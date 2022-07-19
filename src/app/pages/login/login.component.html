@@ -1,0 +1,47 @@
+<div class="login-page-container">
+    <h2>Login</h2>
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm()" class="login-form">
+        <mat-form-field class="email-form-field" appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <button
+                *ngIf="formGroup.value.login"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formGroup.patchValue({ login: '' })"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="password-form-field" appearance="fill">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" />
+            <button
+                *ngIf="formGroup.value.password"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formGroup.patchValue({ password: '' })"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!formGroup.valid"
+        >
+            Register
+        </button>
+        <p *ngIf="loginErr">{{ loginErr }}</p>
+        <button
+            mat-button
+            (click)="navigateToRegisterPage()"
+            class="navigate-to-register-btn"
+        >
+            Don't Have Account? Click Here to Register
+        </button>
+    </form>
+</div>

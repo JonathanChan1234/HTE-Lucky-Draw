@@ -1,13 +1,18 @@
 <div class="register-page-container">
-    <h2>Register</h2>
+    <h2>Register A Master Account</h2>
     <form
         [formGroup]="formGroup"
         (ngSubmit)="submitForm()"
         class="register-form"
     >
-        <mat-form-field class="login-form-field" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" />
+            <input
+                matInput
+                type="email"
+                formControlName="email"
+                class="email-form-field"
+            />
             <button
                 *ngIf="formGroup.value.login"
                 matSuffix
@@ -18,9 +23,14 @@
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>
-        <mat-form-field class="password-form-field" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" />
+            <input
+                matInput
+                type="password"
+                formControlName="password"
+                class="password-form-field"
+            />
             <button
                 *ngIf="formGroup.value.password"
                 matSuffix
@@ -34,9 +44,14 @@
                 At least 8 alphabet and numeric characters
             </mat-hint>
         </mat-form-field>
-        <mat-form-field class="password-form-field" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Confirm Your Password</mat-label>
-            <input matInput type="password" formControlName="confirmPassword" />
+            <input
+                matInput
+                type="password"
+                formControlName="confirmPassword"
+                class="confirm-password-form-field"
+            />
             <button
                 *ngIf="formGroup.value.confirmPassword"
                 matSuffix
@@ -54,10 +69,19 @@
             mat-raised-button
             color="primary"
             type="submit"
-            [disabled]="!formGroup.valid"
+            class="register-btn"
+            [disabled]="!formGroup.valid || confirmPwdErr !== ''"
         >
             Register
         </button>
-        <p *ngIf="registerErr">{{ registerErr }}</p>
+        <p *ngIf="error$ | async">{{ error$ | async }}</p>
+        <button
+            mat-button
+            [disabled]="loading$ | async"
+            (click)="navigateToLoginPage()"
+            class="navigate-to-login-btn"
+        >
+            Already Have An Account? Click Here to Login
+        </button>
     </form>
 </div>

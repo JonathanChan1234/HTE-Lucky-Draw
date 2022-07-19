@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/service/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -9,28 +10,33 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class LoginComponent implements OnInit {
     formGroup: FormGroup;
+    loginErr = '';
 
-    constructor(formBuilder: FormBuilder, private auth: Auth) {
+    constructor(
+        formBuilder: FormBuilder,
+        private router: Router,
+        private authService: AuthService
+    ) {
         this.formGroup = formBuilder.group({
-            login: ['', [Validators.required, Validators.email]],
-            password: [
-                '',
-                [
-                    Validators.required,
-                    Validators.pattern(/^(?=.*\d)(?=.*[a-zA-z]).{8,30}$/),
-                ],
-            ],
-            confirmPassword: [
-                '',
-                [
-                    Validators.required,
-                    Validators.pattern(/^(?=.*\d)(?=.*[a-zA-z]).{8,30}$/),
-                ],
-            ],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required]],
         });
     }
 
     ngOnInit(): void {}
 
-    submitForm() {}
+    async submitForm() {
+        if (!this.formGroup.valid) return;
+        const { email, password } = this.formGroup.value;
+        try {
+            await this.authService.signIn(email, password);
+            this.router.navigate(['main']);
+        } catch (error) {
+            this.loginErr = (error as Error).message;
+        }
+    }
+
+    navigateToRegisterPage() {
+        this.router.navigate(['register']);
+    }
 }
