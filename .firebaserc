@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "hte-lucky-draw": {
+      "hosting": {
+        "hte-lucky-draw": [
+          "hte-lucky-draw"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "hte-lucky-draw"
+  }
+}

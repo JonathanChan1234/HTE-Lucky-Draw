@@ -1,0 +1,63 @@
+<div class="register-page-container">
+    <h2>Register</h2>
+    <form
+        [formGroup]="formGroup"
+        (ngSubmit)="submitForm()"
+        class="register-form"
+    >
+        <mat-form-field class="login-form-field" appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <button
+                *ngIf="formGroup.value.login"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formGroup.patchValue({ login: '' })"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="password-form-field" appearance="fill">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" />
+            <button
+                *ngIf="formGroup.value.password"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formGroup.patchValue({ password: '' })"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-hint align="end">
+                At least 8 alphabet and numeric characters
+            </mat-hint>
+        </mat-form-field>
+        <mat-form-field class="password-form-field" appearance="fill">
+            <mat-label>Confirm Your Password</mat-label>
+            <input matInput type="password" formControlName="confirmPassword" />
+            <button
+                *ngIf="formGroup.value.confirmPassword"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formGroup.patchValue({ confirmPassword: '' })"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="confirmPwdErr !== ''">{{
+                confirmPwdErr
+            }}</mat-error>
+        </mat-form-field>
+        <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!formGroup.valid"
+        >
+            Register
+        </button>
+        <p *ngIf="registerErr">{{ registerErr }}</p>
+    </form>
+</div>

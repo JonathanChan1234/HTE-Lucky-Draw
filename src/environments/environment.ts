@@ -3,7 +3,23 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  firebase: {
+    projectId: 'hte-lucky-draw',
+    appId: '1:427079540763:web:693188f007abf9823dd8be',
+    storageBucket: 'hte-lucky-draw.appspot.com',
+    apiKey: 'AIzaSyAGSPLZPEfz7gu2dAxNBrvp-PGMVlJcR-w',
+    authDomain: 'hte-lucky-draw.firebaseapp.com',
+    messagingSenderId: '427079540763',
+    measurementId: 'G-BJZ22HC5GN',
+  },
+    production: false,
+    apiKey: 'AIzaSyAGSPLZPEfz7gu2dAxNBrvp-PGMVlJcR-w',
+    authDomain: 'hte-lucky-draw.firebaseapp.com',
+    projectId: 'hte-lucky-draw',
+    storageBucket: 'hte-lucky-draw.appspot.com',
+    messagingSenderId: '427079540763',
+    appId: '1:427079540763:web:693188f007abf9823dd8be',
+    measurementId: 'G-BJZ22HC5GN',
 };
 
 /*
