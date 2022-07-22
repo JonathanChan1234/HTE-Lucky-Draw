@@ -1,3 +1,4 @@
+import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -5,14 +6,14 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
-import { HarnessLoader } from '@angular/cdk/testing';
+import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
 
+import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { cold } from 'jasmine-marbles';
+import { cold, getTestScheduler } from 'jasmine-marbles';
 import { AuthService } from 'src/app/service/auth.service';
 import { RegisterComponent } from './register.component';
 
@@ -21,8 +22,18 @@ describe('RegisterComponent', () => {
     let fixture: ComponentFixture<RegisterComponent>;
     let loader: HarnessLoader;
     let debugElement: DebugElement;
+
+    // Spy
     let spyRouter: jasmine.SpyObj<Router>;
     let spyAuthService: jasmine.SpyObj<AuthService>;
+
+    // Harnesses and Elements
+    let emailField: MatInputHarness;
+    let passwordField: MatInputHarness;
+    let confirmPasswordField: MatInputHarness;
+
+    let emailFormField: MatFormFieldHarness;
+    let submitButton: MatButtonHarness;
 
     beforeEach(async () => {
         spyRouter = jasmine.createSpyObj<Router>('router', ['navigate']);
@@ -51,33 +62,39 @@ describe('RegisterComponent', () => {
         component = fixture.componentInstance;
         debugElement = fixture.debugElement;
 
+        emailField = await loader.getHarness(
+            MatInputHarness.with({ selector: '.email-form-field' })
+        );
+        passwordField = await loader.getHarness(
+            MatInputHarness.with({ selector: '.password-form-field' })
+        );
+        confirmPasswordField = await loader.getHarness(
+            MatInputHarness.with({ selector: '.confirm-password-form-field' })
+        );
+        submitButton = await loader.getHarness(
+            MatButtonHarness.with({ selector: '.register-btn' })
+        );
         fixture.detectChanges();
     });
 
+    const getErrMsgText = () => {
+        return debugElement.query(By.css('.register-err-text'));
+    };
+
     it('validation test', async () => {
-        expect(component).toBeTruthy();
-        const cold$ = cold('--#|', null, new Error('test error'));
-        const register = spyAuthService.register.and.returnValue(cold$);
-
-        const emailField = await loader.getHarness(
-            MatInputHarness.with({ selector: '.email-form-field' })
-        );
-        const passwordField = await loader.getHarness(
-            MatInputHarness.with({ selector: '.password-form-field' })
-        );
-        const confirmPasswordField = await loader.getHarness(
-            MatInputHarness.with({ selector: '.confirm-password-form-field' })
-        );
-        const submitButton = await loader.getHarness(
-            MatButtonHarness.with({ selector: '.register-btn' })
-        );
-
-        // correct email and password
+        // valid email and password
         await emailField.setValue('test@gmail.com');
         await passwordField.setValue('password1');
         await confirmPasswordField.setValue('password1');
         fixture.detectChanges();
         expect(await submitButton.isDisabled()).toBeFalse();
+
+        // invalid email
+        await emailField.setValue('testgmail.com');
+        await passwordField.setValue('password1');
+        await confirmPasswordField.setValue('password1');
+        fixture.detectChanges();
+        expect(await submitButton.isDisabled()).toBeTrue();
 
         // password and confirm password not matching
         await emailField.setValue('test@gmail.com');
@@ -99,14 +116,14 @@ describe('RegisterComponent', () => {
         fixture.detectChanges();
         expect(await submitButton.isDisabled()).toBeTrue();
 
-        // password does not numeric
+        // password does not contain number
         await emailField.setValue('test.gmail.com');
         await passwordField.setValue('password');
         await confirmPasswordField.setValue('password');
         fixture.detectChanges();
         expect(await submitButton.isDisabled()).toBeTrue();
 
-        // password does not numeric
+        // password does not contain alphabet
         await emailField.setValue('test.gmail.com');
         await passwordField.setValue('12345678');
         await confirmPasswordField.setValue('12345678');
@@ -130,5 +147,64 @@ describe('RegisterComponent', () => {
         );
         fixture.detectChanges();
         expect(await submitButton.isDisabled()).toBeTrue();
+    });
+
+    it('should show err msg', async () => {
+        const errMsg = 'test error';
+        const cold$ = cold('--#|', null, new Error(errMsg));
+        const register = spyAuthService.register.and.returnValue(cold$);
+        const navigate = spyRouter.navigate.and.returnValue(
+            new Promise((res) => res(true))
+        );
+
+        const email = 'test@gmail.com';
+        const password = 'password1';
+
+        await emailField.setValue(email);
+        await passwordField.setValue(password);
+        await confirmPasswordField.setValue(password);
+        await submitButton.click();
+        fixture.detectChanges();
+
+        // loading
+        expect(register).toHaveBeenCalledWith(email, password);
+        expect(component.loading).toBeTrue();
+        expect(await submitButton.isDisabled()).toBeTrue();
+
+        // Error
+        getTestScheduler().flush();
+        fixture.detectChanges();
+        expect(component.registerErr).toBe(errMsg);
+        expect(getErrMsgText()).toBeTruthy();
+        expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to main when success', async () => {
+        const res$ = cold('--x|', { x: 'test' });
+        const register = spyAuthService.register.and.returnValue(res$);
+        const navigate = spyRouter.navigate.and.returnValue(
+            new Promise((res) => res(true))
+        );
+
+        const email = 'test@gmail.com';
+        const password = 'password1';
+
+        await emailField.setValue(email);
+        await passwordField.setValue(password);
+        await confirmPasswordField.setValue(password);
+        await submitButton.click();
+        fixture.detectChanges();
+
+        // loading
+        expect(register).toHaveBeenCalledWith(email, password);
+        expect(component.loading).toBeTrue();
+        expect(await submitButton.isDisabled()).toBeTrue();
+
+        // Error
+        getTestScheduler().flush();
+        fixture.detectChanges();
+        expect(component.registerErr).toBe('');
+        expect(getErrMsgText()).toBeNull();
+        expect(navigate).toHaveBeenCalled();
     });
 });

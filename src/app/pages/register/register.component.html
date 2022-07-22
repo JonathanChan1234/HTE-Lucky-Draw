@@ -1,5 +1,10 @@
 <div class="register-page-container">
     <h2>Register A Master Account</h2>
+    <div class="warning-header" *ngIf="registerErr">
+        <div>
+            <div class="register-err-text">{{ registerErr }}</div>
+        </div>
+    </div>
     <form
         [formGroup]="formGroup"
         (ngSubmit)="submitForm()"
@@ -22,6 +27,12 @@
             >
                 <mat-icon>close</mat-icon>
             </button>
+            <mat-error *ngIf="formGroup.get('email')?.hasError('required')">
+                Required</mat-error
+            >
+            <mat-error *ngIf="formGroup.get('email')?.hasError('email')">
+                Invaild Email</mat-error
+            >
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Password</mat-label>
@@ -40,6 +51,12 @@
             >
                 <mat-icon>close</mat-icon>
             </button>
+            <mat-error *ngIf="formGroup.get('password')?.hasError('required')">
+                Required</mat-error
+            >
+            <mat-error *ngIf="formGroup.get('password')?.hasError('pattern')">
+                The password does not match the required pattern</mat-error
+            >
             <mat-hint align="end">
                 At least 8 alphabet and numeric characters
             </mat-hint>
@@ -61,23 +78,27 @@
             >
                 <mat-icon>close</mat-icon>
             </button>
-            <mat-error *ngIf="confirmPwdErr !== ''">{{
-                confirmPwdErr
-            }}</mat-error>
+            <mat-error
+                *ngIf="formGroup.get('confirmPassword')?.hasError('required')"
+            >
+                Required</mat-error
+            >
+            <mat-error *ngIf="formGroup.hasError('confirmPassword')">
+                Password does not match</mat-error
+            >
         </mat-form-field>
         <button
             mat-raised-button
             color="primary"
             type="submit"
             class="register-btn"
-            [disabled]="!formGroup.valid || confirmPwdErr !== ''"
+            [disabled]="!formGroup.valid || loading"
         >
             Register
         </button>
-        <p *ngIf="error$ | async">{{ error$ | async }}</p>
+
         <button
             mat-button
-            [disabled]="loading$ | async"
             (click)="navigateToLoginPage()"
             class="navigate-to-login-btn"
         >

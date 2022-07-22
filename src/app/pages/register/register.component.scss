@@ -16,8 +16,21 @@
 
     .mat-form-field {
         width: 80%;
-        margin-top: 20px;
+        margin-bottom: 20px;
     }
+}
+
+.warning-header {
+    background-color: rgb(255, 51, 51);
+    padding: 10px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.register-err-text {
+    font-weight: 300;
+    font-size: large;
 }
 
 .navigate-to-login-btn {
