@@ -13,11 +13,9 @@ export class LuckyDrawComponent implements OnInit {
     ngOnInit(): void {}
 
     async signOut() {
-        try {
-            await this.authService.signOut();
-            this.router.navigate(['login']);
-        } catch (error) {
-            alert(error);
-        }
+        this.authService.signOut().subscribe({
+            next: () => this.router.navigate(['login']),
+            error: (error) => alert(error),
+        });
     }
 }

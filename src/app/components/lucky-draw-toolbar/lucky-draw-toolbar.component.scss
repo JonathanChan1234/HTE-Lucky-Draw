@@ -1,0 +1,31 @@
+.title-toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dot {
+    height: 50px;
+    width: 50px;
+    color: white;
+    background-color: #8c00fff8;
+    border-radius: 50%;
+    line-height: 50px;
+    font-weight: 400;
+    font-size: large;
+    text-align: center;
+    display: inline-block;
+}
+
+.card-header {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.email-text {
+    margin-top: 15px;
+    font-weight: 400;
+}

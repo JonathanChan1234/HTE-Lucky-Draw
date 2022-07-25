@@ -12,7 +12,7 @@ import { AuthService } from '../service/auth.service';
 @Injectable({
     providedIn: 'root',
 })
-export class FirebaseLoginGuard implements CanActivate {
+export class FirebaseAuthPrivateGuard implements CanActivate {
     constructor(private authService: AuthService, private router: Router) {}
     canActivate(
         route: ActivatedRouteSnapshot,
@@ -22,11 +22,16 @@ export class FirebaseLoginGuard implements CanActivate {
         | Promise<boolean | UrlTree>
         | boolean
         | UrlTree {
-        return this.checkLoginInfo();
-    }
-
-    checkLoginInfo() {
-        if (this.authService.getUserInfo()) return true;
-        return this.router.parseUrl('login');
+        return this.authService
+            .getUserInfo()
+            .then((user) => {
+                if (state.url === '/register' || state.url === '/login')
+                    return user === null ? true : this.router.parseUrl('/main');
+                return user === null ? this.router.parseUrl('/login') : true;
+            })
+            .catch((error) => {
+                console.error(error);
+                return this.router.parseUrl('/login');
+            });
     }
 }

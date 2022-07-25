@@ -1,0 +1,34 @@
+<mat-toolbar class="title-toolbar">
+    <span>HTE Lucky Draw</span>
+    <button
+        mat-mini-fab
+        color="basic"
+        aria-label="avatar-icon-button"
+        [matMenuTriggerFor]="menu"
+        *ngIf="user$ | async"
+    >
+        <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <mat-card>
+            <mat-card-header class="card-header">
+                <div mat-card-avatar>
+                    <span class="dot">S</span>
+                </div>
+                <div class="email-text">
+                    {{ (user$ | async)?.email || 'Error' }}
+                </div>
+            </mat-card-header>
+            <mat-card-actions>
+                <button mat-menu-item>
+                    <mat-icon>key</mat-icon>
+                    <span>Reset Password</span>
+                </button>
+                <button mat-menu-item (click)="signOut()">
+                    <mat-icon>logout</mat-icon>
+                    <span>Logout</span>
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </mat-menu>
+</mat-toolbar>

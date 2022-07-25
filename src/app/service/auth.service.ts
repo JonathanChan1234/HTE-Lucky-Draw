@@ -3,27 +3,39 @@ import {
     Auth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    signOut,
     Unsubscribe,
     User,
     UserCredential,
 } from '@angular/fire/auth';
-import { from, Observable, shareReplay } from 'rxjs';
+import { BehaviorSubject, from, Observable, shareReplay } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-    private user: User | null = null;
-    authSubscription: Unsubscribe;
+    user$ = new BehaviorSubject<User | null>(null);
+    authUnsubscribe: Unsubscribe;
 
     constructor(private auth: Auth) {
-        this.authSubscription = auth.onAuthStateChanged((user) => {
-            user = user;
-        });
+        this.authUnsubscribe = auth.onAuthStateChanged((user) =>
+            this.user$.next(user)
+        );
     }
 
-    getUserInfo(): User | null {
-        return this.user;
+    getUserInfo(): Promise<User | null> {
+        return new Promise((resolve, reject) => {
+            const unsubscribe = this.auth.onAuthStateChanged(
+                (user) => {
+                    unsubscribe();
+                    resolve(user);
+                },
+                (error) => {
+                    unsubscribe();
+                    reject(error);
+                }
+            );
+        });
     }
 
     register(email: string, password: string): Observable<UserCredential> {
@@ -38,11 +50,11 @@ export class AuthService implements OnDestroy {
         ).pipe(shareReplay(1));
     }
 
-    signOut() {
-        return this.auth.signOut();
+    signOut(): Observable<void> {
+        return from(signOut(this.auth));
     }
 
     ngOnDestroy(): void {
-        this.authSubscription();
+        this.authUnsubscribe();
     }
 }
