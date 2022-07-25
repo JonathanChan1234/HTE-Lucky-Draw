@@ -1,23 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import {
-    FormBuilder,
+    FormControl,
     FormGroup,
+    FormGroupDirective,
+    NgForm,
     ValidatorFn,
     Validators,
 } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
 
 const PasswordValidator: ValidatorFn = (fg) => {
     const password = fg.get('password')?.value;
     const confirmPassword = fg.get('confirmPassword')?.value;
-    return confirmPassword !== null && password === confirmPassword
+    return password && confirmPassword && password === confirmPassword
         ? null
         : {
               password: 'Not Identical to Confirm Password',
               confirmPassword: 'Not Identical to Password',
           };
 };
+
+class ConfirmPasswordErrorMatcher implements ErrorStateMatcher {
+    isErrorState(
+        control: FormControl | null,
+        _form: FormGroupDirective | NgForm | null
+    ): boolean {
+        return !!(control?.parent?.invalid && control?.touched);
+    }
+}
 
 @Component({
     selector: 'app-register',
@@ -29,31 +41,23 @@ export class RegisterComponent implements OnInit {
     confirmPwdErr = '';
     registerErr = '';
     loading = false;
+    confirmPasswordErrorMatcher: ConfirmPasswordErrorMatcher;
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private router: Router,
-        private authService: AuthService
-    ) {
-        this.formGroup = formBuilder.group(
+    constructor(private router: Router, private authService: AuthService) {
+        this.confirmPasswordErrorMatcher = new ConfirmPasswordErrorMatcher();
+        this.formGroup = new FormGroup(
             {
-                email: ['', [Validators.required, Validators.email]],
-                password: [
-                    '',
-                    [
-                        Validators.required,
-                        Validators.pattern(/^(?=.*\d)(?=.*[a-zA-z]).{8,30}$/),
-                    ],
-                ],
-                confirmPassword: [
-                    '',
-                    [
-                        Validators.required,
-                        Validators.pattern(/^(?=.*\d)(?=.*[a-zA-z]).{8,30}$/),
-                    ],
-                ],
+                email: new FormControl('', [
+                    Validators.required,
+                    Validators.email,
+                ]),
+                password: new FormControl('', [
+                    Validators.required,
+                    Validators.pattern(/^(?=.*\d)(?=.*[a-zA-z]).{8,30}$/),
+                ]),
+                confirmPassword: new FormControl('', [Validators.required]),
             },
-            { validator: PasswordValidator }
+            { validators: PasswordValidator }
         );
     }
 
@@ -63,7 +67,7 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['login']);
     }
 
-    submitForm() {
+    register() {
         if (!this.formGroup.valid) return;
         const { email, password } = this.formGroup.value;
         this.loading = true;

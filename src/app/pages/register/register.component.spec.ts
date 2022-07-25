@@ -2,11 +2,10 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
 
@@ -32,7 +31,6 @@ describe('RegisterComponent', () => {
     let passwordField: MatInputHarness;
     let confirmPasswordField: MatInputHarness;
 
-    let emailFormField: MatFormFieldHarness;
     let submitButton: MatButtonHarness;
 
     beforeEach(async () => {
@@ -52,7 +50,6 @@ describe('RegisterComponent', () => {
             providers: [
                 { provide: Router, useValue: spyRouter },
                 { provide: AuthService, useValue: spyAuthService },
-                { provide: FormBuilder, useValue: new FormBuilder() },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -77,8 +74,8 @@ describe('RegisterComponent', () => {
         fixture.detectChanges();
     });
 
-    const getErrMsgText = () => {
-        return debugElement.query(By.css('.register-err-text'));
+    const getErrMsgBar = () => {
+        return debugElement.query(By.css('.err-msg-bar'));
     };
 
     it('validation test', async () => {
@@ -175,7 +172,7 @@ describe('RegisterComponent', () => {
         getTestScheduler().flush();
         fixture.detectChanges();
         expect(component.registerErr).toBe(errMsg);
-        expect(getErrMsgText()).toBeTruthy();
+        expect(getErrMsgBar()).toBeTruthy();
         expect(navigate).not.toHaveBeenCalled();
     });
 
@@ -204,7 +201,7 @@ describe('RegisterComponent', () => {
         getTestScheduler().flush();
         fixture.detectChanges();
         expect(component.registerErr).toBe('');
-        expect(getErrMsgText()).toBeNull();
+        expect(getErrMsgBar()).toBeNull();
         expect(navigate).toHaveBeenCalled();
     });
 });

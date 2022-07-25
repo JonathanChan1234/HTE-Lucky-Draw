@@ -1,15 +1,11 @@
 <div class="register-page-container">
     <h2>Register A Master Account</h2>
-    <div class="warning-header" *ngIf="registerErr">
-        <div>
-            <div class="register-err-text">{{ registerErr }}</div>
-        </div>
-    </div>
-    <form
-        [formGroup]="formGroup"
-        (ngSubmit)="submitForm()"
-        class="register-form"
-    >
+    <app-error-message-bar
+        class="err-msg-bar"
+        [errMsg]="registerErr"
+        *ngIf="registerErr"
+    ></app-error-message-bar>
+    <form [formGroup]="formGroup" (ngSubmit)="register()" class="register-form">
         <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
             <input
@@ -68,6 +64,7 @@
                 type="password"
                 formControlName="confirmPassword"
                 class="confirm-password-form-field"
+                [errorStateMatcher]="confirmPasswordErrorMatcher"
             />
             <button
                 *ngIf="formGroup.value.confirmPassword"

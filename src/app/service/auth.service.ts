@@ -7,19 +7,23 @@ import {
     User,
     UserCredential,
 } from '@angular/fire/auth';
-import { BehaviorSubject, from, Observable, shareReplay } from 'rxjs';
+import { from, Observable, shareReplay } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-    auth$ = new BehaviorSubject<User | null>(null);
+    private user: User | null = null;
     authSubscription: Unsubscribe;
 
     constructor(private auth: Auth) {
         this.authSubscription = auth.onAuthStateChanged((user) => {
-            this.auth$.next(user);
+            user = user;
         });
+    }
+
+    getUserInfo(): User | null {
+        return this.user;
     }
 
     register(email: string, password: string): Observable<UserCredential> {

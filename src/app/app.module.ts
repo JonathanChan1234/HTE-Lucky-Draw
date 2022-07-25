@@ -17,12 +17,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ErrorMessageBarComponent } from './components/error-message-bar/error-message-bar.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
-    declarations: [AppComponent, LoginComponent, LuckyDrawComponent, RegisterComponent],
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        LuckyDrawComponent,
+        RegisterComponent,
+        ErrorMessageBarComponent,
+    ],
     imports: [
         BrowserModule,
         AppRoutingModule,

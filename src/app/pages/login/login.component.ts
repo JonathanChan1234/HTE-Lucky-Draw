@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
 
@@ -11,29 +11,30 @@ import { AuthService } from 'src/app/service/auth.service';
 export class LoginComponent implements OnInit {
     formGroup: FormGroup;
     loginErr = '';
+    loading = false;
 
-    constructor(
-        formBuilder: FormBuilder,
-        private router: Router,
-        private authService: AuthService
-    ) {
-        this.formGroup = formBuilder.group({
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required]],
+    constructor(private router: Router, private authService: AuthService) {
+        this.formGroup = new FormGroup({
+            email: new FormControl('', [Validators.required, Validators.email]),
+            password: new FormControl('', [Validators.required]),
         });
     }
 
     ngOnInit(): void {}
 
-    async submitForm() {
-        if (!this.formGroup.valid) return;
+    submitForm() {
+        if (this.formGroup.invalid) return;
+
         const { email, password } = this.formGroup.value;
-        try {
-            await this.authService.signIn(email, password);
-            this.router.navigate(['main']);
-        } catch (error) {
-            this.loginErr = (error as Error).message;
-        }
+        if (email === null || password === null) return;
+
+        this.loading = true;
+        this.loginErr = '';
+        this.authService.signIn(email, password).subscribe({
+            next: () => this.router.navigate(['main']),
+            error: (error) => (this.loginErr = error.message),
+            complete: () => (this.loading = false),
+        });
     }
 
     navigateToRegisterPage() {

@@ -1,9 +1,19 @@
 <div class="login-page-container">
     <h2>Login</h2>
+    <app-error-message-bar
+        class="err-msg-bar"
+        [errMsg]="loginErr"
+        *ngIf="loginErr"
+    ></app-error-message-bar>
     <form [formGroup]="formGroup" (ngSubmit)="submitForm()" class="login-form">
-        <mat-form-field class="email-form-field" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" />
+            <input
+                matInput
+                type="email"
+                formControlName="email"
+                class="email-input"
+            />
             <button
                 *ngIf="formGroup.value.login"
                 matSuffix
@@ -13,10 +23,21 @@
             >
                 <mat-icon>close</mat-icon>
             </button>
+            <mat-error *ngIf="formGroup.get('email')?.hasError('required')">
+                Required</mat-error
+            >
+            <mat-error *ngIf="formGroup.get('email')?.hasError('email')">
+                Invaild Email</mat-error
+            >
         </mat-form-field>
-        <mat-form-field class="password-form-field" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" />
+            <input
+                matInput
+                type="password"
+                formControlName="password"
+                class="password-input"
+            />
             <button
                 *ngIf="formGroup.value.password"
                 matSuffix
@@ -26,12 +47,14 @@
             >
                 <mat-icon>close</mat-icon>
             </button>
+            <mat-error>Required</mat-error>
         </mat-form-field>
         <button
             mat-raised-button
             color="primary"
             type="submit"
-            [disabled]="!formGroup.valid"
+            [disabled]="formGroup.invalid || loading"
+            class="submit-button"
         >
             Register
         </button>
