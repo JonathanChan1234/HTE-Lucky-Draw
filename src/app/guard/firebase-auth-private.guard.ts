@@ -25,7 +25,11 @@ export class FirebaseAuthPrivateGuard implements CanActivate {
         return this.authService
             .getUserInfo()
             .then((user) => {
-                if (state.url === '/register' || state.url === '/login')
+                if (
+                    state.url === '/register' ||
+                    state.url === '/login' ||
+                    state.url === '/'
+                )
                     return user === null ? true : this.router.parseUrl('/main');
                 return user === null ? this.router.parseUrl('/login') : true;
             })

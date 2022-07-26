@@ -15,12 +15,14 @@ import { BehaviorSubject, from, Observable, shareReplay } from 'rxjs';
 })
 export class AuthService implements OnDestroy {
     user$ = new BehaviorSubject<User | null>(null);
+    user: User | null = null;
     authUnsubscribe: Unsubscribe;
 
     constructor(private auth: Auth) {
-        this.authUnsubscribe = auth.onAuthStateChanged((user) =>
-            this.user$.next(user)
-        );
+        this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+            this.user$.next(user);
+            this.user = user;
+        });
     }
 
     getUserInfo(): Promise<User | null> {
