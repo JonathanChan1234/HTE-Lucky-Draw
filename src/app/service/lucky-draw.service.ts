@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
     collection,
+    deleteDoc,
     doc,
     Firestore,
     getDoc,
@@ -9,6 +10,7 @@ import {
     runTransaction,
     where,
 } from '@angular/fire/firestore';
+import { from, Observable } from 'rxjs';
 import { Draw } from '../model/draw';
 import { AuthService } from './auth.service';
 
@@ -21,6 +23,18 @@ export class LuckyDrawService {
         private authService: AuthService
     ) {}
 
+    getDrawList(): Observable<Draw[]> {
+        return from(this.getDrawListAsync());
+    }
+
+    createNewDraw(name: string): Observable<void> {
+        return from(this.createNewDrawAsync(name));
+    }
+
+    deleteDraw(id: string): Observable<void> {
+        return from(this.deleteDrawAsync(id));
+    }
+
     async checkIfUserDocsExist(): Promise<boolean> {
         if (!this.authService.user) throw new Error('Not authenticated');
         const docSnap = await getDoc(
@@ -29,7 +43,7 @@ export class LuckyDrawService {
         return docSnap.exists();
     }
 
-    async getDrawList(): Promise<Draw[]> {
+    async getDrawListAsync(): Promise<Draw[]> {
         if (!this.authService.user) throw new Error('Not authenticated');
         const userDocExist = await this.checkIfUserDocsExist();
         if (!userDocExist) return [];
@@ -46,7 +60,7 @@ export class LuckyDrawService {
         return drawDocs;
     }
 
-    async createNewDraw(name: string): Promise<void> {
+    async createNewDrawAsync(name: string): Promise<void> {
         return this.createDraw(new Draw(name));
     }
 
@@ -78,5 +92,17 @@ export class LuckyDrawService {
                 draw.toFirebaseData()
             );
         });
+    }
+
+    async deleteDrawAsync(id: string): Promise<void> {
+        if (!this.authService.user) throw new Error('Not authenticated');
+        const uid = this.authService.user.uid;
+        const drawDoc = doc(this.firestore, 'users', uid, 'draws', id);
+
+        // check if the doc exists
+        const drawRef = await getDoc(drawDoc);
+        if (!drawRef.exists()) throw new Error('This draw does not exist');
+
+        return deleteDoc(drawDoc);
     }
 }

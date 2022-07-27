@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import {
     BehaviorSubject,
     catchError,
-    from,
     map,
     merge,
     Observable,
@@ -13,6 +12,7 @@ import {
     switchMap,
 } from 'rxjs';
 import { CreateDrawDialogComponent } from 'src/app/components/create-draw-dialog/create-draw-dialog.component';
+import { DeleteDrawDialogComponent } from 'src/app/components/delete-draw-dialog/delete-draw-dialog.component';
 import { Draw } from 'src/app/model/draw';
 import { AuthService } from 'src/app/service/auth.service';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
@@ -38,10 +38,9 @@ export class LuckyDrawComponent implements OnInit {
 
     ngOnInit(): void {
         this.draws$ = this.refresh$.pipe(
-            switchMap(() =>
-                from(this.luckyDrawService.getDrawList()).pipe(shareReplay(1))
-            ),
-            catchError(() => of(null))
+            switchMap(() => this.luckyDrawService.getDrawList()),
+            catchError(() => of(null)),
+            shareReplay(1)
         );
         this.loading$ = merge(
             this.refresh$,
@@ -55,14 +54,6 @@ export class LuckyDrawComponent implements OnInit {
             map(() => null)
         );
     }
-    openCreateDrawDialog(): void {
-        const dialogRef = this.matDialog.open(CreateDrawDialogComponent, {});
-
-        dialogRef.afterClosed().subscribe((result) => {
-            console.log('The dialog was closed');
-            console.log(result);
-        });
-    }
 
     getReadableDate(date: Date): string {
         return convertDateToDateString(date);
@@ -70,5 +61,29 @@ export class LuckyDrawComponent implements OnInit {
 
     refresh(): void {
         this.refresh$.next(true);
+    }
+
+    openCreateDrawDialog(): void {
+        const dialogRef = this.matDialog.open(CreateDrawDialogComponent, {
+            disableClose: true,
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            // refresh the list if success
+            this.refresh();
+        });
+    }
+
+    openDeleteDrawDialog(id: string, name: string): void {
+        const dialogRef = this.matDialog.open(DeleteDrawDialogComponent, {
+            disableClose: true,
+            data: { id, name },
+        });
+        dialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            // refresh the list if success
+            this.refresh();
+        });
     }
 }

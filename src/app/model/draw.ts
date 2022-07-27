@@ -6,7 +6,7 @@ import {
 } from '@angular/fire/firestore';
 
 export class Draw {
-    id?: string;
+    id: string;
     name: string;
     prizeCount: number;
     participantCount: number;

@@ -31,6 +31,7 @@ import { AuthenticatingComponent } from './pages/authenticating/authenticating.c
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import { RegisterComponent } from './pages/register/register.component';
         CreateDrawDialogComponent,
         AuthenticatingComponent,
         LuckyDrawToolbarComponent,
+        DeleteDrawDialogComponent,
     ],
     imports: [
         BrowserModule,

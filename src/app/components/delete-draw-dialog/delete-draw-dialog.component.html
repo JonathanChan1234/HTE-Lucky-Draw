@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Delete Lucky Draw</h2>
+<mat-dialog-content class="mat-typography">
+    <div *ngIf="!loading" class="content-container">
+        <h3>⚠️Warning</h3>
+        <p>
+            Are you sure to delete {{ data.name }}? (All the data associated
+            will be deleted)
+        </p>
+    </div>
+    <div *ngIf="loading" class="loading-container">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <p>Handling Your Request</p>
+    </div>
+
+    <app-error-message-bar
+        class="error-msg-bar"
+        *ngIf="errMsg"
+        [errMsg]="errMsg"
+    ></app-error-message-bar>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close [disabled]="loading">Cancel</button>
+    <button
+        mat-raised-button
+        color="accent"
+        (click)="deleteDraw()"
+        [disabled]="loading"
+    >
+        Delete
+    </button>
+</mat-dialog-actions>

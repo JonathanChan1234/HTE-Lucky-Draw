@@ -1,12 +1,52 @@
-<h1 mat-dialog-title>Create New Lucky Draw</h1>
+<h2 mat-dialog-title>
+    <mat-icon>design_services</mat-icon>
+    Create New Draw
+</h2>
 <div mat-dialog-content>
-    <p>Select A Name</p>
-    <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput />
-    </mat-form-field>
+    <div class="form-container" *ngIf="!loading">
+        <p>This name must be unique</p>
+        <form [formGroup]="formGroup">
+            <mat-form-field appearance="fill">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" autofocus />
+                <mat-error *ngIf="formGroup.get('name')?.hasError('required')"
+                    >Required</mat-error
+                >
+                <mat-error *ngIf="formGroup.get('name')?.hasError('maxlength')"
+                    >Maximum Character is 30</mat-error
+                >
+            </mat-form-field>
+        </form>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <p>Handling Your Request</p>
+    </div>
+
+    <app-error-message-bar
+        class="error-msg-bar"
+        *ngIf="errMsg"
+        [errMsg]="errMsg"
+    ></app-error-message-bar>
 </div>
-<div mat-dialog-actions>
-    <button mat-button color="accent" (click)="cancel()">Cancel</button>
-    <button mat-button color="primary" cdkFocusInitial>Create</button>
+<div mat-dialog-actions class="dialog-action-container">
+    <button
+        mat-button
+        color="accent"
+        (click)="cancel()"
+        [disabled]="loading"
+        class="cancel-btn"
+    >
+        Cancel
+    </button>
+    <button
+        mat-raised-button
+        color="primary"
+        class="create-btn"
+        [disabled]="formGroup.invalid || loading"
+        (click)="createNewDraw()"
+    >
+        Create
+    </button>
 </div>
