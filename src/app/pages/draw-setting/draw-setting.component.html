@@ -1,0 +1,65 @@
+<div class="draw-setting-container">
+    <div>
+        <div>
+            <h2>Lucky Draw Setting</h2>
+        </div>
+        <div class="loading-container" *ngIf="loading$ | async">
+            <mat-spinner></mat-spinner>
+            <h3>Fetching Your Draw Setting</h3>
+        </div>
+        <app-error-message-bar
+            *ngIf="error$ | async"
+            [errMsg]="
+                $any(error$ | async).message +
+                '. Please try again by clicking the refresh button'
+            "
+        ></app-error-message-bar>
+        <mat-list *ngIf="(draw$ | async) && !(loading$ | async)">
+            <mat-list-item>
+                <div mat-line>Change Draw Name</div>
+                <p mat-line class="draw-name-text">
+                    {{ (draw$ | async)?.name }}
+                </p>
+                <button mat-raised-button color="primary">Change</button>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <div mat-line>Sign In Required</div>
+                <mat-slide-toggle
+                    class="signin-slide-toggle"
+                    (change)="changeSignInRequiredSetting($event)"
+                    [checked]="(draw$ | async)?.signInRequired"
+                ></mat-slide-toggle>
+                <div mat-line>
+                    <p class="description-text">
+                        (This requires participants to first sign in in order to
+                        join the draw)
+                    </p>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <div mat-line>Lock Draw</div>
+                <mat-slide-toggle
+                    class="lock-slide-toggle"
+                    (change)="changeLockSetting($event)"
+                    [disabled]="!(draw$ | async)?.signInRequired"
+                    [checked]="(draw$ | async)?.lock"
+                ></mat-slide-toggle>
+                <div mat-line>
+                    <p class="description-text">
+                        (Only available if signing in is required. This will
+                        disallow participant to join the draw)
+                    </p>
+                </div>
+            </mat-list-item>
+        </mat-list>
+    </div>
+    <button
+        class="back-home-btn"
+        mat-raised-button
+        (click)="navigateToHomePage()"
+    >
+        Back to Home
+    </button>
+</div>

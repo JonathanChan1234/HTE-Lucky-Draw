@@ -1,0 +1,25 @@
+.draw-setting-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+}
+
+.draw-name-text {
+    color: grey;
+}
+
+.description-text {
+    white-space: normal;
+    text-overflow: normal;
+}

@@ -10,6 +10,11 @@ import {
     runTransaction,
     where,
 } from '@angular/fire/firestore';
+import {
+    DocumentData,
+    DocumentReference,
+    updateDoc,
+} from '@firebase/firestore';
 import { from, Observable } from 'rxjs';
 import { Draw } from '../model/draw';
 import { AuthService } from './auth.service';
@@ -22,6 +27,10 @@ export class LuckyDrawService {
         private firestore: Firestore,
         private authService: AuthService
     ) {}
+
+    getDrawById(drawId: string): Observable<Draw> {
+        return from(this.getDrawByIdAsync(drawId));
+    }
 
     getDrawList(): Observable<Draw[]> {
         return from(this.getDrawListAsync());
@@ -41,6 +50,32 @@ export class LuckyDrawService {
             doc(this.firestore, `users`, this.authService.user.uid)
         );
         return docSnap.exists();
+    }
+
+    async getDrawRefById(
+        drawId: string
+    ): Promise<DocumentReference<DocumentData>> {
+        if (!this.authService.user) throw new Error('Not authenticated');
+        const uid = this.authService.user.uid;
+        const drawDoc = doc(this.firestore, 'users', uid, 'draws', drawId);
+
+        // check if the doc exists
+        const drawRef = await getDoc(drawDoc);
+        if (!drawRef.exists()) throw new Error('This draw does not exist');
+        return drawDoc;
+    }
+
+    async getDrawByIdAsync(drawId: string): Promise<Draw> {
+        console.log('get draw by id ');
+
+        if (!this.authService.user) throw new Error('Not authenticated');
+        const uid = this.authService.user.uid;
+        const drawDoc = await getDoc(
+            doc(this.firestore, 'users', uid, 'draws', drawId)
+        );
+        if (!drawDoc.exists())
+            throw new Error(`Draw doc ${drawId} does not exist`);
+        return Draw.ToJSONObject(drawDoc);
     }
 
     async getDrawListAsync(): Promise<Draw[]> {
@@ -94,15 +129,26 @@ export class LuckyDrawService {
         });
     }
 
-    async deleteDrawAsync(id: string): Promise<void> {
-        if (!this.authService.user) throw new Error('Not authenticated');
-        const uid = this.authService.user.uid;
-        const drawDoc = doc(this.firestore, 'users', uid, 'draws', id);
+    async updateDrawNameAsync(drawId: string, name: string): Promise<void> {
+        const drawRef = await this.getDrawRefById(drawId);
+        return updateDoc(drawRef, { name });
+    }
 
-        // check if the doc exists
-        const drawRef = await getDoc(drawDoc);
-        if (!drawRef.exists()) throw new Error('This draw does not exist');
+    async updateSignInRequiredAsync(
+        drawId: string,
+        signInRequired: boolean
+    ): Promise<void> {
+        const drawRef = await this.getDrawRefById(drawId);
+        return updateDoc(drawRef, { signInRequired });
+    }
 
-        return deleteDoc(drawDoc);
+    async updateLockAsync(drawId: string, lock: boolean): Promise<void> {
+        const drawRef = await this.getDrawRefById(drawId);
+        return updateDoc(drawRef, { lock });
+    }
+
+    async deleteDrawAsync(drawId: string): Promise<void> {
+        const drawRef = await this.getDrawRefById(drawId);
+        return deleteDoc(drawRef);
     }
 }

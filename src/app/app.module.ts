@@ -19,19 +19,22 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CreateDrawDialogComponent } from './components/create-draw-dialog/create-draw-dialog.component';
+import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
 import { ErrorMessageBarComponent } from './components/error-message-bar/error-message-bar.component';
 import { LuckyDrawToolbarComponent } from './components/lucky-draw-toolbar/lucky-draw-toolbar.component';
 import { AuthenticatingComponent } from './pages/authenticating/authenticating.component';
+import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +47,7 @@ import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delet
         AuthenticatingComponent,
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
+        DrawSettingComponent,
     ],
     imports: [
         BrowserModule,
@@ -57,6 +61,8 @@ import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delet
         provideFunctions(() => getFunctions()),
         provideMessaging(() => getMessaging()),
         provideStorage(() => getStorage()),
+        MatSlideToggleModule,
+        MatSnackBarModule,
         MatDialogModule,
         MatChipsModule,
         MatListModule,

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import {
     BehaviorSubject,
@@ -14,7 +15,6 @@ import {
 import { CreateDrawDialogComponent } from 'src/app/components/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from 'src/app/components/delete-draw-dialog/delete-draw-dialog.component';
 import { Draw } from 'src/app/model/draw';
-import { AuthService } from 'src/app/service/auth.service';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 import { convertDateToDateString } from 'src/app/utils/date';
 
@@ -31,9 +31,9 @@ export class LuckyDrawComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private authService: AuthService,
         private matDialog: MatDialog,
-        private luckyDrawService: LuckyDrawService
+        private luckyDrawService: LuckyDrawService,
+        private snackBar: MatSnackBar
     ) {}
 
     ngOnInit(): void {
@@ -72,6 +72,10 @@ export class LuckyDrawComponent implements OnInit {
             if (!result) return;
             // refresh the list if success
             this.refresh();
+
+            this.snackBar.open(`✔️ Draw created successfully`, 'close', {
+                duration: 2000,
+            });
         });
     }
 
@@ -84,6 +88,17 @@ export class LuckyDrawComponent implements OnInit {
             if (!result) return;
             // refresh the list if success
             this.refresh();
+            this.snackBar.open(
+                `✔️ Draw ${name} deleted successfully`,
+                'close',
+                {
+                    duration: 2000,
+                }
+            );
         });
+    }
+
+    navigateToSettingPage(drawId: string): Promise<boolean> {
+        return this.router.navigate([`draws/setting/${drawId}`]);
     }
 }
