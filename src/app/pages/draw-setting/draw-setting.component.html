@@ -3,10 +3,10 @@
         <div>
             <h2>Lucky Draw Setting</h2>
         </div>
-        <div class="loading-container" *ngIf="loading$ | async">
-            <mat-spinner></mat-spinner>
-            <h3>Fetching Your Draw Setting</h3>
-        </div>
+        <app-loading-spinner
+            [msg]="loadingMsg"
+            *ngIf="loading$ | async"
+        ></app-loading-spinner>
         <app-error-message-bar
             *ngIf="error$ | async"
             [errMsg]="
@@ -17,10 +17,31 @@
         <mat-list *ngIf="(draw$ | async) && !(loading$ | async)">
             <mat-list-item>
                 <div mat-line>Change Draw Name</div>
-                <p mat-line class="draw-name-text">
+                <div mat-line>
+                    <mat-form-field
+                        *ngIf="editMode"
+                        class="edit-draw-name-formfield"
+                    >
+                        <mat-label>Name</mat-label>
+                        <input matInput [formControl]="nameFormControl" />
+                        <mat-error *ngIf="nameFormControl.hasError('required')"
+                            >Required</mat-error
+                        >
+                        <mat-error *ngIf="nameFormControl.hasError('maxlength')"
+                            >Maximum Character is 30</mat-error
+                        >
+                    </mat-form-field>
+                </div>
+                <div mat-line class="draw-name-text" *ngIf="!editMode">
                     {{ (draw$ | async)?.name }}
-                </p>
-                <button mat-raised-button color="primary">Change</button>
+                </div>
+                <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="changeDrawName()"
+                >
+                    Change
+                </button>
             </mat-list-item>
             <mat-divider></mat-divider>
             <mat-list-item>

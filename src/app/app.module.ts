@@ -35,6 +35,7 @@ import { DrawSettingComponent } from './pages/draw-setting/draw-setting.componen
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { RegisterComponent } from './pages/register/register.component';
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,
+        LoadingSpinnerComponent,
     ],
     imports: [
         BrowserModule,

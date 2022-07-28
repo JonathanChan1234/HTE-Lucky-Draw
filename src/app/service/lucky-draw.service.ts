@@ -66,7 +66,7 @@ export class LuckyDrawService {
     }
 
     async getDrawByIdAsync(drawId: string): Promise<Draw> {
-        console.log('get draw by id ');
+        console.log('get draw by id');
 
         if (!this.authService.user) throw new Error('Not authenticated');
         const uid = this.authService.user.uid;

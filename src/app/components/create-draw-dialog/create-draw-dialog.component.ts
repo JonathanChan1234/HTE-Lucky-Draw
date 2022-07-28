@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { from } from 'rxjs';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 
 @Component({
@@ -34,7 +33,7 @@ export class CreateDrawDialogComponent {
 
         this.loading = true;
         this.errMsg = '';
-        from(this.luckyDrawService.createNewDraw(name)).subscribe({
+        this.luckyDrawService.createNewDraw(name).subscribe({
             next: () => {
                 this.loading = false;
                 this.dialogRef.close(true);

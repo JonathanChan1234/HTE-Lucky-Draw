@@ -1,71 +1,72 @@
 <div class="lucky-draw-container">
-    <div>
-        <div class="list-container">
-            <h2>Lucky Draw List</h2>
-            <div>
-                <button
-                    mat-mini-fab
-                    class="open-create-draw-btn"
-                    aria-label="Create New Dialog"
-                    (click)="openCreateDrawDialog()"
-                >
-                    <mat-icon>add</mat-icon>
-                </button>
-                <button mat-icon-button (click)="refresh()">
-                    <mat-icon>refresh</mat-icon>
-                </button>
-            </div>
+    <div class="list-container">
+        <h2>Lucky Draw List</h2>
+        <div>
+            <button
+                mat-mini-fab
+                class="open-create-draw-btn"
+                aria-label="Create New Dialog"
+                (click)="openCreateDrawDialog()"
+            >
+                <mat-icon>add</mat-icon>
+            </button>
+            <button mat-icon-button (click)="refresh()">
+                <mat-icon>refresh</mat-icon>
+            </button>
         </div>
-        <app-error-message-bar
-            *ngIf="error$ | async"
-            [errMsg]="$any(error$ | async).message"
-        ></app-error-message-bar>
-        <div *ngIf="loading$ | async">
-            <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-        </div>
-        <mat-list *ngIf="draws$ | async">
-            <mat-list-item *ngFor="let draw of draws$ | async">
-                <mat-icon mat-list-icon>ballot</mat-icon>
-                <div mat-line>{{ draw.name }}</div>
-                <p mat-line>
-                    Created at {{ getReadableDate(draw.createdAt.toDate()) }}
-                </p>
-                <mat-chip-list aria-label="draw-option" mat-line>
-                    <mat-chip
-                        [color]="draw.signInRequired ? 'primary' : 'warning'"
-                    >
-                        {{
-                            draw.signInRequired
-                                ? 'Sign In Required'
-                                : 'Sign In Not Required'
-                        }}
-                    </mat-chip>
-                    <mat-chip color="primary">{{
-                        draw.lock ? 'Lock' : 'Open'
-                    }}</mat-chip>
-                </mat-chip-list>
-                <button mat-icon-button [matMenuTriggerFor]="menu">
-                    <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="navigateToSettingPage(draw.id)">
-                        <mat-icon>settings</mat-icon>
-                        <span>Setting</span>
-                    </button>
-                    <button mat-menu-item>
-                        <mat-icon>edit</mat-icon>
-                        <span>Edit</span>
-                    </button>
-                    <button
-                        mat-menu-item
-                        (click)="openDeleteDrawDialog(draw.id, draw.name)"
-                    >
-                        <mat-icon>delete</mat-icon>
-                        <span>Delete</span>
-                    </button>
-                </mat-menu>
-                <mat-divider></mat-divider>
-            </mat-list-item>
-        </mat-list>
     </div>
+
+    <app-error-message-bar
+        *ngIf="error$ | async"
+        [errMsg]="$any(error$ | async).message"
+    ></app-error-message-bar>
+
+    <app-loading-spinner
+        *ngIf="loading$ | async"
+        msg="Fetching Your Lucky Draw List"
+    >
+    </app-loading-spinner>
+
+    <mat-list *ngIf="draws$ | async">
+        <mat-list-item *ngFor="let draw of draws$ | async">
+            <mat-icon mat-list-icon>ballot</mat-icon>
+            <div mat-line>{{ draw.name }}</div>
+            <p mat-line>
+                Created at {{ getReadableDate(draw.createdAt.toDate()) }}
+            </p>
+            <mat-chip-list aria-label="draw-option" mat-line>
+                <mat-chip [color]="draw.signInRequired ? 'primary' : 'warning'">
+                    {{
+                        draw.signInRequired
+                            ? 'Sign In Required'
+                            : 'Sign In Not Required'
+                    }}
+                </mat-chip>
+                <mat-chip color="primary">{{
+                    draw.lock ? 'Lock' : 'Open'
+                }}</mat-chip>
+            </mat-chip-list>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="navigateToSettingPage(draw.id)">
+                    <mat-icon>settings</mat-icon>
+                    <span>Setting</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                </button>
+                <button
+                    mat-menu-item
+                    (click)="openDeleteDrawDialog(draw.id, draw.name)"
+                >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+            </mat-menu>
+            <mat-divider></mat-divider>
+        </mat-list-item>
+    </mat-list>
 </div>
