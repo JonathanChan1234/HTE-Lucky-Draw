@@ -29,13 +29,12 @@ import { AppComponent } from './app.component';
 import { CreateDrawDialogComponent } from './components/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
 import { ErrorMessageBarComponent } from './components/error-message-bar/error-message-bar.component';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { LuckyDrawToolbarComponent } from './components/lucky-draw-toolbar/lucky-draw-toolbar.component';
-import { AuthenticatingComponent } from './pages/authenticating/authenticating.component';
 import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 
 @NgModule({
     declarations: [
@@ -45,7 +44,6 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
         RegisterComponent,
         ErrorMessageBarComponent,
         CreateDrawDialogComponent,
-        AuthenticatingComponent,
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,

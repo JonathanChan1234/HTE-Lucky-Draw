@@ -10,18 +10,20 @@
             >
                 <mat-icon>add</mat-icon>
             </button>
-            <button mat-icon-button (click)="refresh()">
+            <button mat-icon-button (click)="refresh()" class="refresh-btn">
                 <mat-icon>refresh</mat-icon>
             </button>
         </div>
     </div>
 
     <app-error-message-bar
-        *ngIf="error$ | async"
-        [errMsg]="$any(error$ | async).message"
+        class="err-msg-bar"
+        *ngIf="errMsg"
+        [errMsg]="errMsg"
     ></app-error-message-bar>
 
     <app-loading-spinner
+        class="loading-spinner"
         *ngIf="loading$ | async"
         msg="Fetching Your Lucky Draw List"
     >

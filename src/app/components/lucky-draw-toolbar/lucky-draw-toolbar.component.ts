@@ -15,7 +15,6 @@ export class LuckyDrawToolbarComponent implements OnInit {
 
     ngOnInit(): void {
         this.user$ = this.authService.user$;
-        this.user$.subscribe((user) => console.log(user));
     }
 
     signOut(): void {

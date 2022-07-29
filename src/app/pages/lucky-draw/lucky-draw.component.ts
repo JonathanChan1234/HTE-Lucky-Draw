@@ -27,7 +27,7 @@ export class LuckyDrawComponent implements OnInit {
     refresh$ = new BehaviorSubject<true>(true);
     loading$!: Observable<boolean>;
     draws$!: Observable<Draw[] | null>;
-    error$!: Observable<Error | null>;
+    errMsg = '';
 
     constructor(
         private router: Router,
@@ -39,7 +39,10 @@ export class LuckyDrawComponent implements OnInit {
     ngOnInit(): void {
         this.draws$ = this.refresh$.pipe(
             switchMap(() => this.luckyDrawService.getDrawList()),
-            catchError(() => of(null)),
+            catchError((err) => {
+                this.errMsg = err.message;
+                return of(null);
+            }),
             shareReplay(1)
         );
         this.loading$ = merge(
@@ -48,10 +51,6 @@ export class LuckyDrawComponent implements OnInit {
                 catchError(() => of(false)),
                 map(() => false)
             )
-        );
-        this.error$ = this.draws$.pipe(
-            catchError((error) => error),
-            map(() => null)
         );
     }
 

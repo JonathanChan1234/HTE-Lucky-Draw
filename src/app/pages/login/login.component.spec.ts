@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
 
+import { FirebaseError } from '@angular/fire/app';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
@@ -103,7 +104,8 @@ describe('LoginComponent', () => {
 
     it('should show error message', async () => {
         const errMsg = 'test error';
-        const cold$ = cold('--#|', null, new Error(errMsg));
+        const error = new FirebaseError(errMsg, errMsg);
+        const cold$ = cold('--#|', null, error);
         const signIn = spyAuthService.signIn.and.returnValue(cold$);
         const navigate = spyRouter.navigate.and.returnValue(
             new Promise((res) => res(true))

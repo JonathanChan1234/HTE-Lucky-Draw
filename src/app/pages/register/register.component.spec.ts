@@ -2,6 +2,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FirebaseError } from '@angular/fire/app';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonHarness } from '@angular/material/button/testing';
@@ -148,7 +149,8 @@ describe('RegisterComponent', () => {
 
     it('should show err msg', async () => {
         const errMsg = 'test error';
-        const cold$ = cold('--#|', null, new Error(errMsg));
+        const error = new FirebaseError(errMsg, errMsg);
+        const cold$ = cold('--#|', null, error);
         const register = spyAuthService.register.and.returnValue(cold$);
         const navigate = spyRouter.navigate.and.returnValue(
             new Promise((res) => res(true))
