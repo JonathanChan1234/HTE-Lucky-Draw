@@ -33,8 +33,8 @@ export class DrawSettingComponent implements OnInit {
     request$ = new Subject<boolean>();
     loading$!: Observable<boolean>;
     draw$!: Observable<Draw | undefined>;
-    error$!: Observable<Error | undefined>;
 
+    errMsg = '';
     loadingMsg: string = FETCH_SETTING_MSG;
     draw?: Draw;
     editMode = false;
@@ -61,7 +61,10 @@ export class DrawSettingComponent implements OnInit {
                     ? this.luckyDrawService.getDrawById(params['drawId'])
                     : throwError(() => new Error('Emtpy Draw ID'))
             ),
-            catchError(() => of(undefined)),
+            catchError((err) => {
+                this.errMsg = err.message;
+                return of(undefined);
+            }),
             shareReplay(1)
         );
 
@@ -71,13 +74,6 @@ export class DrawSettingComponent implements OnInit {
             this.draw$.pipe(
                 map(() => false),
                 catchError(() => of(false))
-            )
-        );
-
-        this.error$ = merge(
-            this.draw$.pipe(
-                map(() => undefined),
-                catchError((err) => of(err))
             )
         );
 

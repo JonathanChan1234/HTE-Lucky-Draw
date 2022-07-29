@@ -15,11 +15,12 @@
                 class="email-input"
             />
             <button
-                *ngIf="formGroup.value.login"
+                *ngIf="formGroup.value.email"
                 matSuffix
                 mat-icon-button
                 aria-label="Clear"
-                (click)="formGroup.patchValue({ login: '' })"
+                type="button"
+                (click)="formGroup.patchValue({ email: '' })"
             >
                 <mat-icon>close</mat-icon>
             </button>
@@ -43,6 +44,7 @@
                 matSuffix
                 mat-icon-button
                 aria-label="Clear"
+                type="button"
                 (click)="formGroup.patchValue({ password: '' })"
             >
                 <mat-icon>close</mat-icon>

@@ -1,0 +1,29 @@
+.empty-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.emoji-container {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.emoji {
+    font-size: 200px;
+    text-align: center;
+}
+
+.msg-container {
+    margin-top: 10px;
+
+    .msg-text {
+        font-weight: 500;
+    }
+}

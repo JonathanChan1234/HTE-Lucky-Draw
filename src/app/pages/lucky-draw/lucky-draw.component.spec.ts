@@ -164,10 +164,9 @@ describe('LuckyDrawComponent (Success)', () => {
         expect(getLoadingSpinner()).toBeNull();
         expect(getErrorMsgBar()).toBeNull();
         const thirdList = await getLuckDrawList();
-        expect(thirdList).toBeTruthy();
-        if (!thirdList) return;
-        const items = await thirdList.getItems();
-        expect(items.length).toBe(0);
+        expect(thirdList).toBeNull();
+        const emptyList = debugElement.query(By.css('.empty-draw-list'));
+        expect(emptyList).toBeTruthy();
 
         expect(getDrawList).toHaveBeenCalledTimes(2);
     });

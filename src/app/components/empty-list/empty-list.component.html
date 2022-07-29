@@ -1,0 +1,16 @@
+<div class="empty-list-container">
+    <div class="emoji-container">
+        <p class="emoji">📋</p>
+    </div>
+    <div class="msg-container">
+        <p class="msg-text">{{ message }}</p>
+        <button
+            mat-raised-button
+            color="primary"
+            (click)="emptyListAction()"
+            class="msg-btn"
+        >
+            {{ btnMessage }}
+        </button>
+    </div>
+</div>

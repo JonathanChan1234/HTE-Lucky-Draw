@@ -29,7 +29,15 @@
     >
     </app-loading-spinner>
 
-    <mat-list *ngIf="draws$ | async">
+    <app-empty-list
+        *ngIf="(draws$ | async) && (draws$ | async)?.length === 0"
+        class="empty-draw-list"
+        message="You do not have any draw yet."
+        btnMessage="Click here to add new draw"
+        (emptyListActionEmitter)="openCreateDrawDialog()"
+    ></app-empty-list>
+
+    <mat-list *ngIf="(draws$ | async) && $any(draws$ | async).length > 0">
         <mat-list-item *ngFor="let draw of draws$ | async">
             <mat-icon mat-list-icon>ballot</mat-icon>
             <div mat-line>{{ draw.name }}</div>
@@ -55,6 +63,13 @@
                 <button mat-menu-item (click)="navigateToSettingPage(draw.id)">
                     <mat-icon>settings</mat-icon>
                     <span>Setting</span>
+                </button>
+                <button
+                    mat-menu-item
+                    (click)="navigateToParticipantPage(draw.id)"
+                >
+                    <mat-icon>person</mat-icon>
+                    <span>Participants</span>
                 </button>
                 <button mat-menu-item>
                     <mat-icon>edit</mat-icon>

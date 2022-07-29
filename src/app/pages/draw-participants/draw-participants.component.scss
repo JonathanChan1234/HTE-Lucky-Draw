@@ -1,0 +1,13 @@
+.participants-container {
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.top-functions-bar {
+    display: flex;
+    flex-direction: row-reverse;
+
+    > * {
+        margin-left: 10px;
+    }
+}

@@ -8,11 +8,8 @@
             *ngIf="loading$ | async"
         ></app-loading-spinner>
         <app-error-message-bar
-            *ngIf="error$ | async"
-            [errMsg]="
-                $any(error$ | async).message +
-                '. Please try again by clicking the refresh button'
-            "
+            *ngIf="errMsg"
+            [errMsg]="errMsg + '. Please make sure the URL is correct and try again later'"
         ></app-error-message-bar>
         <mat-list *ngIf="(draw$ | async) && !(loading$ | async)">
             <mat-list-item>
