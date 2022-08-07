@@ -1,0 +1,61 @@
+<app-loading-spinner
+    msg="Fetching Participant List"
+    *ngIf="loading$ | async"
+></app-loading-spinner>
+
+<app-error-message-bar
+    *ngIf="errorMsg"
+    [errMsg]="errorMsg"
+></app-error-message-bar>
+
+<mat-list *ngIf="participants$ | async">
+    <ng-container *ngFor="let participant of participants$ | async">
+        <mat-list-item>
+            <div mat-line>{{ participant.name }}</div>
+            <div mat-line>{{ participant.id }}</div>
+            <mat-chip-list mat-line>
+                <mat-chip color="primary" selected *ngIf="participant.signedIn">
+                    Signed In
+                </mat-chip>
+                <mat-chip
+                    color="accent"
+                    selected
+                    *ngIf="participant.prizeWinner"
+                >
+                    Prize Winner
+                </mat-chip>
+            </mat-chip-list>
+            <ng-container *ngIf="isSmallScreen$ | async; else largeScreen">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item>
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>info</mat-icon>
+                        More
+                    </button>
+                </mat-menu>
+            </ng-container>
+            <ng-template #largeScreen>
+                <button mat-icon-button>
+                    <mat-icon>info</mat-icon>
+                </button>
+                <button mat-icon-button color="primary">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </ng-template>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+    </ng-container>
+</mat-list>

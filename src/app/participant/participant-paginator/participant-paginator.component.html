@@ -1,0 +1,23 @@
+<div class="paginator-container">
+    <mat-form-field>
+        <mat-label>Items per page</mat-label>
+        <mat-select
+            [(ngModel)]="pageSize"
+            (selectionChange)="pageSizeChange($event)"
+        >
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="15">15</mat-option>
+            <mat-option [value]="20">20</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div>
+        <button mat-icon-button (click)="goToPreviousPage()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
+        <button mat-icon-button (click)="goToNextPage()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
+    </div>
+</div>

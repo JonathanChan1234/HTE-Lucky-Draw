@@ -1,0 +1,16 @@
+<div class="participants-container">
+    <h2>Participants List</h2>
+    <div class="top-functions-bar">
+        <button mat-raised-button color="primary">
+            <mat-icon>file_upload</mat-icon>
+            {{ (isSmallScreen$ | async) ? '' : 'Upload a template file' }}
+        </button>
+        <button mat-raised-button>
+            <mat-icon>person</mat-icon>
+            {{ (isSmallScreen$ | async) ? '' : 'Upload a template file' }}
+        </button>
+    </div>
+    <app-participant-search-bar></app-participant-search-bar>
+    <app-participant-list></app-participant-list>
+    <app-participant-paginator></app-participant-paginator>
+</div>

@@ -45,18 +45,17 @@ export class LuckyDrawService {
     }
 
     async checkIfUserDocsExist(): Promise<boolean> {
-        if (!this.authService.user) throw new Error('Not authenticated');
-        const docSnap = await getDoc(
-            doc(this.firestore, `users`, this.authService.user.uid)
-        );
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not authenticated');
+        const docSnap = await getDoc(doc(this.firestore, `users`, uid));
         return docSnap.exists();
     }
 
     async getDrawRefById(
         drawId: string
     ): Promise<DocumentReference<DocumentData>> {
-        if (!this.authService.user) throw new Error('Not authenticated');
-        const uid = this.authService.user.uid;
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not authenticated');
         const drawDoc = doc(this.firestore, 'users', uid, 'draws', drawId);
 
         // check if the doc exists
@@ -66,10 +65,8 @@ export class LuckyDrawService {
     }
 
     async getDrawByIdAsync(drawId: string): Promise<Draw> {
-        console.log('get draw by id');
-
-        if (!this.authService.user) throw new Error('Not authenticated');
-        const uid = this.authService.user.uid;
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not authenticated');
         const drawDoc = await getDoc(
             doc(this.firestore, 'users', uid, 'draws', drawId)
         );
@@ -79,11 +76,11 @@ export class LuckyDrawService {
     }
 
     async getDrawListAsync(): Promise<Draw[]> {
-        if (!this.authService.user) throw new Error('Not authenticated');
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not authenticated');
         const userDocExist = await this.checkIfUserDocsExist();
         if (!userDocExist) return [];
 
-        const uid = this.authService.user.uid;
         const querySnapshot = await getDocs(
             collection(this.firestore, 'users', uid, 'draws')
         );
@@ -100,8 +97,8 @@ export class LuckyDrawService {
     }
 
     async createDraw(draw: Draw): Promise<void> {
-        if (!this.authService.user) throw new Error('Not authenticated');
-        const uid = this.authService.user.uid;
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not authenticated');
 
         const drawQuery = query(
             collection(this.firestore, 'users', uid, 'draws'),

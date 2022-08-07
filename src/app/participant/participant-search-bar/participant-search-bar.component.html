@@ -1,0 +1,47 @@
+<form
+    (ngSubmit)="updateParticipantFilter()"
+    [formGroup]="formGroup"
+    class="participant-search-form"
+>
+    <div class="form-group">
+        <mat-form-field appearance="fill">
+            <mat-label>Choose an option</mat-label>
+            <mat-select
+                required
+                formControlName="searchField"
+                name="searchField"
+            >
+                <mat-option value="id">ID</mat-option>
+                <mat-option value="name">Name</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Search</mat-label>
+            <input matInput formControlName="searchValue" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Sign In</mat-label>
+            <mat-select required formControlName="signIn" name="signIn">
+                <mat-option value="all">All</mat-option>
+                <mat-option value="signIn">Signed In</mat-option>
+                <mat-option value="notSignIn">Not Signed In</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Prize Winner</mat-label>
+            <mat-select
+                required
+                formControlName="prizeWinner"
+                name="prizeWinner"
+            >
+                <mat-option value="all">All</mat-option>
+                <mat-option value="winner">Winner</mat-option>
+                <mat-option value="notWinner">Not a Prize Winner</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <button mat-raised-button color="primary" type="submit">
+        <mat-icon>search</mat-icon>
+        Search
+    </button>
+</form>

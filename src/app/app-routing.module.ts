@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FirebaseAuthPrivateGuard } from './guard/firebase-auth-private.guard';
-import { DrawParticipantsComponent } from './pages/draw-participants/draw-participants.component';
 import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { DrawParticipantsComponent } from './participant/draw-participants/draw-participants.component';
 
 const routes: Routes = [
     {
@@ -28,7 +28,10 @@ const routes: Routes = [
         children: [
             { path: '', component: LuckyDrawComponent },
             { path: 'setting/:drawId', component: DrawSettingComponent },
-            {path: 'participants/:drawId', component: DrawParticipantsComponent}
+            {
+                path: 'participants/:drawId',
+                component: DrawParticipantsComponent,
+            },
         ],
         canActivate: [FirebaseAuthPrivateGuard],
     },
