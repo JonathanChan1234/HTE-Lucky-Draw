@@ -25,6 +25,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -42,6 +44,8 @@ import { DrawParticipantsComponent } from './participant/draw-participants/draw-
 import { ParticipantListComponent } from './participant/participant-list/participant-list.component';
 import { ParticipantPaginatorComponent } from './participant/participant-paginator/participant-paginator.component';
 import { ParticipantSearchBarComponent } from './participant/participant-search-bar/participant-search-bar.component';
+import { ParticipantEffect } from './participant/participant.effect';
+import { participantReducer } from './participant/participant.reducer';
 
 @NgModule({
     declarations: [
@@ -88,6 +92,8 @@ import { ParticipantSearchBarComponent } from './participant/participant-search-
         MatCardModule,
         MatSelectModule,
         MatPaginatorModule,
+        StoreModule.forRoot({ participant: participantReducer }),
+        EffectsModule.forRoot([ParticipantEffect]),
     ],
     providers: [{ provide: PERSISTENCE, useValue: 'local' }],
     bootstrap: [AppComponent],

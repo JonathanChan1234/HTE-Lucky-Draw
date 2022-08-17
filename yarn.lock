@@ -1795,6 +1795,20 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
+"@ngrx/effects@^14.1.0":
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/effects/-/effects-14.1.0.tgz#79c4a9d497dda7ffd09a8450f72a6472e2da8b07"
+  integrity sha512-o4rJzxH79i3JpikFLCXTtcNEppuXYNN347aBJ9I6BLJW+RMM9B765Zd31e0AKa3DgI9TMOziRGDX9LvvNqghLg==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/store@^14.1.0":
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/store/-/store-14.1.0.tgz#fc50a888eb5d15f7de5c2a7411558fc4f7e75f2f"
+  integrity sha512-wwp/T71sExXf0ye90iVFkJgCD1lA7NJOV38frHxLQqhIt4tyXD1e+GVi++uGdWFWftJgQc0QNiCzmITxjdEYKg==
+  dependencies:
+    tslib "^2.0.0"
+
 "@ngtools/webpack@14.0.6":
   version "14.0.6"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-14.0.6.tgz#a48185b584a528a59ce82217830673268ceee8c2"
