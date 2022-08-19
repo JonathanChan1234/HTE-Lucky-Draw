@@ -19,7 +19,7 @@ export type ParticipantSearchFilter = {
     prizeWinner?: boolean; // undefined if don't care
 };
 
-export type ParticipantPageOption = {
+export type ParticipantPaginatorOption = {
     id: string;
     type: 'startAfter' | 'endBefore';
 };
@@ -40,7 +40,7 @@ export class ParticipantService implements OnDestroy {
     });
     private readonly pageSize$ = new BehaviorSubject<number>(1);
     private readonly page$ = new BehaviorSubject<
-        ParticipantPageOption | undefined
+        ParticipantPaginatorOption | undefined
     >(undefined);
 
     constructor(private participantDb: ParticipantDbService) {}

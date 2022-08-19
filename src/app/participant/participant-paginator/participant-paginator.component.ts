@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
-import { ParticipantService } from '../participant.service';
+import { Store } from '@ngrx/store';
+import { ParticipantAction } from '../participant.action';
+import { AppState } from '../participant.reducer';
 
 @Component({
     selector: 'app-participant-paginator',
@@ -9,19 +11,19 @@ import { ParticipantService } from '../participant.service';
 })
 export class ParticipantPaginatorComponent implements OnInit {
     pageSize = 1;
-    constructor(private participantService: ParticipantService) {}
+    constructor(private store: Store<AppState>) {}
 
     ngOnInit(): void {}
 
     pageSizeChange({ value }: MatSelectChange) {
-        this.participantService.updatePageSize(value);
+        this.store.dispatch(ParticipantAction.setPageSize({ pageSize: value }));
     }
 
     goToNextPage(): void {
-        this.participantService.nextPage();
+        this.store.dispatch(ParticipantAction.goToNexPage());
     }
 
     goToPreviousPage(): void {
-        this.participantService.previousPage();
+        this.store.dispatch(ParticipantAction.goToPreviousPage());
     }
 }

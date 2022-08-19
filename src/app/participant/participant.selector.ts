@@ -15,3 +15,8 @@ export const selectError = createSelector(
     (state: AppState) => state.participant,
     (state: ParticipantState) => state.error
 );
+
+export const selectPageOption = createSelector(
+    (state: AppState) => state.participant,
+    ({ pageOption }) => pageOption
+);

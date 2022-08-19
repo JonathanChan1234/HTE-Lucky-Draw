@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { ParticipantAction } from '../participant.action';
+import { AppState } from '../participant.reducer';
 import { ParticipantService } from '../participant.service';
 
 interface ParticipantFilterForm {
@@ -17,7 +20,10 @@ interface ParticipantFilterForm {
 export class ParticipantSearchBarComponent implements OnInit {
     formGroup: FormGroup<ParticipantFilterForm>;
 
-    constructor(private participantService: ParticipantService) {
+    constructor(
+        private participantService: ParticipantService,
+        private store: Store<AppState>
+    ) {
         this.formGroup = new FormGroup({
             searchField: new FormControl<'id' | 'name'>('id', {
                 nonNullable: true,
@@ -38,12 +44,19 @@ export class ParticipantSearchBarComponent implements OnInit {
     updateParticipantFilter() {
         const { searchField, searchValue, signIn, prizeWinner } =
             this.formGroup.value;
-        this.participantService.updateSearchFilter({
-            searchField: searchField ?? 'id',
-            searchValue: searchValue ?? '',
-            signedIn: signIn === 'all' ? undefined : signIn === 'signIn',
-            prizeWinner:
-                prizeWinner === 'all' ? undefined : prizeWinner === 'winner',
-        });
+        this.store.dispatch(
+            ParticipantAction.setParticipantFilter({
+                filter: {
+                    searchField: searchField ?? 'id',
+                    searchValue: searchValue ?? '',
+                    signedIn:
+                        signIn === 'all' ? undefined : signIn === 'signIn',
+                    prizeWinner:
+                        prizeWinner === 'all'
+                            ? undefined
+                            : prizeWinner === 'winner',
+                },
+            })
+        );
     }
 }

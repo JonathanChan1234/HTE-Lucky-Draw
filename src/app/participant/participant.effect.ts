@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, from, map, of, switchMap, tap } from 'rxjs';
 import { ParticipantDbService } from './participant-db.service';
 import { ParticipantAction } from './participant.action';
 import { AppState } from './participant.reducer';
+import { selectPageOption } from './participant.selector';
 
 @Injectable()
 export class ParticipantEffect {
@@ -18,17 +19,20 @@ export class ParticipantEffect {
         this.actions$.pipe(
             ofType(ParticipantAction.loadParticipant),
             tap(() => this.store.dispatch(ParticipantAction.setLoading())),
-            switchMap(({ drawId }) =>
+            concatLatestFrom(() => this.store.select(selectPageOption)),
+            switchMap(([{ drawId }, { filter, pageSize, paginator }]) =>
                 from(
-                    this.participantDbService.getParticipants(drawId, 10, {
-                        searchField: 'id',
-                        searchValue: '',
-                    })
+                    this.participantDbService.getParticpantData(
+                        drawId,
+                        pageSize,
+                        filter,
+                        paginator
+                    )
                 )
             ),
-            map((participants) =>
+            map((participantData) =>
                 ParticipantAction.loadParticipantSuccess({
-                    participants,
+                    participantData,
                 })
             ),
             catchError((error) => {

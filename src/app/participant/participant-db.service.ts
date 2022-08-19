@@ -14,15 +14,81 @@ import { where } from '@firebase/firestore';
 import { AuthService } from '../service/auth.service';
 import { Participant, ToJSONObject } from './participant';
 import {
-    ParticipantPageOption,
+    ParticipantPaginatorOption,
     ParticipantSearchFilter,
 } from './participant.service';
+
+export interface ParticipantData {
+    participants: Participant[];
+    reachStart: boolean;
+    reachEnd: boolean;
+}
 
 @Injectable({
     providedIn: 'root',
 })
 export class ParticipantDbService {
     constructor(private db: Firestore, private authService: AuthService) {}
+
+    async getParticpantData(
+        drawId: string,
+        pageSize: number,
+        filter: ParticipantSearchFilter,
+        pageOption?: ParticipantPaginatorOption
+    ): Promise<ParticipantData> {
+        console.log('get participant from db');
+        const participants = await this.getParticipants(
+            drawId,
+            pageSize,
+            filter,
+            pageOption
+        );
+
+        if (participants.length === 0)
+            return { participants, reachStart: true, reachEnd: true };
+
+        if (pageOption) {
+            if (pageOption.type === 'startAfter') {
+                const nextParticipant = await this.getParticipants(
+                    drawId,
+                    1,
+                    filter,
+                    {
+                        type: 'startAfter',
+                        id: participants[participants.length - 1].id,
+                    }
+                );
+                return {
+                    participants,
+                    reachStart: false,
+                    reachEnd: nextParticipant.length === 0,
+                };
+            }
+            const nextParticipant = await this.getParticipants(
+                drawId,
+                1,
+                filter,
+                {
+                    type: 'endBefore',
+                    id: participants[0].id,
+                }
+            );
+            return {
+                participants,
+                reachEnd: false,
+                reachStart: nextParticipant.length === 0,
+            };
+        }
+        const nextParticipant = await this.getParticipants(drawId, 1, filter, {
+            type: 'startAfter',
+            id: participants[participants.length - 1].id,
+        });
+        return {
+            participants,
+            reachStart: true,
+            reachEnd: nextParticipant.length < 0,
+        };
+    }
 
     async getParticipants(
         drawId: string,
@@ -33,10 +99,8 @@ export class ParticipantDbService {
             searchValue,
             searchField,
         }: ParticipantSearchFilter,
-        pageOption?: ParticipantPageOption
+        pageOption?: ParticipantPaginatorOption
     ): Promise<Participant[]> {
-        console.log('get participant from db');
-
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not authenticated');
         const queryConstraints: QueryConstraint[] = [];
