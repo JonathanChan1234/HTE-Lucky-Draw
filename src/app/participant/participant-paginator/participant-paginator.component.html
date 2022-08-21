@@ -13,10 +13,18 @@
         </mat-select>
     </mat-form-field>
     <div>
-        <button mat-icon-button (click)="goToPreviousPage()">
+        <button
+            mat-icon-button
+            (click)="goToPreviousPage()"
+            [disabled]="reachStart$ | async"
+        >
             <mat-icon>navigate_before</mat-icon>
         </button>
-        <button mat-icon-button (click)="goToNextPage()">
+        <button
+            mat-icon-button
+            (click)="goToNextPage()"
+            [disabled]="reachEnd$ | async"
+        >
             <mat-icon>navigate_next</mat-icon>
         </button>
     </div>

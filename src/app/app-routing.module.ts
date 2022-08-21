@@ -5,7 +5,6 @@ import { DrawSettingComponent } from './pages/draw-setting/draw-setting.componen
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { DrawParticipantsComponent } from './participant/draw-participants/draw-participants.component';
 
 const routes: Routes = [
     {
@@ -30,7 +29,10 @@ const routes: Routes = [
             { path: 'setting/:drawId', component: DrawSettingComponent },
             {
                 path: 'participants/:drawId',
-                component: DrawParticipantsComponent,
+                loadChildren: () =>
+                    import('./participant/participant.module').then(
+                        (m) => m.ParticipantModule
+                    ),
             },
         ],
         canActivate: [FirebaseAuthPrivateGuard],

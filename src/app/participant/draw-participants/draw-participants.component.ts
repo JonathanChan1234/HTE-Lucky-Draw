@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
 import { ParticipantAction } from '../participant.action';
-import { AppState } from '../participant.reducer';
 import { selectPageOption } from '../participant.selector';
 
 @Component({
@@ -12,17 +11,18 @@ import { selectPageOption } from '../participant.selector';
     templateUrl: './draw-participants.component.html',
     styleUrls: ['./draw-participants.component.scss'],
 })
-export class DrawParticipantsComponent implements OnInit {
+export class DrawParticipantsComponent implements OnInit, OnDestroy {
     isSmallScreen$!: Observable<boolean>;
+    participantSubscription!: Subscription;
 
     constructor(
         private screenSizeService: ScreenSizeService,
         private route: ActivatedRoute,
-        private store: Store<AppState>
+        private store: Store
     ) {}
 
     ngOnInit(): void {
-        combineLatest([
+        this.participantSubscription = combineLatest([
             this.route.params,
             this.store.select(selectPageOption),
         ]).subscribe(([params]) => {
@@ -32,5 +32,10 @@ export class DrawParticipantsComponent implements OnInit {
             );
         });
         this.isSmallScreen$ = this.screenSizeService.isSmallScreen();
+    }
+
+    ngOnDestroy(): void {
+        if (!this.participantSubscription) return;
+        this.participantSubscription.unsubscribe();
     }
 }

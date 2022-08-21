@@ -13,16 +13,18 @@ import {
 import { where } from '@firebase/firestore';
 import { AuthService } from '../service/auth.service';
 import { Participant, ToJSONObject } from './participant';
-import {
-    ParticipantPaginatorOption,
-    ParticipantSearchFilter,
-} from './participant.service';
+import { ParticipantSearchFilter } from './participant.reducer';
 
 export interface ParticipantData {
     participants: Participant[];
     reachStart: boolean;
     reachEnd: boolean;
 }
+
+export type ParticipantPaginatorOption = {
+    id: string;
+    type: 'startAfter' | 'endBefore';
+};
 
 @Injectable({
     providedIn: 'root',
@@ -47,46 +49,33 @@ export class ParticipantDbService {
         if (participants.length === 0)
             return { participants, reachStart: true, reachEnd: true };
 
-        if (pageOption) {
-            if (pageOption.type === 'startAfter') {
-                const nextParticipant = await this.getParticipants(
-                    drawId,
-                    1,
-                    filter,
-                    {
-                        type: 'startAfter',
-                        id: participants[participants.length - 1].id,
-                    }
-                );
-                return {
-                    participants,
-                    reachStart: false,
-                    reachEnd: nextParticipant.length === 0,
-                };
-            }
+        // For first load or next page operation, check if there is next item
+        if ((pageOption && pageOption.type === 'startAfter') || !pageOption) {
             const nextParticipant = await this.getParticipants(
                 drawId,
                 1,
                 filter,
                 {
-                    type: 'endBefore',
-                    id: participants[0].id,
+                    type: 'startAfter',
+                    id: participants[participants.length - 1].id,
                 }
             );
             return {
                 participants,
-                reachEnd: false,
-                reachStart: nextParticipant.length === 0,
+                reachStart: pageOption ? false : true,
+                reachEnd: nextParticipant.length === 0,
             };
         }
+
+        // For previous page operation, check if there is previous item
         const nextParticipant = await this.getParticipants(drawId, 1, filter, {
-            type: 'startAfter',
-            id: participants[participants.length - 1].id,
+            type: 'endBefore',
+            id: participants[0].id,
         });
         return {
             participants,
-            reachStart: true,
-            reachEnd: nextParticipant.length < 0,
+            reachEnd: false,
+            reachStart: nextParticipant.length === 0,
         };
     }
 

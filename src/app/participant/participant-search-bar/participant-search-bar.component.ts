@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { ParticipantAction } from '../participant.action';
-import { AppState } from '../participant.reducer';
-import { ParticipantService } from '../participant.service';
 
 interface ParticipantFilterForm {
     searchValue: FormControl<string>;
@@ -20,10 +18,7 @@ interface ParticipantFilterForm {
 export class ParticipantSearchBarComponent implements OnInit {
     formGroup: FormGroup<ParticipantFilterForm>;
 
-    constructor(
-        private participantService: ParticipantService,
-        private store: Store<AppState>
-    ) {
+    constructor(private store: Store) {
         this.formGroup = new FormGroup({
             searchField: new FormControl<'id' | 'name'>('id', {
                 nonNullable: true,
@@ -39,6 +34,7 @@ export class ParticipantSearchBarComponent implements OnInit {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     ngOnInit(): void {}
 
     updateParticipantFilter() {

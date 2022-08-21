@@ -1,11 +1,18 @@
 import { createReducer, on } from '@ngrx/store';
+import { isEqual } from 'lodash';
 import { Participant } from './participant';
 import { ParticipantAction } from './participant.action';
-import { ParticipantSearchFilter } from './participant.service';
 
 export interface AppState {
     participant: ParticipantState;
 }
+
+export type ParticipantSearchFilter = {
+    searchField: 'name' | 'id';
+    searchValue: string;
+    signedIn?: boolean; // undefined if don't care
+    prizeWinner?: boolean; // undefined if don't care
+};
 
 export interface ParticipantState {
     participants: Participant[];
@@ -38,68 +45,99 @@ const initialState: ParticipantState = {
     reachEnd: true,
 };
 
+export const participantFeatureKey = 'participant';
+
 export const participantReducer = createReducer(
     initialState,
-    on(ParticipantAction.setLoading, (state) => ({ ...state, loading: true })),
+    on(
+        ParticipantAction.loadParticipant,
+        (state): ParticipantState => ({ ...state, loading: true })
+    ),
     on(
         ParticipantAction.loadParticipantSuccess,
-        (state, { participantData }) => ({
+        (
+            state,
+            { participantData: { participants, reachStart, reachEnd } }
+        ): ParticipantState => ({
             ...state,
             loading: false,
             error: null,
-            participants: participantData.participants,
-            reachStart: participantData.reachStart,
-            reachEnd: participantData.reachEnd,
+            participants: participants,
+            reachStart: reachStart,
+            reachEnd: reachEnd,
         })
     ),
-    on(ParticipantAction.loadParticipantError, (state, { error }) => ({
-        ...state,
-        loading: false,
-        error,
-    })),
-    on(ParticipantAction.setParticipantFilter, (state, { filter }) => ({
-        ...state,
-        pageOption: {
-            ...state.pageOption,
-            paginator: undefined,
-            filter,
-        },
-    })),
-    on(ParticipantAction.goToPreviousPage, (state) =>
-        state.reachStart
-            ? state
-            : {
-                  ...state,
-                  pageOption: {
-                      ...state.pageOption,
-                      paginator: {
-                          type: 'endBefore',
-                          id: state.participants[state.participants.length - 1]
-                              .id,
-                      },
-                  },
-              }
+    on(
+        ParticipantAction.loadParticipantError,
+        (state, { error }): ParticipantState => ({
+            ...state,
+            loading: false,
+            error,
+        })
     ),
-    on(ParticipantAction.goToNexPage, (state) =>
-        state.reachStart
-            ? {
-                  ...state,
-                  pageOption: {
-                      ...state.pageOption,
-                      paginator: {
-                          type: 'startAfter',
-                          id: state.participants[0].id,
+    on(
+        ParticipantAction.setParticipantFilter,
+        (state, { filter }): ParticipantState =>
+            isEqual(state.pageOption.filter, filter)
+                ? state
+                : {
+                      ...state,
+                      pageOption: {
+                          ...state.pageOption,
+                          paginator: undefined,
+                          filter,
                       },
-                  },
-              }
-            : state
+                  }
     ),
-    on(ParticipantAction.setPageSize, (state, { pageSize }) => ({
-        ...state,
-        pageOption: {
-            ...state.pageOption,
-            pageSize,
-            paginator: undefined,
-        },
-    }))
+    on(
+        ParticipantAction.goToPreviousPage,
+        (state): ParticipantState =>
+            state.reachStart
+                ? state
+                : {
+                      ...state,
+                      pageOption: {
+                          ...state.pageOption,
+                          paginator:
+                              state.participants.length === 0
+                                  ? undefined
+                                  : {
+                                        type: 'endBefore',
+                                        id: state.participants[
+                                            state.participants.length - 1
+                                        ].id,
+                                    },
+                      },
+                  }
+    ),
+    on(
+        ParticipantAction.goToNexPage,
+        (state): ParticipantState =>
+            state.reachEnd
+                ? state
+                : {
+                      ...state,
+                      pageOption: {
+                          ...state.pageOption,
+                          paginator:
+                              state.participants.length === 0
+                                  ? undefined
+                                  : {
+                                        type: 'startAfter',
+                                        id: state.participants[0].id,
+                                    },
+                      },
+                  }
+    ),
+    on(
+        ParticipantAction.setPageSize,
+        (state, { pageSize }): ParticipantState => ({
+            ...state,
+            pageOption: {
+                ...state.pageOption,
+                pageSize,
+                paginator: undefined,
+            },
+        })
+    )
 );

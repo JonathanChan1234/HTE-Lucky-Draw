@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Details</h2>
+<div mat-dialog-content>
+    <mat-list>
+        <mat-list-item>
+            <mat-icon mat-list-icon>person</mat-icon>
+            <div mat-line>Name: {{ participant.name }}</div>
+            <div mat-line>ID: {{ participant.id }}</div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>login</mat-icon>
+            <div mat-line>
+                Is signed in?:
+                {{
+                    participant.signedIn
+                        ? 'Signed In At ' + signedInDate()
+                        : 'Not signed in'
+                }}
+            </div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>redeem</mat-icon>
+            <div mat-line>Prize: {{ participant.prize || 'Not Assigned' }}</div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>comment</mat-icon>
+            <div mat-line>Message: {{ participant.message }}</div>
+        </mat-list-item>
+    </mat-list>
+</div>
+<div mat-dialog-actions class="dialog-action-container">
+    <button mat-button color="accent" mat-dialog-close>close</button>
+</div>

@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { ParticipantData } from './participant-db.service';
-import { ParticipantSearchFilter } from './participant.service';
+import { ParticipantSearchFilter } from './participant.reducer';
 
 export enum ParticipantActionType {
     LoadParticipants = '[ParticipantList Component] LoadParticipantList',

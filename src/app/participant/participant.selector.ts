@@ -1,22 +1,37 @@
-import { createSelector } from '@ngrx/store';
-import { AppState, ParticipantState } from './participant.reducer';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { ParticipantState } from './participant.reducer';
+
+export const featureKey = 'participant';
+
+export interface AppState {
+    participant: ParticipantState;
+}
+
+const selectFeature = createFeatureSelector<ParticipantState>(featureKey);
 
 export const selectParticipant = createSelector(
-    (state: AppState) => state.participant,
-    (state: ParticipantState) => state.participants
+    selectFeature,
+    ({ participants }) => participants
 );
 
 export const selectLoading = createSelector(
-    (state: AppState) => state.participant,
-    (state: ParticipantState) => state.loading
+    selectFeature,
+    ({ loading }) => loading
 );
 
-export const selectError = createSelector(
-    (state: AppState) => state.participant,
-    (state: ParticipantState) => state.error
-);
+export const selectError = createSelector(selectFeature, ({ error }) => error);
 
 export const selectPageOption = createSelector(
-    (state: AppState) => state.participant,
+    selectFeature,
     ({ pageOption }) => pageOption
+);
+
+export const selectReachStart = createSelector(
+    selectFeature,
+    ({ reachStart }) => reachStart
+);
+
+export const selectReachEnd = createSelector(
+    selectFeature,
+    ({ reachEnd }) => reachEnd
 );

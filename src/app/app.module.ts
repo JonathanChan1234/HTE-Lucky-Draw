@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -30,22 +29,16 @@ import { StoreModule } from '@ngrx/store';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { extModules } from './build-specific';
 import { CreateDrawDialogComponent } from './components/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
 import { EmptyListComponent } from './components/empty-list/empty-list.component';
-import { ErrorMessageBarComponent } from './components/error-message-bar/error-message-bar.component';
-import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { LuckyDrawToolbarComponent } from './components/lucky-draw-toolbar/lucky-draw-toolbar.component';
 import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { DrawParticipantsComponent } from './participant/draw-participants/draw-participants.component';
-import { ParticipantListComponent } from './participant/participant-list/participant-list.component';
-import { ParticipantPaginatorComponent } from './participant/participant-paginator/participant-paginator.component';
-import { ParticipantSearchBarComponent } from './participant/participant-search-bar/participant-search-bar.component';
-import { ParticipantEffect } from './participant/participant.effect';
-import { participantReducer } from './participant/participant.reducer';
+import { UtilsModule } from './utils/utils.module';
 
 @NgModule({
     declarations: [
@@ -53,17 +46,11 @@ import { participantReducer } from './participant/participant.reducer';
         LoginComponent,
         LuckyDrawComponent,
         RegisterComponent,
-        ErrorMessageBarComponent,
         CreateDrawDialogComponent,
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,
-        LoadingSpinnerComponent,
         EmptyListComponent,
-        DrawParticipantsComponent,
-        ParticipantListComponent,
-        ParticipantSearchBarComponent,
-        ParticipantPaginatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -71,6 +58,7 @@ import { participantReducer } from './participant/participant.reducer';
         BrowserAnimationsModule,
         ReactiveFormsModule,
         FormsModule,
+        UtilsModule,
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => getAuth()),
         provideFirestore(() => getFirestore()),
@@ -91,9 +79,9 @@ import { participantReducer } from './participant/participant.reducer';
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
-        MatPaginatorModule,
-        StoreModule.forRoot({ participant: participantReducer }),
-        EffectsModule.forRoot([ParticipantEffect]),
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot([]),
+        extModules,
     ],
     providers: [{ provide: PERSISTENCE, useValue: 'local' }],
     bootstrap: [AppComponent],

@@ -16,7 +16,7 @@ import { CreateDrawDialogComponent } from 'src/app/components/create-draw-dialog
 import { DeleteDrawDialogComponent } from 'src/app/components/delete-draw-dialog/delete-draw-dialog.component';
 import { Draw } from 'src/app/model/draw';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
-import { convertDateToDateString } from 'src/app/utils/date';
+import { convertDateToDateString } from 'src/app/utility/date';
 
 @Component({
     selector: 'app-lucky-draw',

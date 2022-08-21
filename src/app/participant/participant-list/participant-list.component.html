@@ -4,8 +4,8 @@
 ></app-loading-spinner>
 
 <app-error-message-bar
-    *ngIf="errorMsg"
-    [errMsg]="errorMsg"
+    *ngIf="error$ | async"
+    [errMsg]="error$ | async"
 ></app-error-message-bar>
 
 <mat-list *ngIf="participants$ | async">
@@ -38,14 +38,20 @@
                         <mat-icon>delete</mat-icon>
                         Delete
                     </button>
-                    <button mat-menu-item>
+                    <button
+                        mat-menu-item
+                        (click)="openDetailsDialog(participant)"
+                    >
                         <mat-icon>info</mat-icon>
                         More
                     </button>
                 </mat-menu>
             </ng-container>
             <ng-template #largeScreen>
-                <button mat-icon-button>
+                <button
+                    mat-icon-button
+                    (click)="openDetailsDialog(participant)"
+                >
                     <mat-icon>info</mat-icon>
                 </button>
                 <button mat-icon-button color="primary">
