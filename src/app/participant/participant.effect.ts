@@ -17,6 +17,7 @@ export class ParticipantEffects {
     loadParticipant$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(ParticipantAction.loadParticipant),
+            // concatLatestFrom(() => this.store.select(selectError)),
             concatLatestFrom(() => this.store.select(selectPageOption)),
             switchMap(([{ drawId }, { filter, pageSize, paginator }]) =>
                 from(

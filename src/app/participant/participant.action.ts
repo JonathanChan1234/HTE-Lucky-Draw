@@ -4,7 +4,6 @@ import { ParticipantSearchFilter } from './participant.reducer';
 
 export enum ParticipantActionType {
     LoadParticipants = '[ParticipantList Component] LoadParticipantList',
-    SetLoading = '[Participant API] SetLoading',
     LoadParticipantsSuccess = '[Participant API] LoadParticipantListSuccess',
     LoadParticipantsError = '[Participant API] LoadParticipantListError',
     SetParticipantFilter = '[Participant Component] SetParticipantFilter',
@@ -29,8 +28,6 @@ const loadParticipantError = createAction(
     props<{ error: string }>()
 );
 
-const setLoading = createAction(ParticipantActionType.SetLoading);
-
 const setParticipantFilter = createAction(
     ParticipantActionType.SetParticipantFilter,
     props<{ filter: ParticipantSearchFilter }>()
@@ -48,7 +45,6 @@ const setPageSize = createAction(
 );
 
 export const ParticipantAction = {
-    setLoading,
     loadParticipant,
     loadParticipantSuccess,
     loadParticipantError,

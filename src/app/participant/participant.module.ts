@@ -6,6 +6,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +24,9 @@ import { StoreModule } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
 import { UtilsModule } from '../utils/utils.module';
 import { DrawParticipantsComponent } from './draw-participants/draw-participants.component';
+import { ParticipantDeleteDialogComponent } from './participant-delete-dialog/participant-delete-dialog.component';
+import { ParticipantDetailsDialogComponent } from './participant-details-dialog/participant-details-dialog.component';
+import { ParticipantEditDialogComponent } from './participant-edit-dialog/participant-edit-dialog.component';
 import { ParticipantListComponent } from './participant-list/participant-list.component';
 import { ParticipantPaginatorComponent } from './participant-paginator/participant-paginator.component';
 import { ParticipantRoutingModule } from './participant-routing.module';
@@ -32,7 +36,6 @@ import {
     participantFeatureKey,
     participantReducer,
 } from './participant.reducer';
-import { ParticipantDetailsComponent } from './participant-details/participant-details.component';
 
 @NgModule({
     declarations: [
@@ -40,7 +43,9 @@ import { ParticipantDetailsComponent } from './participant-details/participant-d
         ParticipantListComponent,
         ParticipantPaginatorComponent,
         ParticipantSearchBarComponent,
-        ParticipantDetailsComponent,
+        ParticipantDetailsDialogComponent,
+        ParticipantDeleteDialogComponent,
+        ParticipantEditDialogComponent,
     ],
     imports: [
         CommonModule,
@@ -67,6 +72,7 @@ import { ParticipantDetailsComponent } from './participant-details/participant-d
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
+        MatCheckboxModule,
     ],
 })
 export class ParticipantModule {}

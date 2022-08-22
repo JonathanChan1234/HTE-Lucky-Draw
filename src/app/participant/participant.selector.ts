@@ -1,13 +1,13 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ParticipantState } from './participant.reducer';
-
-export const featureKey = 'participant';
+import { participantFeatureKey, ParticipantState } from './participant.reducer';
 
 export interface AppState {
     participant: ParticipantState;
 }
 
-const selectFeature = createFeatureSelector<ParticipantState>(featureKey);
+const selectFeature = createFeatureSelector<ParticipantState>(
+    participantFeatureKey
+);
 
 export const selectParticipant = createSelector(
     selectFeature,

@@ -8,19 +8,14 @@ export interface ParticipantDetailsData {
 }
 
 @Component({
-    selector: 'app-participant-details',
-    templateUrl: './participant-details.component.html',
-    styleUrls: ['./participant-details.component.scss'],
+    selector: 'app-participant-details-dialog',
+    templateUrl: './participant-details-dialog.component.html',
 })
-export class ParticipantDetailsComponent implements OnInit {
-    participant: Participant;
-
+export class ParticipantDetailsDialogComponent implements OnInit {
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: ParticipantDetailsData,
-        public dialogRef: MatDialogRef<ParticipantDetailsComponent>
-    ) {
-        this.participant = data.participant;
-    }
+        @Inject(MAT_DIALOG_DATA) public participant: Participant,
+        public dialogRef: MatDialogRef<ParticipantDetailsDialogComponent>
+    ) {}
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     ngOnInit(): void {}

@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
     collection,
+    deleteDoc,
+    doc,
+    DocumentData,
+    DocumentReference,
     endBefore,
     Firestore,
     getDocs,
@@ -9,6 +13,7 @@ import {
     query,
     QueryConstraint,
     startAfter,
+    updateDoc,
 } from '@angular/fire/firestore';
 import { where } from '@firebase/firestore';
 import { AuthService } from '../service/auth.service';
@@ -25,6 +30,10 @@ export type ParticipantPaginatorOption = {
     id: string;
     type: 'startAfter' | 'endBefore';
 };
+
+export const USERS_KEY = 'users';
+export const DRAWS_KEY = 'draws';
+export const PARTICIPANTS_KEY = 'participants';
 
 @Injectable({
     providedIn: 'root',
@@ -119,11 +128,52 @@ export class ParticipantDbService {
         }
 
         const getParticipantQuery = query(
-            collection(this.db, 'users', uid, 'draws', drawId, 'participants'),
+            collection(
+                this.db,
+                USERS_KEY,
+                uid,
+                DRAWS_KEY,
+                drawId,
+                PARTICIPANTS_KEY
+            ),
             ...[...queryConstraints, limit(pageSize)]
         );
         const documentSnapshots = await getDocs(getParticipantQuery);
 
         return documentSnapshots.docs.map((doc) => ToJSONObject(doc));
+    }
+
+    async editParticipant(
+        drawId: string,
+        participant: Pick<Participant, 'id' | 'name' | 'message' | 'signedIn'>
+    ): Promise<void> {
+        return updateDoc(
+            this.getParticipantDoc(drawId, participant.id),
+            participant
+        );
+    }
+
+    async deleteParticipant(
+        drawId: string,
+        participantId: string
+    ): Promise<void> {
+        return deleteDoc(this.getParticipantDoc(drawId, participantId));
+    }
+
+    getParticipantDoc(
+        drawId: string,
+        participantId: string
+    ): DocumentReference<DocumentData> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return doc(
+            this.db,
+            USERS_KEY,
+            uid,
+            DRAWS_KEY,
+            drawId,
+            PARTICIPANTS_KEY,
+            participantId
+        );
     }
 }
