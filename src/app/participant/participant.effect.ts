@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { catchError, from, map, of, switchMap } from 'rxjs';
 import { ParticipantDbService } from './participant-db.service';
 import { ParticipantAction } from './participant.action';
-import { selectPageOption } from './participant.selector';
+import { selectDrawIdAndPageOption } from './participant.selector';
 
 @Injectable()
 export class ParticipantEffects {
@@ -14,21 +14,58 @@ export class ParticipantEffects {
         private participantDbService: ParticipantDbService
     ) {}
 
+    setDrawId$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ParticipantAction.setDrawId),
+            map(() => ParticipantAction.loadParticipant())
+        );
+    });
+
+    setParticipantFilter$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ParticipantAction.setParticipantFilter),
+            map(() => ParticipantAction.loadParticipant())
+        );
+    });
+
+    setPageSize$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ParticipantAction.setPageSize),
+            map(() => ParticipantAction.loadParticipant())
+        );
+    });
+
+    toNextPage$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ParticipantAction.goToNextPage),
+            map(() => ParticipantAction.loadParticipant())
+        );
+    });
+
+    toPreviousPage$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ParticipantAction.goToPreviousPage),
+            map(() => ParticipantAction.loadParticipant())
+        );
+    });
+
     loadParticipant$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(ParticipantAction.loadParticipant),
-            // concatLatestFrom(() => this.store.select(selectError)),
-            concatLatestFrom(() => this.store.select(selectPageOption)),
-            switchMap(([{ drawId }, { filter, pageSize, paginator }]) =>
-                from(
+            concatLatestFrom(() =>
+                this.store.select(selectDrawIdAndPageOption)
+            ),
+            switchMap(([, { drawId, filter, pageSize, paginator }]) => {
+                if (!drawId) throw new Error('Empty Draw ID');
+                return from(
                     this.participantDbService.getParticpantData(
                         drawId,
                         pageSize,
                         filter,
                         paginator
                     )
-                )
-            ),
+                );
+            }),
             map((participantData) =>
                 ParticipantAction.loadParticipantSuccess({
                     participantData,

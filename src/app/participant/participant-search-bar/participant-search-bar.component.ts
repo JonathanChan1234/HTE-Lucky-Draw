@@ -18,7 +18,7 @@ interface ParticipantFilterForm {
 export class ParticipantSearchBarComponent implements OnInit {
     formGroup: FormGroup<ParticipantFilterForm>;
 
-    constructor(private store: Store) {
+    constructor(private readonly store: Store) {
         this.formGroup = new FormGroup({
             searchField: new FormControl<'id' | 'name'>('id', {
                 nonNullable: true,

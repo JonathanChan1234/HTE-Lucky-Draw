@@ -3,7 +3,8 @@ import { ParticipantData } from './participant-db.service';
 import { ParticipantSearchFilter } from './participant.reducer';
 
 export enum ParticipantActionType {
-    LoadParticipants = '[ParticipantList Component] LoadParticipantList',
+    SetDrawId = '[Participant Component] SetDrawId',
+    LoadParticipants = '[Participant Component] LoadParticipantList',
     LoadParticipantsSuccess = '[Participant API] LoadParticipantListSuccess',
     LoadParticipantsError = '[Participant API] LoadParticipantListError',
     SetParticipantFilter = '[Participant Component] SetParticipantFilter',
@@ -13,10 +14,21 @@ export enum ParticipantActionType {
     ReachPageEnd = '[Participant API] ReachPageEnd',
 }
 
-const loadParticipant = createAction(
-    ParticipantActionType.LoadParticipants,
+const setDrawId = createAction(
+    ParticipantActionType.SetDrawId,
     props<{ drawId: string }>()
 );
+
+const setParticipantFilter = createAction(
+    ParticipantActionType.SetParticipantFilter,
+    props<{ filter: ParticipantSearchFilter }>()
+);
+
+const goToPreviousPage = createAction(ParticipantActionType.ToPreviousPage);
+
+const goToNextPage = createAction(ParticipantActionType.ToNextPage);
+
+const loadParticipant = createAction(ParticipantActionType.LoadParticipants);
 
 const loadParticipantSuccess = createAction(
     ParticipantActionType.LoadParticipantsSuccess,
@@ -28,29 +40,18 @@ const loadParticipantError = createAction(
     props<{ error: string }>()
 );
 
-const setParticipantFilter = createAction(
-    ParticipantActionType.SetParticipantFilter,
-    props<{ filter: ParticipantSearchFilter }>()
-);
-
-const goToPreviousPage = createAction(ParticipantActionType.ToPreviousPage);
-
-const goToNexPage = createAction(ParticipantActionType.ToNextPage);
-
-const reachPageEnd = createAction(ParticipantActionType.ReachPageEnd);
-
 const setPageSize = createAction(
     ParticipantActionType.SetPageSize,
     props<{ pageSize: number }>()
 );
 
 export const ParticipantAction = {
+    setDrawId,
+    setPageSize,
+    setParticipantFilter,
     loadParticipant,
     loadParticipantSuccess,
     loadParticipantError,
-    setParticipantFilter,
-    reachPageEnd,
-    goToNexPage,
+    goToNextPage,
     goToPreviousPage,
-    setPageSize,
 };

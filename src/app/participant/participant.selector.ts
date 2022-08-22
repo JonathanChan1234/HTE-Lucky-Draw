@@ -9,6 +9,8 @@ const selectFeature = createFeatureSelector<ParticipantState>(
     participantFeatureKey
 );
 
+const selectDrawId = createSelector(selectFeature, ({ drawId }) => drawId);
+
 export const selectParticipant = createSelector(
     selectFeature,
     ({ participants }) => participants
@@ -34,4 +36,15 @@ export const selectReachStart = createSelector(
 export const selectReachEnd = createSelector(
     selectFeature,
     ({ reachEnd }) => reachEnd
+);
+
+export const selectDrawIdAndPageOption = createSelector(
+    selectDrawId,
+    selectPageOption,
+    (drawId, { filter, pageSize, paginator }) => ({
+        drawId,
+        filter,
+        pageSize,
+        paginator,
+    })
 );

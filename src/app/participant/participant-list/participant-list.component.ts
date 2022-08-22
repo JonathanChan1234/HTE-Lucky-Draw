@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
 import { Participant } from '../participant';
 import { ParticipantDeleteDialogComponent } from '../participant-delete-dialog/participant-delete-dialog.component';
@@ -12,23 +12,25 @@ import { ParticipantAction } from '../participant.action';
 import {
     selectError,
     selectLoading,
-    selectPageOption,
     selectParticipant,
 } from '../participant.selector';
+
+export interface ParticipantDialogData {
+    participant: Participant;
+    drawId: string;
+}
 
 @Component({
     selector: 'app-participant-list',
     templateUrl: './participant-list.component.html',
     styleUrls: ['./participant-list.component.scss'],
 })
-export class ParticipantListComponent implements OnInit, OnDestroy {
+export class ParticipantListComponent implements OnInit {
+    drawId!: string | null;
     isSmallScreen$!: Observable<boolean>;
     loading$!: Observable<boolean>;
     participants$!: Observable<Participant[]>;
     error$!: Observable<string | null>;
-
-    participantSubscription!: Subscription;
-    refresh$ = new BehaviorSubject<boolean>(true);
 
     constructor(
         private screenSizeService: ScreenSizeService,
@@ -43,22 +45,23 @@ export class ParticipantListComponent implements OnInit, OnDestroy {
         this.loading$ = this.store.select(selectLoading);
         this.error$ = this.store.select(selectError);
 
-        this.participantSubscription = combineLatest([
-            this.route.params,
-            this.store.select(selectPageOption),
-            this.refresh$,
-        ]).subscribe(([params]) => {
+        this.route.params.subscribe((params) => {
             if (!params['drawId']) return;
+            this.drawId = params['drawId'];
             this.store.dispatch(
-                ParticipantAction.loadParticipant({ drawId: params['drawId'] })
+                ParticipantAction.setDrawId({ drawId: params['drawId'] })
             );
         });
     }
 
     openEditDialog(participant: Participant): void {
-        this.matDialog.open(ParticipantEditDialogComponent, {
-            data: participant,
-            // disableClose: true,
+        if (!this.drawId) return;
+        const dialogRef = this.matDialog.open(ParticipantEditDialogComponent, {
+            data: { participant, drawId: this.drawId },
+        });
+        dialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            this.store.dispatch(ParticipantAction.loadParticipant());
         });
     }
 
@@ -72,18 +75,12 @@ export class ParticipantListComponent implements OnInit, OnDestroy {
         const dialogRef = this.matDialog.open(
             ParticipantDeleteDialogComponent,
             {
-                disableClose: true,
-                data: participant,
+                data: { participant, drawId: this.drawId },
             }
         );
         dialogRef.afterClosed().subscribe((result) => {
             if (!result) return;
-            this.refresh$.next(true);
+            this.store.dispatch(ParticipantAction.loadParticipant());
         });
-    }
-
-    ngOnDestroy(): void {
-        this.participantSubscription.unsubscribe();
-        this.refresh$.complete();
     }
 }

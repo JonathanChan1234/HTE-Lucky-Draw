@@ -3,8 +3,8 @@
     <div *ngIf="!loading" class="content-container">
         <h3>⚠️Warning</h3>
         <p>
-            Are you sure to delete {{ participant.name }}? (All the data
-            associated will be deleted)
+            Are you sure to delete {{ dialogData.participant.name }}? (All the
+            data associated will be deleted)
         </p>
     </div>
     <div *ngIf="loading" class="loading-container">

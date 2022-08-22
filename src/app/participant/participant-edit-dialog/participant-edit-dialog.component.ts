@@ -1,8 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Participant } from '../participant';
+import { from } from 'rxjs';
 import { ParticipantDbService } from '../participant-db.service';
+import { ParticipantDialogData } from '../participant-list/participant-list.component';
 
 interface ParticipantEditFormGroup {
     name: FormControl<string>;
@@ -21,19 +22,19 @@ export class ParticipantEditDialogComponent implements OnInit {
     errMsg = '';
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) public participant: Participant,
+        @Inject(MAT_DIALOG_DATA) public dialogData: ParticipantDialogData,
         private matRef: MatDialogRef<ParticipantEditDialogComponent>,
         private participantDbService: ParticipantDbService
     ) {
         this.form = new FormGroup({
-            name: new FormControl(participant.name, {
+            name: new FormControl(dialogData.participant.name, {
                 validators: [Validators.required],
                 nonNullable: true,
             }),
-            signedIn: new FormControl(participant.signedIn, {
+            signedIn: new FormControl(dialogData.participant.signedIn, {
                 nonNullable: true,
             }),
-            message: new FormControl(participant.message, {
+            message: new FormControl(dialogData.participant.message, {
                 nonNullable: true,
             }),
         });
@@ -45,15 +46,39 @@ export class ParticipantEditDialogComponent implements OnInit {
     editParticipant(): void {
         if (this.form.invalid) return;
         const { name, signedIn, message } = this.form.value;
-        this.matRef.disableClose = true;
-        // from(
-        //     this.participantDbService.editParticipant(this.drawId, {
-        //         id: this.participant.id,
-        //         name: name ?? this.participant.name,
-        //         signedIn: signedIn ?? this.participant.signedIn,
-        //         message: message ?? this.participant.message,
-        //     })
-        // );
-        // TODO: Add editing participant logic
+
+        // check if the form values are identical to the original value
+        const {
+            name: originalName,
+            signedIn: originalSignedIn,
+            message: originalMessage,
+        } = this.dialogData.participant;
+        if (
+            name === originalName &&
+            signedIn === originalSignedIn &&
+            originalMessage === message
+        ) {
+            this.matRef.close();
+            return;
+        }
+
+        this.loading = true;
+        from(
+            this.participantDbService.editParticipant(this.dialogData.drawId, {
+                id: this.dialogData.participant.id,
+                name: name ?? this.dialogData.participant.name,
+                signedIn: signedIn ?? this.dialogData.participant.signedIn,
+                message: message ?? this.dialogData.participant.message,
+            })
+        ).subscribe({
+            next: () => {
+                this.loading = false;
+                this.matRef.close(true);
+            },
+            error: (error) => {
+                this.loading = false;
+                this.errMsg = error.message;
+            },
+        });
     }
 }

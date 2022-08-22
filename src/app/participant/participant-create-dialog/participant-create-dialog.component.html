@@ -1,6 +1,10 @@
-<h2 mat-dialog-title>Edit Participant</h2>
+<h2 mat-dialog-title>Create Participant</h2>
 <div mat-dialog-content>
-    <form [formGroup]="form" class="participant-edit-form" *ngIf="!loading">
+    <form [formGroup]="form" class="participant-create-form" *ngIf="!loading">
+        <mat-form-field appearance="fill">
+            <mat-label>ID</mat-label>
+            <input matInput formControlName="id" />
+        </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" />
@@ -15,18 +19,18 @@
         *ngIf="loading"
         msg="Handling Your Request"
     ></app-loading-spinner>
-    <ng-template *ngIf="errMsg">
+    <ng-container *ngIf="errMsg !== ''">
         <app-error-message-bar [errMsg]="errMsg"></app-error-message-bar>
-    </ng-template>
+    </ng-container>
 </div>
 <div mat-dialog-actions align="end" class="dialog-action-container">
     <button mat-button mat-dialog-close [disabled]="loading">close</button>
     <button
         mat-raised-button
         color="primary"
-        (click)="editParticipant()"
+        (click)="addParticipant()"
         [disabled]="loading"
     >
-        Edit
+        Create
     </button>
 </div>

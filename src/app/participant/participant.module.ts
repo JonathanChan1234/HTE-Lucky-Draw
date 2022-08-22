@@ -36,6 +36,7 @@ import {
     participantFeatureKey,
     participantReducer,
 } from './participant.reducer';
+import { ParticipantCreateDialogComponent } from './participant-create-dialog/participant-create-dialog.component';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import {
         ParticipantDetailsDialogComponent,
         ParticipantDeleteDialogComponent,
         ParticipantEditDialogComponent,
+        ParticipantCreateDialogComponent,
     ],
     imports: [
         CommonModule,

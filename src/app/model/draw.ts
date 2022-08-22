@@ -17,7 +17,7 @@ export class Draw {
 
     constructor(
         name: string,
-        id: string = '',
+        id = '',
         prizeCount = 0,
         participantCount = 0,
         signInCount = 0,

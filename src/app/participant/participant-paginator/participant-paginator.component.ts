@@ -15,7 +15,7 @@ export class ParticipantPaginatorComponent implements OnInit {
     reachStart$!: Observable<boolean>;
     reachEnd$!: Observable<boolean>;
 
-    constructor(private store: Store) {}
+    constructor(private readonly store: Store) {}
 
     ngOnInit(): void {
         this.reachStart$ = this.store.select(selectReachStart);
@@ -27,7 +27,7 @@ export class ParticipantPaginatorComponent implements OnInit {
     }
 
     goToNextPage(): void {
-        this.store.dispatch(ParticipantAction.goToNexPage());
+        this.store.dispatch(ParticipantAction.goToNextPage());
     }
 
     goToPreviousPage(): void {

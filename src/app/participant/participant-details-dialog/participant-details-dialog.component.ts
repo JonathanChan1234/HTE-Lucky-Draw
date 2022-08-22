@@ -3,10 +3,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { convertDateToDateString } from 'src/app/utility/date';
 import { Participant } from '../participant';
 
-export interface ParticipantDetailsData {
-    participant: Participant;
-}
-
 @Component({
     selector: 'app-participant-details-dialog',
     templateUrl: './participant-details-dialog.component.html',

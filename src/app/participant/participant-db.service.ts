@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
     collection,
-    deleteDoc,
     doc,
     DocumentData,
     DocumentReference,
@@ -9,11 +8,13 @@ import {
     Firestore,
     getDocs,
     limit,
+    limitToLast,
     orderBy,
     query,
     QueryConstraint,
+    runTransaction,
     startAfter,
-    updateDoc,
+    Timestamp,
 } from '@angular/fire/firestore';
 import { where } from '@firebase/firestore';
 import { AuthService } from '../service/auth.service';
@@ -47,7 +48,6 @@ export class ParticipantDbService {
         filter: ParticipantSearchFilter,
         pageOption?: ParticipantPaginatorOption
     ): Promise<ParticipantData> {
-        console.log('get participant from db');
         const participants = await this.getParticipants(
             drawId,
             pageSize,
@@ -109,22 +109,26 @@ export class ParticipantDbService {
             queryConstraints.push(where('signedIn', '==', signedIn));
         }
         if (searchValue !== '') {
-            queryConstraints.push(
-                where(searchField === 'id' ? 'id' : 'name', '<=', searchValue)
-            );
-            queryConstraints.push(
-                where(searchField === 'id' ? 'id' : 'name', '>=', searchValue)
-            );
+            queryConstraints.push(where(searchField, '<=', searchValue));
+            queryConstraints.push(where(searchField, '>=', searchValue));
             queryConstraints.push(orderBy(searchField));
         } else {
             queryConstraints.push(orderBy('id'));
         }
         if (pageOption) {
-            queryConstraints.push(
-                pageOption.type === 'startAfter'
-                    ? startAfter(pageOption.id)
-                    : endBefore(pageOption.id)
-            );
+            if (pageOption.type === 'startAfter') {
+                queryConstraints.push(
+                    startAfter(pageOption.id),
+                    limit(pageSize)
+                );
+            } else {
+                queryConstraints.push(
+                    endBefore(pageOption.id),
+                    limitToLast(pageSize)
+                );
+            }
+        } else {
+            queryConstraints.push(limit(pageSize));
         }
 
         const getParticipantQuery = query(
@@ -136,7 +140,7 @@ export class ParticipantDbService {
                 drawId,
                 PARTICIPANTS_KEY
             ),
-            ...[...queryConstraints, limit(pageSize)]
+            ...[...queryConstraints]
         );
         const documentSnapshots = await getDocs(getParticipantQuery);
 
@@ -147,17 +151,116 @@ export class ParticipantDbService {
         drawId: string,
         participant: Pick<Participant, 'id' | 'name' | 'message' | 'signedIn'>
     ): Promise<void> {
-        return updateDoc(
-            this.getParticipantDoc(drawId, participant.id),
-            participant
-        );
+        return runTransaction(this.db, async (transaction) => {
+            const drawRef = this.getDrawDoc(drawId);
+            const drawDoc = await transaction.get(drawRef);
+            if (!drawDoc.exists()) throw new Error('Draw does not exist');
+
+            const participantRef = this.getParticipantDoc(
+                drawId,
+                participant.id
+            );
+            const participantDoc = await transaction.get(participantRef);
+            if (!participantDoc.exists())
+                throw new Error('Participant does not exist!');
+
+            // Check if there the participant is already signed in or not
+            const model = ToJSONObject(participantDoc);
+
+            // The participant is from "signed in" to "not signed in"
+            if (model.signedIn && !participant.signedIn) {
+                transaction.update(drawRef, {
+                    signInCount: drawDoc.data()['signInCount'] - 1,
+                });
+            }
+
+            // The participant is from "not signed in" to "signed in"
+            if (!model.signedIn && participant.signedIn) {
+                transaction.update(drawRef, {
+                    signInCount: drawDoc.data()['signInCount'] + 1,
+                });
+            }
+            transaction.update(participantRef, participant);
+        });
     }
 
     async deleteParticipant(
         drawId: string,
         participantId: string
     ): Promise<void> {
-        return deleteDoc(this.getParticipantDoc(drawId, participantId));
+        return runTransaction(this.db, async (transaction) => {
+            const drawRef = this.getDrawDoc(drawId);
+            const drawDoc = await transaction.get(drawRef);
+            if (!drawDoc.exists()) throw new Error('Draw does not exist');
+
+            const participantRef = this.getParticipantDoc(
+                drawId,
+                participantId
+            );
+            const participantDoc = await transaction.get(participantRef);
+            if (!participantDoc.exists())
+                throw new Error('Participant does not exist!');
+
+            // Check if there the participant is already signed in or not
+            const participant = ToJSONObject(participantDoc);
+            if (participant.signedIn) {
+                transaction.update(drawRef, {
+                    signInCount: drawDoc.data()['signInCount'] - 1,
+                });
+            }
+
+            transaction.update(drawRef, {
+                participantCount: drawDoc.data()['participantCount'] - 1,
+            });
+            transaction.delete(participantRef);
+        });
+    }
+
+    async createParticipant(
+        drawId: string,
+        {
+            id,
+            name,
+            message,
+            signedIn,
+        }: Pick<Participant, 'id' | 'name' | 'message' | 'signedIn'>
+    ): Promise<void> {
+        return runTransaction(this.db, async (transaction) => {
+            const drawRef = this.getDrawDoc(drawId);
+            const drawDoc = await transaction.get(drawRef);
+            if (!drawDoc.exists()) throw new Error('Draw does not exist');
+
+            const participantRef = this.getParticipantDoc(drawId, id);
+            const participantDoc = await transaction.get(participantRef);
+            if (participantDoc.exists())
+                throw new Error('Participant already exists');
+
+            transaction.update(drawRef, {
+                participantCount: drawDoc.data()['participantCount'] + 1,
+                signInCount: signedIn
+                    ? drawDoc.data()['signInCount'] + 1
+                    : drawDoc.data()['signInCount'],
+            });
+
+            const participant: Participant = {
+                id,
+                name,
+                message,
+                signedIn,
+                signedInAt: Timestamp.now(),
+                prize: '',
+                prizeId: '',
+                prizeWinner: false,
+                random: Math.round(Math.random() * (Math.pow(2, 32) - 1)),
+            };
+            transaction.set(participantRef, participant);
+        });
+    }
+
+    getDrawDoc(drawId: string): DocumentReference<DocumentData> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return doc(this.db, USERS_KEY, uid, DRAWS_KEY, drawId);
     }
 
     getParticipantDoc(
