@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Import Participant List</h2>
+<div mat-dialog-content>
+    <div>
+        <p>You can import at most 100 particpants at a time</p>
+        <label for="import-participants-input" class="btn"> Upload File </label>
+        <input
+            type="file"
+            accept="csv"
+            id="import-participants-input"
+            class="load-participants-input"
+            (change)="onFileUpload($event)"
+        />
+    </div>
+    <div *ngIf="fileName">
+        <span>{{ fileName }}</span>
+    </div>
+    <div *ngIf="handlingImportedFile">
+        <app-loading-spinner
+            msg="Handling the participant list"
+        ></app-loading-spinner>
+    </div>
+    <app-loading-spinner
+        *ngIf="loading"
+        msg="Handling Your Request"
+    ></app-loading-spinner>
+    <ng-container *ngIf="errMsg !== ''">
+        <app-error-message-bar [errMsg]="errMsg"></app-error-message-bar>
+    </ng-container>
+</div>
+<div mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close [disabled]="loading">close</button>
+    <button mat-raised-button color="primary" [disabled]="loading">
+        Create
+    </button>
+</div>

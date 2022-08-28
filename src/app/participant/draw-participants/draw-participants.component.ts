@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
+import { ImportParticipantsDialogComponent } from '../import-participants-dialog/import-participants-dialog.component';
 import { ParticipantCreateDialogComponent } from '../participant-create-dialog/participant-create-dialog.component';
 
 @Component({
@@ -11,6 +12,7 @@ import { ParticipantCreateDialogComponent } from '../participant-create-dialog/p
     styleUrls: ['./draw-participants.component.scss'],
 })
 export class DrawParticipantsComponent implements OnInit {
+    drawId!: string | null;
     isSmallScreen$!: Observable<boolean>;
 
     constructor(
@@ -21,11 +23,20 @@ export class DrawParticipantsComponent implements OnInit {
 
     ngOnInit(): void {
         this.isSmallScreen$ = this.screenSizeService.isSmallScreen();
+        this.drawId = this.route.snapshot.paramMap.get('drawId');
     }
 
     openCreateDialog() {
-        const drawId = this.route.snapshot.paramMap.get('drawId');
-        if (!drawId) return;
-        this.matDialog.open(ParticipantCreateDialogComponent, { data: drawId });
+        if (!this.drawId) return;
+        this.matDialog.open(ParticipantCreateDialogComponent, {
+            data: this.drawId,
+        });
+    }
+
+    openImportDialog() {
+        if (!this.drawId) return;
+        this.matDialog.open(ImportParticipantsDialogComponent, {
+            data: this.drawId,
+        });
     }
 }

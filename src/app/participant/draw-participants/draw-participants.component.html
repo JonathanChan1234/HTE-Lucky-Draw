@@ -1,7 +1,7 @@
 <div class="participants-container">
     <h2>Participants List</h2>
     <div class="top-functions-bar">
-        <button mat-raised-button color="primary">
+        <button mat-raised-button color="primary" (click)="openImportDialog()">
             <mat-icon>file_upload</mat-icon>
             {{ (isSmallScreen$ | async) ? '' : 'Upload a template file' }}
         </button>

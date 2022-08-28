@@ -37,6 +37,7 @@ import {
     participantReducer,
 } from './participant.reducer';
 import { ParticipantCreateDialogComponent } from './participant-create-dialog/participant-create-dialog.component';
+import { ImportParticipantsDialogComponent } from './import-participants-dialog/import-participants-dialog.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { ParticipantCreateDialogComponent } from './participant-create-dialog/pa
         ParticipantDeleteDialogComponent,
         ParticipantEditDialogComponent,
         ParticipantCreateDialogComponent,
+        ImportParticipantsDialogComponent,
     ],
     imports: [
         CommonModule,
