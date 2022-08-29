@@ -3,21 +3,24 @@ import { csvParser } from '../utility/csv';
 type ParticipantRaw = {
     id: string;
     name: string;
-    isSignedIn: string;
+    signedIn: string;
     message: string;
 };
 
-interface Participant {
+export interface ImportedParticipant {
     id: string;
     name: string;
-    isSignedIn: boolean;
+    signedIn: boolean;
     message: string;
 }
 
-export const participantListCsvParser = (data: string): Participant[] => {
+export const participantListCsvParser = (
+    data: string
+): ImportedParticipant[] => {
     const participantRawList = csvParser<ParticipantRaw>(data);
-    const participants: Participant[] = [];
-    for (const { id, name, isSignedIn, message } of participantRawList) {
+    const participants: ImportedParticipant[] = [];
+
+    for (const { id, name, signedIn, message } of participantRawList) {
         if (name === undefined || name === '')
             throw new Error(`name column does not exist or the name is empty`);
         if (id === undefined || id === '')
@@ -26,14 +29,14 @@ export const participantListCsvParser = (data: string): Participant[] => {
             throw new Error(`message column does not exist`);
 
         if (
-            isSignedIn === undefined ||
-            (isSignedIn !== 'true' && isSignedIn !== 'false')
+            signedIn === undefined ||
+            (signedIn !== 'true' && signedIn !== 'false')
         )
-            throw new Error(`Invalid isSignedIn value ${isSignedIn}`);
+            throw new Error(`Invalid isSignedIn value ${signedIn}`);
         participants.push({
             id,
             name,
-            isSignedIn: isSignedIn === 'true' ? true : false,
+            signedIn: signedIn === 'true' ? true : false,
             message,
         });
     }

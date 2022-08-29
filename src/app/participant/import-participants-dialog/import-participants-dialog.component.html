@@ -2,34 +2,51 @@
 <div mat-dialog-content>
     <div>
         <p>You can import at most 100 particpants at a time</p>
-        <label for="import-participants-input" class="btn"> Upload File </label>
-        <input
-            type="file"
-            accept="csv"
-            id="import-participants-input"
-            class="load-participants-input"
-            (change)="onFileUpload($event)"
-        />
+        <div class="btn import-participants-input-container">
+            <label
+                for="import-participants-input"
+                class="import-participants-label"
+            >
+                Upload File
+            </label>
+            <input
+                type="file"
+                accept="csv"
+                id="import-participants-input"
+                class="import-participants-input"
+                (click)="clearPreviousFile($event)"
+                (change)="onFileUpload($event)"
+            />
+        </div>
     </div>
-    <div *ngIf="fileName">
+    <ng-container *ngIf="fileName">
         <span>{{ fileName }}</span>
-    </div>
-    <div *ngIf="handlingImportedFile">
-        <app-loading-spinner
-            msg="Handling the participant list"
-        ></app-loading-spinner>
-    </div>
-    <app-loading-spinner
-        *ngIf="loading"
-        msg="Handling Your Request"
-    ></app-loading-spinner>
+    </ng-container>
+
+    <ng-container *ngIf="loadingState.loading">
+        <app-loading-spinner [msg]="loadingState.msg"></app-loading-spinner>
+    </ng-container>
+
     <ng-container *ngIf="errMsg !== ''">
         <app-error-message-bar [errMsg]="errMsg"></app-error-message-bar>
     </ng-container>
+
+    <ng-container *ngIf="participantList.length > 0">
+        <p class="participant-list-result-text">
+            {{ participantList.length }} records is found
+        </p>
+    </ng-container>
 </div>
 <div mat-dialog-actions align="end" class="dialog-action-container">
-    <button mat-button mat-dialog-close [disabled]="loading">close</button>
-    <button mat-raised-button color="primary" [disabled]="loading">
-        Create
+    <button mat-button mat-dialog-close [disabled]="loadingState.loading">
+        close
+    </button>
+    <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loadingState.loading"
+        (click)="importParticipantList()"
+    >
+        Import
     </button>
 </div>

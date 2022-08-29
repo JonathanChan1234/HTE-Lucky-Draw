@@ -1,13 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 .btn {
     position: relative;
 
     display: block;
-    margin: 30px auto;
+    margin: 15px auto;
     padding: 0;
 
     overflow: hidden;
@@ -17,7 +23,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     border-radius: 2px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 
-    background-color: #2ecc71;
+    background-color: #1d39d8;
     color: #ecf0f1;
 
     transition: background-color 0.3s;
@@ -25,7 +31,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .btn:hover,
 .btn:focus {
-    background-color: #27ae60;
+    background-color: #7c7aff;
 }
 
 .btn > * {

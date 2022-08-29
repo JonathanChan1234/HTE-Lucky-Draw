@@ -1,7 +1,20 @@
-.load-participants-input {
+.import-participants-input {
     display: none;
 }
 
-.upload-file-label {
-    background-color: blue;
+.import-participants-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .import-participants-label {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+}
+
+.participant-list-result-text {
+    font-weight: 700;
+    margin-top: 10px;
 }

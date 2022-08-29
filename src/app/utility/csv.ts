@@ -4,7 +4,7 @@ type CsvObject = {
 
 export function csvParser<T extends CsvObject>(csv: string): T[] {
     const arr: T[] = [];
-    const objArr = csv.split('\n');
+    const objArr = csv.split('\r\n');
 
     if (objArr.length === 0) return arr;
     const headers = objArr[0].split(',');

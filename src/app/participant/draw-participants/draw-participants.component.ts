@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
 import { ImportParticipantsDialogComponent } from '../import-participants-dialog/import-participants-dialog.component';
 import { ParticipantCreateDialogComponent } from '../participant-create-dialog/participant-create-dialog.component';
+import { ParticipantAction } from '../participant.action';
 
 @Component({
     selector: 'app-draw-participants',
@@ -18,7 +20,8 @@ export class DrawParticipantsComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private screenSizeService: ScreenSizeService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        private readonly store: Store
     ) {}
 
     ngOnInit(): void {
@@ -28,15 +31,19 @@ export class DrawParticipantsComponent implements OnInit {
 
     openCreateDialog() {
         if (!this.drawId) return;
-        this.matDialog.open(ParticipantCreateDialogComponent, {
+        const result = this.matDialog.open(ParticipantCreateDialogComponent, {
             data: this.drawId,
+            disableClose: true,
         });
+        if (result) this.store.dispatch(ParticipantAction.loadParticipant());
     }
 
     openImportDialog() {
         if (!this.drawId) return;
-        this.matDialog.open(ImportParticipantsDialogComponent, {
+        const result = this.matDialog.open(ImportParticipantsDialogComponent, {
             data: this.drawId,
+            disableClose: true,
         });
+        if (result) this.store.dispatch(ParticipantAction.loadParticipant());
     }
 }

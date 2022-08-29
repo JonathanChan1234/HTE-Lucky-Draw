@@ -218,42 +218,49 @@ export class ParticipantDbService {
 
     async createParticipant(
         drawId: string,
-        {
-            id,
-            name,
-            message,
-            signedIn,
-        }: Pick<Participant, 'id' | 'name' | 'message' | 'signedIn'>
+        participants: Pick<
+            Participant,
+            'id' | 'name' | 'message' | 'signedIn'
+        >[]
     ): Promise<void> {
+        if (participants.length > 100)
+            throw new Error(
+                'You can import at most 100 participants at a time'
+            );
         return runTransaction(this.db, async (transaction) => {
             const drawRef = this.getDrawDoc(drawId);
             const drawDoc = await transaction.get(drawRef);
             if (!drawDoc.exists()) throw new Error('Draw does not exist');
 
-            const participantRef = this.getParticipantDoc(drawId, id);
-            const participantDoc = await transaction.get(participantRef);
-            if (participantDoc.exists())
-                throw new Error('Participant already exists');
+            let signedInCount = 0;
+            for (const { id } of participants) {
+                const participantDoc = await transaction.get(
+                    this.getParticipantDoc(drawId, id)
+                );
+                if (participantDoc.exists())
+                    throw new Error(`Participant ID ${id} already exists`);
+            }
+            for (const { id, name, message, signedIn } of participants) {
+                const participantRef = this.getParticipantDoc(drawId, id);
+                const participant: Participant = {
+                    id,
+                    name,
+                    message,
+                    signedIn,
+                    signedInAt: Timestamp.now(),
+                    prize: '',
+                    prizeId: '',
+                    prizeWinner: false,
+                    random: Math.round(Math.random() * (Math.pow(2, 32) - 1)),
+                };
+                if (signedIn) signedInCount++;
+                transaction.set(participantRef, participant);
+            }
 
             transaction.update(drawRef, {
                 participantCount: drawDoc.data()['participantCount'] + 1,
-                signInCount: signedIn
-                    ? drawDoc.data()['signInCount'] + 1
-                    : drawDoc.data()['signInCount'],
+                signInCount: drawDoc.data()['signInCount'] + signedInCount,
             });
-
-            const participant: Participant = {
-                id,
-                name,
-                message,
-                signedIn,
-                signedInAt: Timestamp.now(),
-                prize: '',
-                prizeId: '',
-                prizeWinner: false,
-                random: Math.round(Math.random() * (Math.pow(2, 32) - 1)),
-            };
-            transaction.set(participantRef, participant);
         });
     }
 

@@ -58,12 +58,14 @@ export class ParticipantCreateDialogComponent implements OnInit {
             return;
         this.loading = true;
         from(
-            this.participantDbService.createParticipant(this.drawId, {
-                id,
-                name,
-                signedIn,
-                message,
-            })
+            this.participantDbService.createParticipant(this.drawId, [
+                {
+                    id,
+                    name,
+                    signedIn,
+                    message,
+                },
+            ])
         ).subscribe({
             next: () => {
                 this.loading = false;
