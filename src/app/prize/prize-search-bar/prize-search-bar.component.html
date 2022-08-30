@@ -1,0 +1,24 @@
+<form
+    (ngSubmit)="updatePrizeFilter()"
+    [formGroup]="formGroup"
+    class="prize-search-form"
+>
+    <div class="form-group">
+        <mat-form-field appearance="fill">
+            <mat-label>Search</mat-label>
+            <input matInput formControlName="searchValue" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Assigned</mat-label>
+            <mat-select required formControlName="assigned" name="assigned">
+                <mat-option value="all">All</mat-option>
+                <mat-option value="assigned">Assigned</mat-option>
+                <mat-option value="notAssigned">Not Assigned</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <button mat-raised-button color="primary" type="submit">
+        <mat-icon>search</mat-icon>
+        Search
+    </button>
+</form>

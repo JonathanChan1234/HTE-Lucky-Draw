@@ -28,11 +28,16 @@ const routes: Routes = [
             { path: '', component: LuckyDrawComponent },
             { path: 'setting/:drawId', component: DrawSettingComponent },
             {
-                path: 'participants/:drawId',
+                path: ':drawId/participants',
                 loadChildren: () =>
                     import('./participant/participant.module').then(
                         (m) => m.ParticipantModule
                     ),
+            },
+            {
+                path: ':drawId/prizes',
+                loadChildren: () =>
+                    import('./prize/prize.module').then((m) => m.PrizeModule),
             },
         ],
         canActivate: [FirebaseAuthPrivateGuard],

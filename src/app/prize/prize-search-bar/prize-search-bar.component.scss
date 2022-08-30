@@ -1,0 +1,22 @@
+.prize-search-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    > * {
+        margin-right: 10px;
+    }
+}
+
+.search-group {
+    display: flex;
+    flex-direction: row;
+
+    > * {
+        margin-right: 10px;
+    }
+}

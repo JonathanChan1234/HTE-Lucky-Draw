@@ -98,7 +98,11 @@ export class LuckyDrawComponent implements OnInit {
     }
 
     navigateToParticipantPage(drawId: string): Promise<boolean> {
-        return this.router.navigate([`draws/participants/${drawId}`]);
+        return this.router.navigate([`draws/${drawId}/participants`]);
+    }
+
+    navigateToPrizePage(drawId: string): Promise<boolean> {
+        return this.router.navigate([`draws/${drawId}/prizes`]);
     }
 
     navigateToSettingPage(drawId: string): Promise<boolean> {

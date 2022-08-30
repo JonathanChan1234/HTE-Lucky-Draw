@@ -11,7 +11,6 @@ export enum ParticipantActionType {
     SetPageSize = '[Participant Component] SetPageSize',
     ToPreviousPage = '[Participant Component] ToPreviousPage',
     ToNextPage = '[Participant Component] ToNextPage',
-    ReachPageEnd = '[Participant API] ReachPageEnd',
 }
 
 const setDrawId = createAction(
