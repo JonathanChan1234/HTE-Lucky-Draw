@@ -7,12 +7,12 @@ export interface AppState {
     participant: ParticipantState;
 }
 
-export type ParticipantSearchFilter = {
+export interface ParticipantSearchFilter {
     searchField: 'name' | 'id';
     searchValue: string;
     signedIn?: boolean; // undefined if don't care
     prizeWinner?: boolean; // undefined if don't care
-};
+}
 
 export interface ParticipantState {
     drawId?: string;

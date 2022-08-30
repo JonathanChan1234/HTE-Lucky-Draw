@@ -13,6 +13,11 @@ export interface PrizeSearchFilter {
     assigned?: boolean;
 }
 
+export interface PrizePaginatorOption {
+    id: string;
+    type: 'startAfter' | 'endBefore';
+}
+
 export interface PrizeState {
     drawId?: string;
     prizes: Prize[];
@@ -21,10 +26,7 @@ export interface PrizeState {
     pageOption: {
         filter: PrizeSearchFilter;
         pageSize: number;
-        paginator?: {
-            id: string;
-            type: 'startAfter' | 'endBefore';
-        };
+        paginator?: PrizePaginatorOption;
     };
     reachStart: boolean;
     reachEnd: boolean;

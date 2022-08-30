@@ -110,11 +110,12 @@ export class ParticipantDbService {
         }
         if (searchValue !== '') {
             queryConstraints.push(where(searchField, '<=', searchValue));
-            queryConstraints.push(where(searchField, '>=', searchValue));
+            queryConstraints.push(
+                where(searchField, '>=', searchValue + '\uf8ff')
+            );
             queryConstraints.push(orderBy(searchField));
-        } else {
-            queryConstraints.push(orderBy('id'));
         }
+        queryConstraints.push(orderBy('id'));
         if (pageOption) {
             if (pageOption.type === 'startAfter') {
                 queryConstraints.push(
