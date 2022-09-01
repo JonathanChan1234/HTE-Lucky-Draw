@@ -1,6 +1,12 @@
 <div class="draw-prize-container">
     <h2>Prize List</h2>
+    <app-prize-toolbar></app-prize-toolbar>
     <app-prize-search-bar></app-prize-search-bar>
     <app-prize-list></app-prize-list>
     <app-prize-paginator></app-prize-paginator>
+    <div *ngIf="handlingRequest | async" class="loading-spinner-background">
+        <app-loading-spinner
+            msg="Processing Your Request"
+        ></app-loading-spinner>
+    </div>
 </div>

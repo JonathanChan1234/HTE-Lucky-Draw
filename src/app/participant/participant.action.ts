@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ParticipantData } from './participant-db.service';
+import { ParticipantList } from './participant-db.service';
 import { ParticipantSearchFilter } from './participant.reducer';
 
 export enum ParticipantActionType {
@@ -31,7 +31,7 @@ const loadParticipant = createAction(ParticipantActionType.LoadParticipants);
 
 const loadParticipantSuccess = createAction(
     ParticipantActionType.LoadParticipantsSuccess,
-    props<{ participantData: ParticipantData }>()
+    props<{ participantData: ParticipantList }>()
 );
 
 const loadParticipantError = createAction(

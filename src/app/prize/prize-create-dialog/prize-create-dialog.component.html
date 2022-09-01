@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Create Participant</h2>
+<div mat-dialog-content>
+    <form [formGroup]="form" class="prize-create-form">
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Sponsor</mat-label>
+            <input matInput formControlName="sponsor" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Sequence</mat-label>
+            <input matInput formControlName="sequence" type="number" />
+            <mat-error *ngIf="form.get('sequence')?.hasError('pattern')"
+                >Sequence must be a positive integer</mat-error
+            >
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close>close</button>
+    <button
+        mat-raised-button
+        color="primary"
+        (click)="addPrize()"
+        [disabled]="form.invalid"
+    >
+        Create
+    </button>
+</div>

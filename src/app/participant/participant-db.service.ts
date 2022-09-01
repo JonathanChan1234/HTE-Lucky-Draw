@@ -17,11 +17,18 @@ import {
     Timestamp,
 } from '@angular/fire/firestore';
 import { where } from '@firebase/firestore';
+import { Prize, PrizeKey, PRIZES_KEY } from '../prize/prize';
 import { AuthService } from '../service/auth.service';
-import { Participant, ToJSONObject } from './participant';
+import { LuckyDrawService } from '../service/lucky-draw.service';
+import {
+    Participant,
+    participantDocToJsonObject,
+    ParticipantKey,
+    PARTICIPANTS_KEY,
+} from './participant';
 import { ParticipantSearchFilter } from './participant.reducer';
 
-export interface ParticipantData {
+export interface ParticipantList {
     participants: Participant[];
     reachStart: boolean;
     reachEnd: boolean;
@@ -34,20 +41,23 @@ export type ParticipantPaginatorOption = {
 
 export const USERS_KEY = 'users';
 export const DRAWS_KEY = 'draws';
-export const PARTICIPANTS_KEY = 'participants';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ParticipantDbService {
-    constructor(private db: Firestore, private authService: AuthService) {}
+    constructor(
+        private db: Firestore,
+        private authService: AuthService,
+        private luckyDrawService: LuckyDrawService
+    ) {}
 
     async getParticpantData(
         drawId: string,
         pageSize: number,
         filter: ParticipantSearchFilter,
         pageOption?: ParticipantPaginatorOption
-    ): Promise<ParticipantData> {
+    ): Promise<ParticipantList> {
         const participants = await this.getParticipants(
             drawId,
             pageSize,
@@ -71,7 +81,7 @@ export class ParticipantDbService {
             );
             return {
                 participants,
-                reachStart: pageOption ? false : true,
+                reachStart: pageOption === undefined,
                 reachEnd: nextParticipant.length === 0,
             };
         }
@@ -103,10 +113,14 @@ export class ParticipantDbService {
         if (!uid) throw new Error('Not authenticated');
         const queryConstraints: QueryConstraint[] = [];
         if (prizeWinner !== undefined) {
-            queryConstraints.push(where('prizeWinner', '==', prizeWinner));
+            queryConstraints.push(
+                where(ParticipantKey.prizeWinner, '==', prizeWinner)
+            );
         }
         if (signedIn !== undefined) {
-            queryConstraints.push(where('signedIn', '==', signedIn));
+            queryConstraints.push(
+                where(ParticipantKey.signedIn, '==', signedIn)
+            );
         }
         if (searchValue !== '') {
             queryConstraints.push(
@@ -145,7 +159,9 @@ export class ParticipantDbService {
         );
         const documentSnapshots = await getDocs(getParticipantQuery);
 
-        return documentSnapshots.docs.map((doc) => ToJSONObject(doc));
+        return documentSnapshots.docs.map((doc) =>
+            participantDocToJsonObject(doc)
+        );
     }
 
     async editParticipant(
@@ -153,11 +169,11 @@ export class ParticipantDbService {
         participant: Pick<Participant, 'id' | 'name' | 'message' | 'signedIn'>
     ): Promise<void> {
         return runTransaction(this.db, async (transaction) => {
-            const drawRef = this.getDrawDoc(drawId);
+            const drawRef = this.luckyDrawService.getDrawDoc(drawId);
             const drawDoc = await transaction.get(drawRef);
             if (!drawDoc.exists()) throw new Error('Draw does not exist');
 
-            const participantRef = this.getParticipantDoc(
+            const participantRef = this.getParticipantRef(
                 drawId,
                 participant.id
             );
@@ -166,7 +182,7 @@ export class ParticipantDbService {
                 throw new Error('Participant does not exist!');
 
             // Check if there the participant is already signed in or not
-            const model = ToJSONObject(participantDoc);
+            const model = participantDocToJsonObject(participantDoc);
 
             // The participant is from "signed in" to "not signed in"
             if (model.signedIn && !participant.signedIn) {
@@ -189,12 +205,14 @@ export class ParticipantDbService {
         drawId: string,
         participantId: string
     ): Promise<void> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
         return runTransaction(this.db, async (transaction) => {
-            const drawRef = this.getDrawDoc(drawId);
+            const drawRef = this.luckyDrawService.getDrawDoc(drawId);
             const drawDoc = await transaction.get(drawRef);
             if (!drawDoc.exists()) throw new Error('Draw does not exist');
 
-            const participantRef = this.getParticipantDoc(
+            const participantRef = this.getParticipantRef(
                 drawId,
                 participantId
             );
@@ -203,7 +221,27 @@ export class ParticipantDbService {
                 throw new Error('Participant does not exist!');
 
             // Check if there the participant is already signed in or not
-            const participant = ToJSONObject(participantDoc);
+            const participant = participantDocToJsonObject(participantDoc);
+            if (participant.prizeWinner && participant.prizeId !== '') {
+                const prizeRef = doc(
+                    this.db,
+                    USERS_KEY,
+                    uid,
+                    DRAWS_KEY,
+                    drawId,
+                    PRIZES_KEY,
+                    participant.prizeId
+                );
+                const prizeDoc = await transaction.get(prizeRef);
+                const prize: Pick<
+                    Prize,
+                    PrizeKey.assigned | PrizeKey.winner | PrizeKey.winnerId
+                > = { assigned: false, winner: '', winnerId: '' };
+                if (prizeDoc.exists()) {
+                    transaction.update(prizeRef, prize);
+                }
+            }
+
             if (participant.signedIn) {
                 transaction.update(drawRef, {
                     signInCount: drawDoc.data()['signInCount'] - 1,
@@ -229,20 +267,20 @@ export class ParticipantDbService {
                 'You can import at most 100 participants at a time'
             );
         return runTransaction(this.db, async (transaction) => {
-            const drawRef = this.getDrawDoc(drawId);
+            const drawRef = this.luckyDrawService.getDrawDoc(drawId);
             const drawDoc = await transaction.get(drawRef);
             if (!drawDoc.exists()) throw new Error('Draw does not exist');
 
             let signedInCount = 0;
             for (const { id } of participants) {
                 const participantDoc = await transaction.get(
-                    this.getParticipantDoc(drawId, id)
+                    this.getParticipantRef(drawId, id)
                 );
                 if (participantDoc.exists())
                     throw new Error(`Participant ID ${id} already exists`);
             }
             for (const { id, name, message, signedIn } of participants) {
-                const participantRef = this.getParticipantDoc(drawId, id);
+                const participantRef = this.getParticipantRef(drawId, id);
                 const participant: Participant = {
                     id,
                     name,
@@ -259,19 +297,14 @@ export class ParticipantDbService {
             }
 
             transaction.update(drawRef, {
-                participantCount: drawDoc.data()['participantCount'] + 1,
+                participantCount:
+                    drawDoc.data()['participantCount'] + participants.length,
                 signInCount: drawDoc.data()['signInCount'] + signedInCount,
             });
         });
     }
 
-    getDrawDoc(drawId: string): DocumentReference<DocumentData> {
-        const uid = this.authService.getUserId();
-        if (!uid) throw new Error('Not signed in');
-        return doc(this.db, USERS_KEY, uid, DRAWS_KEY, drawId);
-    }
-
-    getParticipantDoc(
+    getParticipantRef(
         drawId: string,
         participantId: string
     ): DocumentReference<DocumentData> {

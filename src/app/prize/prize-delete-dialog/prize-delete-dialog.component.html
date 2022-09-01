@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Delete Participant</h2>
+<mat-dialog-content class="mat-typography">
+    <div class="content-container">
+        <h3>⚠️Warning</h3>
+        <p>
+            Are you sure to delete {{ prize.name }}? (All the data associated
+            will be deleted)
+        </p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="accent" (click)="deletePrize()">
+        Delete
+    </button>
+</mat-dialog-actions>

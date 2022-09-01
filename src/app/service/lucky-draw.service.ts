@@ -19,6 +19,9 @@ import { from, Observable } from 'rxjs';
 import { Draw } from '../model/draw';
 import { AuthService } from './auth.service';
 
+const USERS_KEY = 'users';
+const DRAWS_KEY = 'draws';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -49,6 +52,12 @@ export class LuckyDrawService {
         if (!uid) throw new Error('Not authenticated');
         const docSnap = await getDoc(doc(this.firestore, `users`, uid));
         return docSnap.exists();
+    }
+
+    getDrawDoc(drawId: string): DocumentReference<DocumentData> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return doc(this.firestore, USERS_KEY, uid, DRAWS_KEY, drawId);
     }
 
     async getDrawRefById(

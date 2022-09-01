@@ -1,0 +1,10 @@
+<div class="prize-toolbar">
+    <button mat-raised-button color="primary" (click)="openImportPrizeDialog()">
+        <mat-icon>file_upload</mat-icon>
+        {{ (isSmallScreen$ | async) ? '' : 'Upload a template file' }}
+    </button>
+    <button mat-raised-button (click)="openCreatePrizeDialog()">
+        <mat-icon>redeem</mat-icon>
+        {{ (isSmallScreen$ | async) ? '' : 'Add Prize' }}
+    </button>
+</div>

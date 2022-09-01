@@ -1,4 +1,3 @@
-import { Timestamp } from '@angular/fire/firestore';
 import { createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash';
 import { Prize } from './prize';
@@ -22,6 +21,8 @@ export interface PrizeState {
     drawId?: string;
     prizes: Prize[];
     loading: boolean;
+    handlingRequest: boolean;
+    snackBarMsg?: { success: boolean; msg: string };
     error: string | null;
     pageOption: {
         filter: PrizeSearchFilter;
@@ -33,16 +34,9 @@ export interface PrizeState {
 }
 
 const initialState: PrizeState = {
-    prizes: [
-        {
-            id: 'testId',
-            addedAt: Timestamp.now(),
-            assigned: true,
-            name: 'Test Prize',
-            sequence: 10,
-        },
-    ],
+    prizes: [],
     loading: false,
+    handlingRequest: false,
     error: null,
     pageOption: {
         filter: {
@@ -66,7 +60,7 @@ export const prizeReducer = createReducer(
         })
     ),
     on(
-        PrizeAction.loadPrize,
+        PrizeAction.loadPrizes,
         (state): PrizeState => ({
             ...state,
             loading: true,
@@ -135,6 +129,50 @@ export const prizeReducer = createReducer(
                 pageSize,
                 paginator: undefined,
             },
+        })
+    ),
+    on(
+        PrizeAction.loadPrizeSuccess,
+        (
+            state,
+            { prizeList: { prizes, reachStart, reachEnd } }
+        ): PrizeState => ({
+            ...state,
+            loading: false,
+            prizes,
+            reachStart,
+            reachEnd,
+        })
+    ),
+    on(
+        PrizeAction.loadPrizeError,
+        (state, { error }): PrizeState => ({
+            ...state,
+            loading: false,
+            error,
+        })
+    ),
+    on(
+        PrizeAction.createPrize,
+        (state): PrizeState => ({
+            ...state,
+            handlingRequest: true,
+        })
+    ),
+    on(
+        PrizeAction.requestSuccess,
+        (state, { msg }): PrizeState => ({
+            ...state,
+            handlingRequest: false,
+            snackBarMsg: { success: true, msg },
+        })
+    ),
+    on(
+        PrizeAction.requestFailure,
+        (state, { msg }): PrizeState => ({
+            ...state,
+            handlingRequest: false,
+            snackBarMsg: { success: false, msg },
         })
     )
 );

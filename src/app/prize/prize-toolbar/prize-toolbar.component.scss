@@ -1,0 +1,8 @@
+.prize-toolbar {
+    display: flex;
+    flex-direction: row-reverse;
+
+    > * {
+        margin-right: 10px;
+    }
+}

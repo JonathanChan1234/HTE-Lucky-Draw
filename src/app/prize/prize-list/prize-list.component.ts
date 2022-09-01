@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
 import { Prize } from '../prize';
+import { PrizeDeleteDialogComponent } from '../prize-delete-dialog/prize-delete-dialog.component';
+import { PrizeAction } from '../prize.action';
 import { PrizeSelector } from '../prize.selector';
-import { PrizeService } from '../prize.service';
 
 @Component({
     selector: 'app-prize-list',
@@ -20,8 +22,8 @@ export class PrizeListComponent implements OnInit {
 
     constructor(
         private screenSizeService: ScreenSizeService,
-        private prizeService: PrizeService,
-        private readonly store: Store
+        private readonly store: Store,
+        private matDialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -29,5 +31,15 @@ export class PrizeListComponent implements OnInit {
         this.loading$ = this.store.select(PrizeSelector.selectLoading);
         this.prizes$ = this.store.select(PrizeSelector.selectPrizeList);
         this.error$ = this.store.select(PrizeSelector.selectError);
+    }
+
+    openDeletePrizeDialog(prize: Prize): void {
+        const matDialogRef = this.matDialog.open(PrizeDeleteDialogComponent, {
+            data: prize,
+        });
+        matDialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            this.store.dispatch(PrizeAction.deletePrize({ prizeId: prize.id }));
+        });
     }
 }

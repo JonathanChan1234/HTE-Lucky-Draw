@@ -16,16 +16,29 @@ export type Participant = {
     prizeWinner: boolean;
 };
 
-export const ToJSONObject = (
+export const PARTICIPANTS_KEY = 'participants';
+
+export enum ParticipantKey {
+    name = 'name',
+    signedIn = 'signedIn',
+    signedInAt = 'signedInAt',
+    random = 'random',
+    prizeWinner = 'prizeWinner',
+    prize = 'prize',
+    prizeId = 'prizeId',
+    message = 'message',
+}
+
+export const participantDocToJsonObject = (
     doc: QueryDocumentSnapshot<DocumentData>
 ): Participant => ({
-    name: doc.data()['name'],
     id: doc.id,
-    signedIn: doc.data()['signedIn'],
-    signedInAt: doc.data()['signedInAt'],
-    random: doc.data()['random'],
-    prizeWinner: doc.data()['prizeWinner'],
-    prize: doc.data()['prize'],
-    prizeId: doc.data()['prizeId'],
-    message: doc.data()['message'],
+    name: doc.data()[ParticipantKey.name],
+    signedIn: doc.data()[ParticipantKey.signedIn],
+    signedInAt: doc.data()[ParticipantKey.signedInAt],
+    random: doc.data()[ParticipantKey.random],
+    prizeWinner: doc.data()[ParticipantKey.prizeWinner],
+    prize: doc.data()[ParticipantKey.prize],
+    prizeId: doc.data()[ParticipantKey.prizeId],
+    message: doc.data()[ParticipantKey.message],
 });

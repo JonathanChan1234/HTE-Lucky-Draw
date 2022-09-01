@@ -15,6 +15,8 @@ export type Prize = {
     addedAt: Timestamp;
 };
 
+export const PRIZES_KEY = 'prizes';
+
 export enum PrizeKey {
     name = 'name',
     assigned = 'assigned',

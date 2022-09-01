@@ -11,8 +11,8 @@
 <mat-list *ngIf="prizes$ | async">
     <ng-container *ngFor="let prize of prizes$ | async">
         <mat-list-item>
-            <div mat-line>{{ prize.name }}</div>
-            <div mat-line>{{ prize.sequence }}</div>
+            <div mat-line>{{ prize.name }} (Sponsor: {{ prize.sponsor }})</div>
+            <div mat-line>Order: {{ prize.sequence }}</div>
             <mat-chip-list mat-line>
                 <mat-chip color="primary" selected *ngIf="prize.assigned">
                     Assigned
@@ -27,7 +27,10 @@
                         <mat-icon>edit</mat-icon>
                         Edit
                     </button>
-                    <button mat-menu-item>
+                    <button
+                        mat-menu-item
+                        (click)="openDeletePrizeDialog(prize)"
+                    >
                         <mat-icon>delete</mat-icon>
                         Delete
                     </button>
@@ -44,7 +47,11 @@
                 <button mat-icon-button color="primary">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn">
+                <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="openDeletePrizeDialog(prize)"
+                >
                     <mat-icon>delete</mat-icon>
                 </button>
             </ng-template>
