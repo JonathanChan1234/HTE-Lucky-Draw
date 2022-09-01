@@ -78,10 +78,10 @@ export class PrizeService {
             queryConstraints.push(where(PrizeKey.assigned, '==', assigned));
         }
         if (searchValue !== '') {
-            queryConstraints.push(where(PrizeKey.name, '<=', searchValue));
             queryConstraints.push(
-                where(PrizeKey.name, '>=', searchValue + '\uf8ff')
+                where(PrizeKey.name, '<=', searchValue + '\uf8ff')
             );
+            queryConstraints.push(where(PrizeKey.name, '>=', searchValue));
             queryConstraints.push(orderBy(PrizeKey.name));
         }
         queryConstraints.push(orderBy(PrizeKey.sequence, 'desc'));

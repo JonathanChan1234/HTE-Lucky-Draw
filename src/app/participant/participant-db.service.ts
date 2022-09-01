@@ -109,10 +109,10 @@ export class ParticipantDbService {
             queryConstraints.push(where('signedIn', '==', signedIn));
         }
         if (searchValue !== '') {
-            queryConstraints.push(where(searchField, '<=', searchValue));
             queryConstraints.push(
-                where(searchField, '>=', searchValue + '\uf8ff')
+                where(searchField, '<=', searchValue + '\uf8ff')
             );
+            queryConstraints.push(where(searchField, '>=', searchValue));
             queryConstraints.push(orderBy(searchField));
         }
         queryConstraints.push(orderBy('id'));
