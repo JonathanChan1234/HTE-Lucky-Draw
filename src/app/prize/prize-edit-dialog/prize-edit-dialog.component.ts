@@ -2,15 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import {
-    debounceTime,
-    from,
-    Observable,
-    of,
-    startWith,
-    switchMap,
-    tap,
-} from 'rxjs';
+import { debounceTime, from, Observable, of, startWith, switchMap } from 'rxjs';
 import { Participant } from 'src/app/participant/participant';
 import { ParticipantDbService } from 'src/app/participant/participant-db.service';
 import { Prize } from '../prize';
@@ -33,9 +25,12 @@ interface PrizeEditFormGroup {
 export class PrizeEditDialogComponent implements OnInit {
     assignedFormControl: FormControl<boolean>;
     winnerIdFormControl: FormControl<string | null>;
-    filterFormControl: FormControl<string> = new FormControl('', {
-        nonNullable: true,
-    });
+    filterFormControl: FormControl<string> = new FormControl(
+        this.prize.winner ?? '',
+        {
+            nonNullable: true,
+        }
+    );
 
     form: FormGroup<PrizeEditFormGroup>;
     filteredOptions!: Observable<Participant[]>;
@@ -80,7 +75,7 @@ export class PrizeEditDialogComponent implements OnInit {
             else this.winnerIdFormControl.enable();
         });
         this.filteredOptions = this.filterFormControl.valueChanges.pipe(
-            startWith(''),
+            startWith(this.prize.winner ?? ''),
             debounceTime(1000),
             switchMap((value) =>
                 this.store.select(PrizeSelector.selectDrawId).pipe(
@@ -88,20 +83,14 @@ export class PrizeEditDialogComponent implements OnInit {
                         if (!drawId) return of([]);
                         return from(
                             this.participantService.getParticipants(drawId, 5, {
-                                prizeWinner: false,
                                 searchField: 'name',
                                 searchValue: value || '',
                             })
                         );
                     })
                 )
-            ),
-            tap((value) => console.log(value))
+            )
         );
-    }
-
-    onPanelClose(): void {
-        this.filterFormControl.setValue('');
     }
 
     editPrize() {
@@ -120,7 +109,6 @@ export class PrizeEditDialogComponent implements OnInit {
             sequence,
             winnerId: winnerId ?? '',
         };
-        console.log(editPrizeDao);
         this.matDialogRef.close(editPrizeDao);
     }
 }

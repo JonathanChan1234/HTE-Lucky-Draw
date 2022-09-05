@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { PrizeAction } from '../prize.action';
 import { PrizeSelector } from '../prize.selector';
 
@@ -13,6 +13,8 @@ import { PrizeSelector } from '../prize.selector';
 })
 export class DrawPrizeComponent implements OnInit {
     handlingRequest!: Observable<boolean>;
+    snackBarSubscription!: Subscription;
+
     constructor(
         private route: ActivatedRoute,
         private readonly store: Store,
@@ -31,13 +33,5 @@ export class DrawPrizeComponent implements OnInit {
             return;
         }
         this.store.dispatch(PrizeAction.setDrawId({ drawId }));
-
-        const snackBarMsg$ = this.store.select(PrizeSelector.selectSnackbarMsg);
-        snackBarMsg$.subscribe((value) => {
-            if (!value) return;
-            this.snackBar.open(`${value.msg}`, undefined, {
-                duration: 2000,
-            });
-        });
     }
 }

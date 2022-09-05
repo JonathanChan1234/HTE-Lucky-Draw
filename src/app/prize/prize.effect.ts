@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, from, map, of, switchMap } from 'rxjs';
+import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
 import { PrizeAction } from './prize.action';
 import { PrizeSelector } from './prize.selector';
 import { PrizeService } from './prize.service';
@@ -69,12 +69,9 @@ export class PrizeEffects {
                     map((prizeList) =>
                         PrizeAction.loadPrizeSuccess({ prizeList })
                     ),
-                    catchError((error) => {
-                        console.log(error);
-                        return of(
-                            PrizeAction.loadPrizeError({ error: error.message })
-                        );
-                    })
+                    catchError((error) =>
+                        of(PrizeAction.loadPrizeError({ error: error.message }))
+                    )
                 );
             })
         );
@@ -88,14 +85,44 @@ export class PrizeEffects {
             ),
             switchMap(([{ prizes }, drawId]) => {
                 if (!drawId) throw new Error('Empty Draw Id');
-                return from(this.prizeService.createPrizes(drawId, prizes));
-            }),
-            map(() =>
-                PrizeAction.requestSuccess({ msg: 'Create New Prize Sucess' })
+                return from(
+                    this.prizeService.createPrizes(drawId, prizes)
+                ).pipe(
+                    map(() =>
+                        PrizeAction.requestSuccess({
+                            msg: 'Create New Prize Sucess',
+                        })
+                    ),
+                    catchError((error) =>
+                        of(PrizeAction.requestFailure({ msg: error.message }))
+                    )
+                );
+            })
+        );
+    });
+
+    editPrize$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(PrizeAction.editPrize),
+            concatLatestFrom(() =>
+                this.store.select(PrizeSelector.selectDrawId)
             ),
-            catchError((error) =>
-                of(PrizeAction.requestFailure({ msg: error.message }))
-            )
+            exhaustMap(([{ prize }, drawId]) => {
+                if (!drawId) throw new Error('Empty Draw ID');
+                return from(this.prizeService.editPrize(drawId, prize)).pipe(
+                    map(() =>
+                        PrizeAction.requestSuccess({
+                            msg: 'Edit Prize Successfully',
+                        })
+                    ),
+                    catchError((error) => {
+                        console.log(error);
+                        return of(
+                            PrizeAction.requestFailure({ msg: error.message })
+                        );
+                    })
+                );
+            })
         );
     });
 
@@ -107,14 +134,19 @@ export class PrizeEffects {
             ),
             switchMap(([{ prizeId }, drawId]) => {
                 if (!drawId) throw new Error('Empty Draw Id');
-                return from(this.prizeService.deletePrize(drawId, prizeId));
-            }),
-            map(() =>
-                PrizeAction.requestSuccess({ msg: 'Delete prize successfully' })
-            ),
-            catchError((error) =>
-                of(PrizeAction.requestFailure({ msg: error.message }))
-            )
+                return from(
+                    this.prizeService.deletePrize(drawId, prizeId)
+                ).pipe(
+                    map(() =>
+                        PrizeAction.requestSuccess({
+                            msg: 'Delete prize successfully',
+                        })
+                    ),
+                    catchError((error) =>
+                        of(PrizeAction.requestFailure({ msg: error.message }))
+                    )
+                );
+            })
         );
     });
 

@@ -153,7 +153,6 @@ export class ParticipantDbService {
         }
 
         if (pageOption === undefined) queryConstraints.push(limit(pageSize));
-        console.log(queryConstraints);
 
         const getParticipantQuery = query(
             collection(

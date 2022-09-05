@@ -171,7 +171,8 @@ export class PrizeService {
     async checkIfPrizeSequenceExists(
         uid: string,
         drawId: string,
-        sequence: number
+        sequence: number,
+        prizeId?: string
     ): Promise<boolean> {
         const sequenceQuery = query(
             collection(this.db, USERS_KEY, uid, DRAWS_KEY, drawId, PRIZES_KEY),
@@ -179,10 +180,12 @@ export class PrizeService {
             limit(1)
         );
         const docs = await getDocs(sequenceQuery);
+        // return false if the found prize id is the same as prizeId
+        if (prizeId && docs.docs[0].id === prizeId) return false;
         return !docs.empty;
     }
 
-    // TODO: better change to cloud function
+    // TODO: better change it to cloud function
     async createPrizes(
         drawId: string,
         prizes: CreatePrizeDao[]
@@ -236,15 +239,54 @@ export class PrizeService {
     ): Promise<void> {
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not signed in');
+
         return runTransaction(this.db, async (transaction) => {
             const prizeRef = this.getPrizeRef(drawId, id);
             const prizeDoc = await transaction.get(prizeRef);
             if (!prizeDoc.exists()) throw new Error('Prize does not exist');
 
-            const originalWinnerId = prizeDoc.data()[PrizeKey.winnerId];
+            if (
+                await this.checkIfPrizeSequenceExists(uid, drawId, sequence, id)
+            )
+                throw new Error('Prize sequence already exists');
 
-            // The winner of the prize has been changed
+            // Case 1: The original winner id and new winner id are the same, no need to change the winner status of both prize and participant
+            // Case 2: The original winner id and new winner id aren't the same, need to change the prize status as well as the status of the original and new winner
+            // Case 3: The prize is set to be not assigned. Need to update the status of the prize (not assigned) as well as the original winner (non-prize winner) if there is any
+            // Exception Case 1: new winner id does not exist in the participant database
+            // Exception Case 2: prize sequence already exists in the prize database
+
+            const originalWinnerId = prizeDoc.data()[PrizeKey.winnerId];
+            let prize: Partial<Prize> = { name, sequence, sponsor };
+            // Case 2 and 3, reset the participant prize status and prize winner status if no winner is empty
+            if (
+                (originalWinnerId && !winnerId) ||
+                (originalWinnerId && winnerId && winnerId !== originalWinnerId)
+            ) {
+                const oldWinnerRef = doc(
+                    this.db,
+                    USERS_KEY,
+                    uid,
+                    DRAWS_KEY,
+                    drawId,
+                    PARTICIPANTS_KEY,
+                    originalWinnerId
+                );
+                const oldWinnerDoc = await transaction.get(oldWinnerRef);
+                if (oldWinnerDoc.exists()) {
+                    const oldWinnerPrizeStatus: UpdateParticipantPrizeDao = {
+                        prize: '',
+                        prizeId: '',
+                        prizeWinner: false,
+                    };
+                    transaction.update(oldWinnerRef, oldWinnerPrizeStatus);
+                }
+                prize = { ...prize, assigned: false, winner: '', winnerId: '' };
+            }
+
+            // Case 2, apply when the prize already has a winner or not
             if (winnerId && winnerId !== originalWinnerId) {
+                // update the new winner status
                 const newWinnerRef = doc(
                     this.db,
                     USERS_KEY,
@@ -266,39 +308,16 @@ export class PrizeService {
                     prizeId: id,
                     prizeWinner: true,
                 };
-
-                const oldWinnerRef = doc(
-                    this.db,
-                    USERS_KEY,
-                    uid,
-                    DRAWS_KEY,
-                    drawId,
-                    PARTICIPANTS_KEY,
-                    prizeDoc.data()[PrizeKey.winnerId]
-                );
-                const oldWinnerDoc = await transaction.get(oldWinnerRef);
-                if (oldWinnerDoc.exists()) {
-                    const oldWinnerPrizeStatus: UpdateParticipantPrizeDao = {
-                        prize: '',
-                        prizeId: '',
-                        prizeWinner: false,
-                    };
-                    transaction.update(oldWinnerRef, oldWinnerPrizeStatus);
-                }
                 transaction.update(newWinnerRef, newWinnerPrizeStatus);
-                const editPrizeDao: Omit<Prize, 'id' | 'addedAt'> = {
-                    name,
-                    sponsor,
-                    sequence,
-                    winnerId,
+                prize = {
+                    ...prize,
+                    assigned: true,
                     winner: newWinnerDoc.data()[ParticipantKey.name],
-                    assigned: true,
+                    winnerId: winnerId,
                 };
-                transaction.update(prizeRef, {
-                    ...editPrizeDao,
-                    assigned: true,
-                });
             }
+
+            transaction.update(prizeRef, prize);
         });
     }
 
