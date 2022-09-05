@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { Prize, PrizeKey } from './prize';
 import { PrizeSearchFilter } from './prize.reducer';
 import { PrizeList } from './prize.service';
 
@@ -12,10 +13,25 @@ export enum PrizeActionType {
     ToPreviousPage = '[Prize Component] ToPreviousPage',
     ToNextPage = '[Prize Component] ToNextPage',
     CreatePrize = '[Prize Component] CreatePrize',
+    EditPrize = '[Prize Component] EditPrize',
     DeletePrize = '[Prize Component] DeletePrize',
     RequestSuccess = '[Prize Effect] RequestSuccess',
     RequestFailure = '[Prize Effect] RequestFailure',
 }
+
+export type CreatePrizeDao = Pick<
+    Prize,
+    PrizeKey.name | PrizeKey.sequence | PrizeKey.sponsor
+>;
+
+export type EditPrizeDao = Pick<
+    Prize,
+    | 'id'
+    | PrizeKey.name
+    | PrizeKey.sequence
+    | PrizeKey.sponsor
+    | PrizeKey.winnerId
+>;
 
 const setDrawId = createAction(
     PrizeActionType.SetDrawId,
@@ -50,7 +66,14 @@ const setPageSize = createAction(
 
 const createPrize = createAction(
     PrizeActionType.CreatePrize,
-    props<{ name: string; sponsor: string; sequence: number }>()
+    props<{
+        prizes: CreatePrizeDao[];
+    }>()
+);
+
+const editPrize = createAction(
+    PrizeActionType.EditPrize,
+    props<{ prize: EditPrizeDao }>()
 );
 
 const deletePrize = createAction(
@@ -78,6 +101,7 @@ export const PrizeAction = {
     loadPrizeSuccess,
     loadPrizeError,
     createPrize,
+    editPrize,
     deletePrize,
     requestSuccess,
     requestFailure,

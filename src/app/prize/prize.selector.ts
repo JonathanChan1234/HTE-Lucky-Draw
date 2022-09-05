@@ -54,6 +54,7 @@ export const PrizeSelector = {
     selectReachStart,
     selectReachEnd,
     selectDrawId,
+    selectPageOption,
     selectDrawIdAndPageOption,
     selectHandlingRequest,
     selectSnackbarMsg,

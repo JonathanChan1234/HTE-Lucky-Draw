@@ -6,6 +6,7 @@ import {
     DocumentReference,
     endBefore,
     Firestore,
+    getDoc,
     getDocs,
     limit,
     limitToLast,
@@ -110,41 +111,49 @@ export class ParticipantDbService {
         pageOption?: ParticipantPaginatorOption
     ): Promise<Participant[]> {
         const uid = this.authService.getUserId();
-        if (!uid) throw new Error('Not authenticated');
+        if (!uid) throw new Error('Not signed in');
+
         const queryConstraints: QueryConstraint[] = [];
+
         if (prizeWinner !== undefined) {
             queryConstraints.push(
                 where(ParticipantKey.prizeWinner, '==', prizeWinner)
             );
         }
+
         if (signedIn !== undefined) {
             queryConstraints.push(
                 where(ParticipantKey.signedIn, '==', signedIn)
             );
         }
+
         if (searchValue !== '') {
             queryConstraints.push(
-                where(searchField, '<=', searchValue + '\uf8ff')
+                where(searchField, '<=', searchValue + '\uf8ff'),
+                where(searchField, '>=', searchValue)
             );
-            queryConstraints.push(where(searchField, '>=', searchValue));
-            queryConstraints.push(orderBy(searchField));
         }
-        queryConstraints.push(orderBy('id'));
-        if (pageOption) {
-            if (pageOption.type === 'startAfter') {
-                queryConstraints.push(
-                    startAfter(pageOption.id),
-                    limit(pageSize)
-                );
-            } else {
-                queryConstraints.push(
-                    endBefore(pageOption.id),
-                    limitToLast(pageSize)
-                );
-            }
-        } else {
-            queryConstraints.push(limit(pageSize));
+
+        if (searchField === 'id')
+            queryConstraints.push(orderBy('id'), orderBy('name'));
+        else queryConstraints.push(orderBy('name'), orderBy('id'));
+
+        if (pageOption && pageOption.type === 'startAfter') {
+            const lastDoc = await getDoc(
+                this.getParticipantRef(drawId, pageOption.id)
+            );
+            queryConstraints.push(startAfter(lastDoc), limit(pageSize));
         }
+
+        if (pageOption && pageOption.type === 'endBefore') {
+            const firstDoc = await getDoc(
+                this.getParticipantRef(drawId, pageOption.id)
+            );
+            queryConstraints.push(endBefore(firstDoc), limitToLast(pageSize));
+        }
+
+        if (pageOption === undefined) queryConstraints.push(limit(pageSize));
+        console.log(queryConstraints);
 
         const getParticipantQuery = query(
             collection(

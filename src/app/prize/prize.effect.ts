@@ -52,10 +52,11 @@ export class PrizeEffects {
     loadPrizes$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(PrizeAction.loadPrizes),
-            concatLatestFrom(() =>
-                this.store.select(PrizeSelector.selectDrawIdAndPageOption)
-            ),
-            switchMap(([, { drawId, filter, pageSize, paginator }]) => {
+            concatLatestFrom(() => [
+                this.store.select(PrizeSelector.selectDrawId),
+                this.store.select(PrizeSelector.selectPageOption),
+            ]),
+            switchMap(([, drawId, { filter, pageSize, paginator }]) => {
                 if (!drawId) throw new Error('Empty Draw Id');
                 return from(
                     this.prizeService.getPrizeList(
@@ -64,12 +65,17 @@ export class PrizeEffects {
                         filter,
                         paginator
                     )
+                ).pipe(
+                    map((prizeList) =>
+                        PrizeAction.loadPrizeSuccess({ prizeList })
+                    ),
+                    catchError((error) => {
+                        console.log(error);
+                        return of(
+                            PrizeAction.loadPrizeError({ error: error.message })
+                        );
+                    })
                 );
-            }),
-            map((prizeList) => PrizeAction.loadPrizeSuccess({ prizeList })),
-            catchError((error) => {
-                console.log(error);
-                return of(PrizeAction.loadPrizeError({ error: error.message }));
             })
         );
     });
@@ -80,9 +86,9 @@ export class PrizeEffects {
             concatLatestFrom(() =>
                 this.store.select(PrizeSelector.selectDrawId)
             ),
-            switchMap(([prize, drawId]) => {
+            switchMap(([{ prizes }, drawId]) => {
                 if (!drawId) throw new Error('Empty Draw Id');
-                return from(this.prizeService.createPrizes(drawId, [prize]));
+                return from(this.prizeService.createPrizes(drawId, prizes));
             }),
             map(() =>
                 PrizeAction.requestSuccess({ msg: 'Create New Prize Sucess' })
@@ -93,7 +99,26 @@ export class PrizeEffects {
         );
     });
 
-    requestSucess$ = createEffect(() => {
+    deletePrize$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(PrizeAction.deletePrize),
+            concatLatestFrom(() =>
+                this.store.select(PrizeSelector.selectDrawId)
+            ),
+            switchMap(([{ prizeId }, drawId]) => {
+                if (!drawId) throw new Error('Empty Draw Id');
+                return from(this.prizeService.deletePrize(drawId, prizeId));
+            }),
+            map(() =>
+                PrizeAction.requestSuccess({ msg: 'Delete prize successfully' })
+            ),
+            catchError((error) =>
+                of(PrizeAction.requestFailure({ msg: error.message }))
+            )
+        );
+    });
+
+    requestSuccess$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(PrizeAction.requestSuccess),
             map(() => PrizeAction.loadPrizes())

@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { isEqual } from 'lodash';
+import { environment } from 'src/environments/environment';
 import { Prize } from './prize';
 import { PrizeAction } from './prize.action';
 
@@ -42,7 +43,7 @@ const initialState: PrizeState = {
         filter: {
             searchValue: '',
         },
-        pageSize: 1,
+        pageSize: environment.production ? 10 : 1,
     },
     reachStart: true,
     reachEnd: true,
@@ -139,6 +140,7 @@ export const prizeReducer = createReducer(
         ): PrizeState => ({
             ...state,
             loading: false,
+            error: null,
             prizes,
             reachStart,
             reachEnd,

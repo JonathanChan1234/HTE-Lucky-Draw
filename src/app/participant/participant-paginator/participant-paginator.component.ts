@@ -3,7 +3,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ParticipantAction } from '../participant.action';
-import { selectReachEnd, selectReachStart } from '../participant.selector';
+import { ParticipantSelector } from '../participant.selector';
 
 @Component({
     selector: 'app-participant-paginator',
@@ -18,8 +18,10 @@ export class ParticipantPaginatorComponent implements OnInit {
     constructor(private readonly store: Store) {}
 
     ngOnInit(): void {
-        this.reachStart$ = this.store.select(selectReachStart);
-        this.reachEnd$ = this.store.select(selectReachEnd);
+        this.reachStart$ = this.store.select(
+            ParticipantSelector.selectReachStart
+        );
+        this.reachEnd$ = this.store.select(ParticipantSelector.selectReachEnd);
     }
 
     pageSizeChange({ value }: MatSelectChange) {

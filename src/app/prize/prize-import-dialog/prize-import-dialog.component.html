@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>Import Prizes List</h2>
+<div mat-dialog-content>
+    <div>
+        <p>You can import at most 100 prizes at a time</p>
+        <div class="btn import-prizes-input-container">
+            <label for="import-prizes-input" class="import-prizes-label">
+                Upload File
+            </label>
+            <input
+                type="file"
+                accept="csv"
+                id="import-prizes-input"
+                class="import-prizes-input"
+                (click)="clearPreviousFile($event)"
+                (change)="onFileUpload($event)"
+            />
+        </div>
+    </div>
+    <ng-container *ngIf="fileName">
+        <span>{{ fileName }}</span>
+    </ng-container>
+
+    <ng-container *ngIf="loadingState.loading">
+        <app-loading-spinner [msg]="loadingState.msg"></app-loading-spinner>
+    </ng-container>
+
+    <ng-container *ngIf="errMsg !== ''">
+        <app-error-message-bar [errMsg]="errMsg"></app-error-message-bar>
+    </ng-container>
+
+    <ng-container *ngIf="prizeList.length > 0">
+        <p class="prize-list-result-text">
+            {{ prizeList.length }} records is found
+        </p>
+    </ng-container>
+</div>
+<div mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close [disabled]="loadingState.loading">
+        close
+    </button>
+    <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loadingState.loading"
+        (click)="importPrizeList()"
+    >
+        Import
+    </button>
+</div>

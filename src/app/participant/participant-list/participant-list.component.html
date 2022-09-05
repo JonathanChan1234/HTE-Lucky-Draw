@@ -1,7 +1,6 @@
-<app-loading-spinner
-    msg="Fetching Participant List"
-    *ngIf="loading$ | async"
-></app-loading-spinner>
+<ng-container *ngIf="loading$ | async">
+    <app-loading-spinner msg="Fetching Participant List"></app-loading-spinner>
+</ng-container>
 
 <app-error-message-bar
     *ngIf="error$ | async"

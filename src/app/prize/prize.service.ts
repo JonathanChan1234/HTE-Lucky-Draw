@@ -4,6 +4,7 @@ import {
     DocumentData,
     DocumentReference,
     Firestore,
+    getDoc,
     getDocs,
     limit,
     orderBy,
@@ -14,12 +15,16 @@ import {
     Timestamp,
 } from '@angular/fire/firestore';
 import { collection, endBefore, limitToLast, where } from '@firebase/firestore';
-import { omit } from 'lodash';
-import { Participant, ParticipantKey } from '../participant/participant';
+import {
+    Participant,
+    ParticipantKey,
+    PARTICIPANTS_KEY,
+} from '../participant/participant';
 import { ParticipantDbService } from '../participant/participant-db.service';
 import { AuthService } from '../service/auth.service';
 import { LuckyDrawService } from '../service/lucky-draw.service';
 import { Prize, prizeDocToJsonObject, PrizeKey, PRIZES_KEY } from './prize';
+import { CreatePrizeDao, EditPrizeDao } from './prize.action';
 import { PrizePaginatorOption, PrizeSearchFilter } from './prize.reducer';
 
 const USERS_KEY = 'users';
@@ -30,6 +35,11 @@ export interface PrizeList {
     reachStart: boolean;
     reachEnd: boolean;
 }
+
+export type UpdateParticipantPrizeDao = Pick<
+    Participant,
+    ParticipantKey.prize | ParticipantKey.prizeWinner | ParticipantKey.prizeId
+>;
 
 @Injectable({
     providedIn: 'root',
@@ -73,15 +83,12 @@ export class PrizeService {
         return prize !== undefined ? prize.data()[PrizeKey.sequence] + 1 : 1;
     }
 
-    // TODO: wrong reach start and reach end logic
     async getPrizeList(
         drawId: string,
         pageSize: number,
         filter: PrizeSearchFilter,
         pageOption?: PrizePaginatorOption
     ): Promise<PrizeList> {
-        console.log('get prize list');
-
         const prizes = await this.getPrizes(
             drawId,
             pageSize,
@@ -121,33 +128,37 @@ export class PrizeService {
     ): Promise<Prize[]> {
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not signed in');
+
         const queryConstraints: QueryConstraint[] = [];
+
         if (assigned !== undefined) {
             queryConstraints.push(where(PrizeKey.assigned, '==', assigned));
         }
+
         if (searchValue !== '') {
             queryConstraints.push(
-                where(PrizeKey.name, '<=', searchValue + '\uf8ff')
+                where(PrizeKey.name, '<=', searchValue + '\uf8ff'),
+                where(PrizeKey.name, '>=', searchValue),
+                orderBy(PrizeKey.name, 'desc')
             );
-            queryConstraints.push(where(PrizeKey.name, '>=', searchValue));
         }
         queryConstraints.push(orderBy(PrizeKey.sequence, 'desc'));
 
-        if (pageOption) {
-            if (pageOption.type === 'startAfter') {
-                queryConstraints.push(
-                    startAfter(pageOption.id),
-                    limit(pageSize)
-                );
-            } else {
-                queryConstraints.push(
-                    endBefore(pageOption.id),
-                    limitToLast(pageSize)
-                );
-            }
-        } else {
-            queryConstraints.push(limit(pageSize));
+        if (pageOption && pageOption.type === 'startAfter') {
+            const lastDoc = await getDoc(
+                this.getPrizeRef(drawId, pageOption.id)
+            );
+            queryConstraints.push(startAfter(lastDoc), limit(pageSize));
         }
+
+        if (pageOption && pageOption.type === 'endBefore') {
+            const firstDoc = await getDoc(
+                this.getPrizeRef(drawId, pageOption.id)
+            );
+            queryConstraints.push(endBefore(firstDoc), limitToLast(pageSize));
+        }
+
+        if (pageOption === undefined) queryConstraints.push(limit(pageSize));
 
         const getPrizeQuery = query(
             collection(this.db, USERS_KEY, uid, DRAWS_KEY, drawId, PRIZES_KEY),
@@ -174,8 +185,11 @@ export class PrizeService {
     // TODO: better change to cloud function
     async createPrizes(
         drawId: string,
-        prizes: Pick<Prize, 'name' | 'sequence' | 'sponsor'>[]
+        prizes: CreatePrizeDao[]
     ): Promise<void> {
+        if (prizes.length > 100)
+            throw new Error('You can import at most 100 prizes at a time');
+
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not signed in');
 
@@ -215,24 +229,76 @@ export class PrizeService {
         });
     }
 
+    // TODO: Need to refactor
     async editPrize(
         drawId: string,
-        prize: Pick<
-            Prize,
-            | 'id'
-            | PrizeKey.name
-            | PrizeKey.sequence
-            | PrizeKey.sponsor
-            | PrizeKey.winnerId
-        >
+        { id, name, sponsor, sequence, winnerId }: EditPrizeDao
     ): Promise<void> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
         return runTransaction(this.db, async (transaction) => {
-            const prizeRef = this.getPrizeRef(drawId, prize.id);
+            const prizeRef = this.getPrizeRef(drawId, id);
             const prizeDoc = await transaction.get(prizeRef);
             if (!prizeDoc.exists()) throw new Error('Prize does not exist');
 
-            // TODO: Add logic to validate if the participant has been assigned to any prize
-            transaction.update(prizeRef, omit(prize, 'id'));
+            const originalWinnerId = prizeDoc.data()[PrizeKey.winnerId];
+
+            // The winner of the prize has been changed
+            if (winnerId && winnerId !== originalWinnerId) {
+                const newWinnerRef = doc(
+                    this.db,
+                    USERS_KEY,
+                    uid,
+                    DRAWS_KEY,
+                    drawId,
+                    PARTICIPANTS_KEY,
+                    winnerId
+                );
+                const newWinnerDoc = await transaction.get(newWinnerRef);
+                if (!newWinnerDoc.exists())
+                    throw new Error('Invalid Participant ID');
+                if (newWinnerDoc.data()[ParticipantKey.prize] !== '')
+                    throw new Error(
+                        'Participant has already been assigned prize'
+                    );
+                const newWinnerPrizeStatus: UpdateParticipantPrizeDao = {
+                    prize: name,
+                    prizeId: id,
+                    prizeWinner: true,
+                };
+
+                const oldWinnerRef = doc(
+                    this.db,
+                    USERS_KEY,
+                    uid,
+                    DRAWS_KEY,
+                    drawId,
+                    PARTICIPANTS_KEY,
+                    prizeDoc.data()[PrizeKey.winnerId]
+                );
+                const oldWinnerDoc = await transaction.get(oldWinnerRef);
+                if (oldWinnerDoc.exists()) {
+                    const oldWinnerPrizeStatus: UpdateParticipantPrizeDao = {
+                        prize: '',
+                        prizeId: '',
+                        prizeWinner: false,
+                    };
+                    transaction.update(oldWinnerRef, oldWinnerPrizeStatus);
+                }
+                transaction.update(newWinnerRef, newWinnerPrizeStatus);
+                const editPrizeDao: Omit<Prize, 'id' | 'addedAt'> = {
+                    name,
+                    sponsor,
+                    sequence,
+                    winnerId,
+                    winner: newWinnerDoc.data()[ParticipantKey.name],
+                    assigned: true,
+                };
+                transaction.update(prizeRef, {
+                    ...editPrizeDao,
+                    assigned: true,
+                });
+            }
         });
     }
 
@@ -254,12 +320,7 @@ export class PrizeService {
                     );
                 const participantDoc = await transaction.get(participantRef);
                 if (participantDoc.exists()) {
-                    const updatedProps: Pick<
-                        Participant,
-                        | ParticipantKey.prize
-                        | ParticipantKey.prizeId
-                        | ParticipantKey.prizeWinner
-                    > = {
+                    const updatedProps: UpdateParticipantPrizeDao = {
                         prize: '',
                         prizeId: '',
                         prizeWinner: false,

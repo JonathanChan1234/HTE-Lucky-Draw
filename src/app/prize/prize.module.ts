@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -17,6 +19,10 @@ import { StoreModule } from '@ngrx/store';
 import { UtilsModule } from '../utils/utils.module';
 import { DrawPrizeComponent } from './draw-prize/draw-prize.component';
 import { PrizeCreateDialogComponent } from './prize-create-dialog/prize-create-dialog.component';
+import { PrizeDeleteDialogComponent } from './prize-delete-dialog/prize-delete-dialog.component';
+import { PrizeDetailsDialogComponent } from './prize-details-dialog/prize-details-dialog.component';
+import { PrizeEditDialogComponent } from './prize-edit-dialog/prize-edit-dialog.component';
+import { PrizeImportDialogComponent } from './prize-import-dialog/prize-import-dialog.component';
 import { PrizeListComponent } from './prize-list/prize-list.component';
 import { PrizePaginatorComponent } from './prize-paginator/prize-paginator.component';
 import { PrizeRoutingModule } from './prize-routing.module';
@@ -24,7 +30,6 @@ import { PrizeSearchBarComponent } from './prize-search-bar/prize-search-bar.com
 import { PrizeToolbarComponent } from './prize-toolbar/prize-toolbar.component';
 import { PrizeEffects } from './prize.effect';
 import { prizeFeatureKey, prizeReducer } from './prize.reducer';
-import { PrizeDeleteDialogComponent } from './prize-delete-dialog/prize-delete-dialog.component';
 
 @NgModule({
     declarations: [
@@ -35,6 +40,9 @@ import { PrizeDeleteDialogComponent } from './prize-delete-dialog/prize-delete-d
         PrizeSearchBarComponent,
         PrizeCreateDialogComponent,
         PrizeDeleteDialogComponent,
+        PrizeDetailsDialogComponent,
+        PrizeImportDialogComponent,
+        PrizeEditDialogComponent,
     ],
     imports: [
         PrizeRoutingModule,
@@ -55,6 +63,8 @@ import { PrizeDeleteDialogComponent } from './prize-delete-dialog/prize-delete-d
         MatInputModule,
         MatDialogModule,
         MatSnackBarModule,
+        MatCheckboxModule,
+        MatAutocompleteModule,
     ],
 })
 export class PrizeModule {}

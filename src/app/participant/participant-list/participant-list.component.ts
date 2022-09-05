@@ -9,11 +9,7 @@ import { ParticipantDeleteDialogComponent } from '../participant-delete-dialog/p
 import { ParticipantDetailsDialogComponent } from '../participant-details-dialog/participant-details-dialog.component';
 import { ParticipantEditDialogComponent } from '../participant-edit-dialog/participant-edit-dialog.component';
 import { ParticipantAction } from '../participant.action';
-import {
-    selectError,
-    selectLoading,
-    selectParticipant,
-} from '../participant.selector';
+import { ParticipantSelector } from '../participant.selector';
 
 export interface ParticipantDialogData {
     participant: Participant;
@@ -41,9 +37,11 @@ export class ParticipantListComponent implements OnInit {
 
     ngOnInit(): void {
         this.isSmallScreen$ = this.screenSizeService.isSmallScreen();
-        this.participants$ = this.store.select(selectParticipant);
-        this.loading$ = this.store.select(selectLoading);
-        this.error$ = this.store.select(selectError);
+        this.participants$ = this.store.select(
+            ParticipantSelector.selectParticipant
+        );
+        this.loading$ = this.store.select(ParticipantSelector.selectLoading);
+        this.error$ = this.store.select(ParticipantSelector.selectError);
 
         this.route.params.subscribe((params) => {
             if (!params['drawId']) return;

@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
 import { Prize } from '../prize';
 import { PrizeDeleteDialogComponent } from '../prize-delete-dialog/prize-delete-dialog.component';
+import { PrizeDetailsDialogComponent } from '../prize-details-dialog/prize-details-dialog.component';
+import { PrizeEditDialogComponent } from '../prize-edit-dialog/prize-edit-dialog.component';
 import { PrizeAction } from '../prize.action';
 import { PrizeSelector } from '../prize.selector';
 
@@ -40,6 +42,20 @@ export class PrizeListComponent implements OnInit {
         matDialogRef.afterClosed().subscribe((result) => {
             if (!result) return;
             this.store.dispatch(PrizeAction.deletePrize({ prizeId: prize.id }));
+        });
+    }
+
+    openPrizeDetailsDialog(prize: Prize): void {
+        this.matDialog.open(PrizeDetailsDialogComponent, { data: prize });
+    }
+
+    openEditPrizeDialog(prize: Prize): void {
+        const matDialogRef = this.matDialog.open(PrizeEditDialogComponent, {
+            data: prize,
+        });
+        matDialogRef.afterClosed().subscribe((editPrizeDao) => {
+            if (!editPrizeDao) return;
+            this.store.dispatch(PrizeAction.editPrize({ prize: editPrizeDao }));
         });
     }
 }

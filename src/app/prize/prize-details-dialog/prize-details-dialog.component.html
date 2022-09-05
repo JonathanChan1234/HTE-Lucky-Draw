@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Details</h2>
+<div mat-dialog-content>
+    <mat-list>
+        <mat-list-item>
+            <mat-icon mat-list-icon>redeem</mat-icon>
+            <div mat-line>Name: {{ prize.name }}</div>
+            <div mat-line>Sponsor: {{ prize.sponsor }}</div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>calendar_month</mat-icon>
+            <div mat-line>
+                Added at: {{ convertToHumanReadableDate(prize.addedAt) }}
+            </div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon> format_list_numbered_rtl </mat-icon>
+            <div mat-line>Sequence: {{ prize.sequence }}</div>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>person</mat-icon>
+            <div mat-line>Winner: {{ prize.winner ?? 'Not Assigned' }}</div>
+            <div mat-line *ngIf="prize.winner">
+                Winner ID: {{ prize.winnerId }}
+            </div>
+        </mat-list-item>
+    </mat-list>
+</div>
+<div mat-dialog-actions class="dialog-action-container">
+    <button mat-button color="accent" mat-dialog-close>close</button>
+</div>

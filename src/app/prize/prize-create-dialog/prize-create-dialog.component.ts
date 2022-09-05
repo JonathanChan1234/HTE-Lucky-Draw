@@ -45,9 +45,7 @@ export class PrizeCreateDialogComponent implements OnInit {
     ngOnInit(): void {
         if (!this.drawId) return;
         from(this.prizeService.getLastSequence(this.drawId)).subscribe({
-            next: (sequence) => {
-                this.form.patchValue({ sequence });
-            },
+            next: (sequence) => this.form.patchValue({ sequence }),
             error: (error) => alert(error.message),
         });
     }
