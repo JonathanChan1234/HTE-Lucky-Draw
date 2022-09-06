@@ -1,0 +1,14 @@
+<p>Draw Animation Test</p>
+
+<div>
+    <button mat-raised-button (click)="toggle()">Toogle</button>
+</div>
+
+<div
+    [@openClose]="isOpen ? 'open' : 'closed'"
+    class="open-close-container"
+    (@openClose.start)="onAnimationEvent($event)"
+    (@openClose.done)="onAnimationEvent($event)"
+>
+    <p>The box is now {{ isOpen ? 'Open' : 'Close' }}</p>
+</div>

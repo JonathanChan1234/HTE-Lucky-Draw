@@ -26,7 +26,14 @@ const routes: Routes = [
         path: 'draws',
         children: [
             { path: '', component: LuckyDrawComponent },
-            { path: 'setting/:drawId', component: DrawSettingComponent },
+            { path: ':drawId/setting', component: DrawSettingComponent },
+            {
+                path: ':drawId/main',
+                loadChildren: () =>
+                    import('./main/draw-main.module').then(
+                        (m) => m.DrawMainModule
+                    ),
+            },
             {
                 path: ':drawId/participants',
                 loadChildren: () =>

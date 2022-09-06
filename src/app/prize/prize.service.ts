@@ -232,7 +232,6 @@ export class PrizeService {
         });
     }
 
-    // TODO: Need to refactor
     async editPrize(
         drawId: string,
         { id, name, sponsor, sequence, winnerId }: EditPrizeDao
@@ -258,7 +257,8 @@ export class PrizeService {
 
             const originalWinnerId = prizeDoc.data()[PrizeKey.winnerId];
             let prize: Partial<Prize> = { name, sequence, sponsor };
-            // Case 2 and 3, reset the participant prize status and prize winner status if no winner is empty
+
+            // Case 2 and 3, update the prize status of the original winner if needed
             if (
                 (originalWinnerId && !winnerId) ||
                 (originalWinnerId && winnerId && winnerId !== originalWinnerId)
@@ -284,9 +284,8 @@ export class PrizeService {
                 prize = { ...prize, assigned: false, winner: '', winnerId: '' };
             }
 
-            // Case 2, apply when the prize already has a winner or not
+            // Case 2: update the prize status of the new winner
             if (winnerId && winnerId !== originalWinnerId) {
-                // update the new winner status
                 const newWinnerRef = doc(
                     this.db,
                     USERS_KEY,

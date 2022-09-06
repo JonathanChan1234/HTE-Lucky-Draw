@@ -38,7 +38,10 @@
     ></app-empty-list>
 
     <mat-list *ngIf="(draws$ | async) && $any(draws$ | async).length > 0">
-        <mat-list-item *ngFor="let draw of draws$ | async">
+        <mat-list-item
+            *ngFor="let draw of draws$ | async"
+            (click)="navigateToDrawMainPage(draw.id)"
+        >
             <mat-icon mat-list-icon>ballot</mat-icon>
             <div mat-line>{{ draw.name }}</div>
             <p mat-line>
