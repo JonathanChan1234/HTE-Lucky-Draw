@@ -1,14 +1,9 @@
 <p>Draw Animation Test</p>
 
 <div>
-    <button mat-raised-button (click)="toggle()">Toogle</button>
+    <button mat-raised-button (click)="startDraw()">Start Animate</button>
 </div>
 
-<div
-    [@openClose]="isOpen ? 'open' : 'closed'"
-    class="open-close-container"
-    (@openClose.start)="onAnimationEvent($event)"
-    (@openClose.done)="onAnimationEvent($event)"
->
-    <p>The box is now {{ isOpen ? 'Open' : 'Close' }}</p>
-</div>
+<ng-container *ngFor="let group of groups">
+    <app-draw-animation-block [group]="group" #block></app-draw-animation-block>
+</ng-container>

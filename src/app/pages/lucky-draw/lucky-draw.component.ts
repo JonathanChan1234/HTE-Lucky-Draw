@@ -97,6 +97,10 @@ export class LuckyDrawComponent implements OnInit {
         });
     }
 
+    stopEvent(event: Event): void {
+        event.stopPropagation();
+    }
+
     navigateToDrawMainPage(drawId: string): Promise<boolean> {
         return this.router.navigate([`draws/${drawId}/main`]);
     }
