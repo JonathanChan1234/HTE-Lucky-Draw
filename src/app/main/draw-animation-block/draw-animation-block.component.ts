@@ -6,7 +6,7 @@ import {
     trigger,
 } from '@angular/animations';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { DrawMainService } from '../draw-main.service';
+import { DrawGroup } from '../draw-main.reducer';
 
 @Component({
     selector: 'app-draw-animation-block',
@@ -33,39 +33,35 @@ import { DrawMainService } from '../draw-main.service';
     ],
 })
 export class DrawAnimationBlockComponent implements OnInit, OnDestroy {
-    @Input() group!: { winner: string; items: string[] };
+    @Input() group!: DrawGroup;
 
     state: 'reset' | 'in' | 'out' = 'reset';
     itemShown = 'Lucky Draw Player';
     intervalId: NodeJS.Timeout | null = null;
     timeoutId: NodeJS.Timeout | null = null;
 
-    constructor(private readonly drawMainService: DrawMainService) {}
-
     ngOnInit(): void {
-        this.drawMainService.getRefresh().subscribe(() => this.startAnimate());
-    }
-
-    ngOnDestroy(): void {
-        if (this.intervalId) clearInterval(this.intervalId);
-        if (this.timeoutId) clearInterval(this.timeoutId);
-    }
-
-    startAnimate() {
         if (this.intervalId) clearInterval(this.intervalId);
         if (this.timeoutId) clearTimeout(this.timeoutId);
         let index = 0;
         let immediateState = true;
         this.intervalId = setInterval(() => {
-            this.itemShown =
-                this.group.items[++index % this.group.items.length];
+            const { name, id } =
+                this.group.candidates[++index % this.group.candidates.length];
+            this.itemShown = `${name} (ID: ${id})`;
             this.state = immediateState ? 'in' : 'out';
             immediateState = !immediateState;
         }, 100);
         this.timeoutId = setTimeout(() => {
-            this.itemShown = this.group.winner;
+            const { name, id } = this.group.winner;
+            this.itemShown = `${name} (ID: ${id})`;
             this.state = 'reset';
             if (this.intervalId) clearInterval(this.intervalId);
         }, 2000);
+    }
+
+    ngOnDestroy(): void {
+        if (this.intervalId) clearInterval(this.intervalId);
+        if (this.timeoutId) clearInterval(this.timeoutId);
     }
 }

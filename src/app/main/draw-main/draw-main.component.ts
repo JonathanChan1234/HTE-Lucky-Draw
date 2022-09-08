@@ -1,5 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { DrawMainService } from '../draw-main.service';
+import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
+import {
+    catchError,
+    distinctUntilChanged,
+    from,
+    map,
+    merge,
+    Observable,
+    of,
+    switchMap,
+    tap,
+} from 'rxjs';
+import { Draw } from 'src/app/model/draw';
+import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
+import { DrawMainAction } from '../draw-main.action';
 
 @Component({
     selector: 'app-draw-main',
@@ -7,27 +22,41 @@ import { DrawMainService } from '../draw-main.service';
     styleUrls: ['./draw-main.component.scss'],
 })
 export class DrawMainComponent implements OnInit {
-    items: string[] = [
-        'Pooh',
-        'Tigger',
-        'Daisy',
-        'Sally',
-        'Penguin',
-        'Bear Bear',
-    ];
-    groups: { winner: string; items: string[] }[] = [
-        { winner: 'Pooh', items: this.items },
-        { winner: 'Tigger', items: this.items },
-        { winner: 'Daisy', items: this.items },
-        { winner: 'Sally', items: this.items },
-        { winner: 'Penguin', items: this.items },
-    ];
+    loading$!: Observable<boolean>;
+    draw$!: Observable<Draw | null>;
+    err = '';
 
-    constructor(private drawMainService: DrawMainService) {}
+    constructor(
+        private drawService: LuckyDrawService,
+        private route: ActivatedRoute,
+        private readonly store: Store
+    ) {}
 
-    ngOnInit(): void {}
-
-    startDraw(): void {
-        this.drawMainService.startDraw();
+    ngOnInit(): void {
+        this.draw$ = this.route.paramMap.pipe(
+            distinctUntilChanged(),
+            switchMap((params) => {
+                const drawId = params.get('drawId');
+                if (!drawId) {
+                    this.err = 'Empty Draw ID';
+                    return of(null);
+                }
+                this.store.dispatch(DrawMainAction.setDrawId({ drawId }));
+                return from(this.drawService.getDrawById(drawId)).pipe(
+                    catchError((error) => {
+                        this.err = error.message;
+                        return of(null);
+                    })
+                );
+            })
+        );
+        this.loading$ = merge(
+            of(true),
+            this.draw$.pipe(
+                tap((val) => console.log(val)),
+                map(() => false),
+                catchError(() => of(false))
+            )
+        );
     }
 }

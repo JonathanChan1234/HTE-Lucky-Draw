@@ -1,16 +1,8 @@
-.open-close-container {
-    border: 1px solid #dddddd;
-    margin-top: 1em;
-    padding: 20px 20px 0px 20px;
-    color: #000000;
-    font-weight: bold;
-    font-size: 20px;
+.draw-main-container {
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-.animation-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+.draw-groups-container {
+    margin-top: 50px;
 }

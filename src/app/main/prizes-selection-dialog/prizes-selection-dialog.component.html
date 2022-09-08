@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Number of Prize to be drawn</h2>
+<mat-form-field appearance="fill">
+    <mat-label>Number of Prize</mat-label>
+    <mat-select [formControl]="formControl">
+        <mat-option *ngFor="let item of items" [value]="item + 1">
+            {{ item + 1 }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+<div mat-dialog-actions align="end" class="dialog-action-container">
+    <button mat-button mat-dialog-close>close</button>
+    <button mat-raised-button color="primary" (click)="setNumberOfPrize()">
+        Set
+    </button>
+</div>
