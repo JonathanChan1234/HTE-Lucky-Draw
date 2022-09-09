@@ -10,7 +10,6 @@ import {
     Observable,
     of,
     switchMap,
-    tap,
 } from 'rxjs';
 import { Draw } from 'src/app/model/draw';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
@@ -53,7 +52,6 @@ export class DrawMainComponent implements OnInit {
         this.loading$ = merge(
             of(true),
             this.draw$.pipe(
-                tap((val) => console.log(val)),
                 map(() => false),
                 catchError(() => of(false))
             )

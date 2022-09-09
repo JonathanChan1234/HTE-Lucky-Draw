@@ -1,11 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, from, map, of, switchMap } from 'rxjs';
+import {
+    catchError,
+    exhaustMap,
+    from,
+    interval,
+    map,
+    of,
+    switchMap,
+    take,
+} from 'rxjs';
 import { PrizeService } from '../prize/prize.service';
 import { DrawMainAction } from './draw-main.action';
 import { DrawMainSelector } from './draw-main.selector';
 import { DrawMainService } from './draw-main.service';
+
+type ANIMATION_STATE = 'reset' | 'in' | 'out';
+const ImmediateState: ANIMATION_STATE[] = ['in', 'out'];
 
 @Injectable()
 export class DrawMainEffect {
@@ -57,13 +69,13 @@ export class DrawMainEffect {
         );
     });
 
-    loadWinnerGroups$ = createEffect(() => {
+    loadDrawGroups$ = createEffect(() => {
         return this.actions$.pipe(
-            ofType(DrawMainAction.loadWinnerGroups),
+            ofType(DrawMainAction.loadDrawGroups),
             concatLatestFrom(() =>
                 this.store.select(DrawMainSelector.selectDrawId)
             ),
-            switchMap(([{ prizes, numberOfDraws }, drawId]) => {
+            exhaustMap(([{ prizes, numberOfDraws }, drawId]) => {
                 if (!drawId)
                     return of(
                         DrawMainAction.loadPrizeFailure({
@@ -76,12 +88,36 @@ export class DrawMainEffect {
                         numberOfDraws
                     )
                 ).pipe(
-                    map((drawGroups) =>
-                        DrawMainAction.loadWinnerGroupsSuccess({ drawGroups })
+                    exhaustMap((groups) =>
+                        interval(100).pipe(
+                            take(20),
+                            map((x) =>
+                                DrawMainAction.setAnimationItems({
+                                    items: groups.map((group) =>
+                                        x !== 19
+                                            ? {
+                                                  text: group.candidates[
+                                                      x %
+                                                          group.candidates
+                                                              .length
+                                                  ].name,
+                                                  state: ImmediateState[
+                                                      x % ImmediateState.length
+                                                  ],
+                                              }
+                                            : {
+                                                  text: group.winner.name,
+                                                  state: 'reset',
+                                              }
+                                    ),
+                                    animating: x < 19,
+                                })
+                            )
+                        )
                     ),
                     catchError((error) =>
                         of(
-                            DrawMainAction.loadPrizeFailure({
+                            DrawMainAction.loadDrawGroupsError({
                                 error: error.message,
                             })
                         )

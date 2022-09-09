@@ -13,14 +13,14 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { UtilsModule } from '../utils/utils.module';
 import { DrawAnimationBlockComponent } from './draw-animation-block/draw-animation-block.component';
+import { DrawGroupsComponent } from './draw-groups/draw-groups.component';
 import { DrawMainNavBarComponent } from './draw-main-nav-bar/draw-main-nav-bar.component';
-import { DrawMainRoutingModule } from './draw-main-routing-modue';
+import { DrawMainRoutingModule } from './draw-main-routing-module';
 import { DrawMainEffect } from './draw-main.effect';
 import { mainFeatureKey, mainReducer } from './draw-main.reducer';
 import { DrawMainComponent } from './draw-main/draw-main.component';
 import { PrizesSelectionDialogComponent } from './prizes-selection-dialog/prizes-selection-dialog.component';
 import { PrizesSelectionComponent } from './prizes-selection/prizes-selection.component';
-import { DrawGroupsComponent } from './draw-groups/draw-groups.component';
 
 @NgModule({
     declarations: [

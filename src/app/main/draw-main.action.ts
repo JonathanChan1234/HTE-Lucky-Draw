@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Prize } from '../prize/prize';
-import { DrawGroup } from './draw-main.reducer';
+import { AnimateItems, DrawGroup } from './draw-main.reducer';
 
 export enum DrawMainActionType {
     SetDrawId = '[DrawMain Component] SetDrawId',
@@ -8,8 +8,10 @@ export enum DrawMainActionType {
     LoadPrizesSuccess = '[DrawMain API] LoadPrizeListSuccess',
     LoadPrizesFailure = '[DrawMain API] LoadPrizeListError',
     LoadDrawGroups = '[DrawMain Component] LoadDrawGroups',
+    ClearDrawGroups = '[DrawMain Component] ClearDrawGroups',
     LoadDrawGroupsSuccess = '[DrawMain Component] LoadDrawGroupsSuccess',
     LoadDrawGroupsFailure = '[DrawMain Component] LoadDrawGroupsFailure',
+    SetAnimationItems = '[DrawMain Component] SetAnimationItems',
 }
 
 const setDrawId = createAction(
@@ -29,19 +31,26 @@ const loadPrizeFailure = createAction(
     props<{ error: string }>()
 );
 
-const loadWinnerGroups = createAction(
+const loadDrawGroups = createAction(
     DrawMainActionType.LoadDrawGroups,
     props<{ prizes: Prize[]; numberOfDraws: number }>()
 );
 
-const loadWinnerGroupsSuccess = createAction(
+const loadDrawGroupsSuccess = createAction(
     DrawMainActionType.LoadDrawGroupsSuccess,
     props<{ drawGroups: DrawGroup[] }>()
 );
 
-const loadWinnerGroupsError = createAction(
+const loadDrawGroupsError = createAction(
     DrawMainActionType.LoadDrawGroupsFailure,
     props<{ error: string }>()
+);
+
+const clearDrawGroups = createAction(DrawMainActionType.ClearDrawGroups);
+
+const setAnimationItems = createAction(
+    DrawMainActionType.SetAnimationItems,
+    props<{ items: AnimateItems[]; animating: boolean }>()
 );
 
 export const DrawMainAction = {
@@ -49,7 +58,9 @@ export const DrawMainAction = {
     loadPrizes,
     loadPrizesSuccess,
     loadPrizeFailure,
-    loadWinnerGroups,
-    loadWinnerGroupsSuccess,
-    loadWinnerGroupsError,
+    loadDrawGroups,
+    loadDrawGroupsSuccess,
+    loadDrawGroupsError,
+    clearDrawGroups,
+    setAnimationItems,
 };

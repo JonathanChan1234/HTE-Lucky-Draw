@@ -112,7 +112,7 @@ export class DrawMainService {
         numberOfPrizes: number
     ): Promise<DrawGroup[]> {
         return Array<DrawGroup>(numberOfPrizes).fill({
-            winner: candidates[0],
+            winner: candidates[Math.floor(Math.random() * candidates.length)],
             candidates,
         });
     }

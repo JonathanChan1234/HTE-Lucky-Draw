@@ -2,10 +2,8 @@
     <app-loading-spinner msg="Fetching Awardees"></app-loading-spinner>
 </ng-container>
 
-<ng-container *ngIf="drawGroups$ | async as groups">
-    <ng-container *ngFor="let group of groups">
-        <app-draw-animation-block [group]="group"></app-draw-animation-block>
-    </ng-container>
+<ng-container *ngFor="let item of items$ | async">
+    <app-draw-animation-block [item]="item"></app-draw-animation-block>
 </ng-container>
 
 <ng-container *ngIf="error$ | async as error">

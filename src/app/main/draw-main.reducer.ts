@@ -12,6 +12,11 @@ export interface DrawGroup {
     winner: Participant;
 }
 
+export interface AnimateItems {
+    text: string;
+    state: 'reset' | 'in' | 'out';
+}
+
 export interface MainState {
     drawId?: string;
     prizes: Prize[];
@@ -19,8 +24,10 @@ export interface MainState {
     loadPrizeError?: string;
     numberOfDraws: number;
     loadingDrawGroups: boolean;
+    items: AnimateItems[];
     drawGroups: DrawGroup[];
     loadDrawGroupError?: string;
+    animating: boolean;
 }
 
 const initialState: MainState = {
@@ -29,6 +36,8 @@ const initialState: MainState = {
     numberOfDraws: 0,
     loadingDrawGroups: false,
     drawGroups: [],
+    items: [],
+    animating: false,
 };
 
 export const mainFeatureKey = 'main';
@@ -68,7 +77,7 @@ export const mainReducer = createReducer(
         })
     ),
     on(
-        DrawMainAction.loadWinnerGroups,
+        DrawMainAction.loadDrawGroups,
         (state, { numberOfDraws }): MainState => ({
             ...state,
             numberOfDraws,
@@ -77,7 +86,7 @@ export const mainReducer = createReducer(
         })
     ),
     on(
-        DrawMainAction.loadWinnerGroupsSuccess,
+        DrawMainAction.loadDrawGroupsSuccess,
         (state, { drawGroups }): MainState => ({
             ...state,
             drawGroups,
@@ -86,11 +95,29 @@ export const mainReducer = createReducer(
         })
     ),
     on(
-        DrawMainAction.loadWinnerGroupsError,
+        DrawMainAction.loadDrawGroupsError,
         (state, { error }): MainState => ({
             ...state,
             loadingDrawGroups: false,
             loadDrawGroupError: error,
+        })
+    ),
+    on(
+        DrawMainAction.clearDrawGroups,
+        (state): MainState => ({
+            ...state,
+            drawGroups: [],
+            loadingDrawGroups: false,
+            loadDrawGroupError: undefined,
+        })
+    ),
+    on(
+        DrawMainAction.setAnimationItems,
+        (state, { items, animating }): MainState => ({
+            ...state,
+            animating,
+            items,
+            loadingDrawGroups: false,
         })
     )
 );

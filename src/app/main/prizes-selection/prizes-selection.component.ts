@@ -41,7 +41,7 @@ export class PrizesSelectionComponent implements OnInit {
 
     startDraw(prizes: Prize[]): void {
         this.store.dispatch(
-            DrawMainAction.loadWinnerGroups({
+            DrawMainAction.loadDrawGroups({
                 prizes: prizes.slice(0, this.numberOfPrizes - 1),
                 numberOfDraws: this.numberOfPrizes,
             })
