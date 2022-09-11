@@ -1,4 +1,4 @@
-<div class="prizes-selection-container" *ngIf="prizes$ | async as prizes">
+<div class="prizes-selection-container">
     <mat-card>
         <div class="card-container">
             <div class="card-header">
@@ -13,11 +13,15 @@
                     mat-button
                     class="setting-btn"
                     (click)="openSelectionDialog(prizes.length)"
+                    [disabled]="(loadingDrawGroups$ | async) || isAnimating"
                 >
                     <mat-icon>settings</mat-icon>
                 </button>
             </div>
             <mat-card-content>
+                <div *ngIf="prizes.length === 0">
+                    <h3>No prize in your prize list</h3>
+                </div>
                 <div *ngIf="prizes.length > 0 && numberOfPrizes === 1">
                     <h3>
                         <p style="font-weight: bold">Next Prize:</p>
@@ -51,6 +55,7 @@
                     mat-raised-button
                     color="primary"
                     class="draw-button"
+                    [disabled]="(loadingDrawGroups$ | async) || isAnimating"
                     (click)="startDraw(prizes)"
                 >
                     <mat-icon>redeem</mat-icon>
@@ -60,3 +65,6 @@
         </div>
     </mat-card>
 </div>
+<app-draw-groups
+    (setAnimating)="disablePrizeSelection($event)"
+></app-draw-groups>

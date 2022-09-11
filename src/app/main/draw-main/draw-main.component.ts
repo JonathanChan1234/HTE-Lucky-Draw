@@ -12,8 +12,10 @@ import {
     switchMap,
 } from 'rxjs';
 import { Draw } from 'src/app/model/draw';
+import { Prize } from 'src/app/prize/prize';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 import { DrawMainAction } from '../draw-main.action';
+import { DrawMainSelector } from '../draw-main.selector';
 
 @Component({
     selector: 'app-draw-main',
@@ -24,6 +26,9 @@ export class DrawMainComponent implements OnInit {
     loading$!: Observable<boolean>;
     draw$!: Observable<Draw | null>;
     err = '';
+
+    prizes$!: Observable<Prize[]>;
+    loadingPrizes$!: Observable<boolean>;
 
     constructor(
         private drawService: LuckyDrawService,
@@ -55,6 +60,10 @@ export class DrawMainComponent implements OnInit {
                 map(() => false),
                 catchError(() => of(false))
             )
+        );
+        this.prizes$ = this.store.select(DrawMainSelector.selectPrizes);
+        this.loadingPrizes$ = this.store.select(
+            DrawMainSelector.selectLoadingPrizeList
         );
     }
 }

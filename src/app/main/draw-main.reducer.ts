@@ -10,11 +10,7 @@ export interface AppState {
 export interface DrawGroup {
     candidates: Participant[];
     winner: Participant;
-}
-
-export interface AnimateItems {
-    text: string;
-    state: 'reset' | 'in' | 'out';
+    prize: Prize;
 }
 
 export interface MainState {
@@ -24,7 +20,6 @@ export interface MainState {
     loadPrizeError?: string;
     numberOfDraws: number;
     loadingDrawGroups: boolean;
-    items: AnimateItems[];
     drawGroups: DrawGroup[];
     loadDrawGroupError?: string;
     animating: boolean;
@@ -36,7 +31,6 @@ const initialState: MainState = {
     numberOfDraws: 0,
     loadingDrawGroups: false,
     drawGroups: [],
-    items: [],
     animating: false,
 };
 
@@ -78,9 +72,9 @@ export const mainReducer = createReducer(
     ),
     on(
         DrawMainAction.loadDrawGroups,
-        (state, { numberOfDraws }): MainState => ({
+        (state, { prizes }): MainState => ({
             ...state,
-            numberOfDraws,
+            numberOfDraws: prizes.length,
             loadingDrawGroups: true,
             loadDrawGroupError: undefined,
         })
@@ -112,11 +106,10 @@ export const mainReducer = createReducer(
         })
     ),
     on(
-        DrawMainAction.setAnimationItems,
-        (state, { items, animating }): MainState => ({
+        DrawMainAction.setAnimating,
+        (state, { animating }): MainState => ({
             ...state,
             animating,
-            items,
             loadingDrawGroups: false,
         })
     )

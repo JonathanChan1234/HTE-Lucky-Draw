@@ -31,19 +31,31 @@ export class DrawParticipantsComponent implements OnInit {
 
     openCreateDialog() {
         if (!this.drawId) return;
-        const result = this.matDialog.open(ParticipantCreateDialogComponent, {
-            data: this.drawId,
-            disableClose: true,
+        const matDialogRef = this.matDialog.open(
+            ParticipantCreateDialogComponent,
+            {
+                data: this.drawId,
+                disableClose: true,
+            }
+        );
+        matDialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            this.store.dispatch(ParticipantAction.loadParticipant());
         });
-        if (result) this.store.dispatch(ParticipantAction.loadParticipant());
     }
 
     openImportDialog() {
         if (!this.drawId) return;
-        const result = this.matDialog.open(ImportParticipantsDialogComponent, {
-            data: this.drawId,
-            disableClose: true,
+        const matDialogRef = this.matDialog.open(
+            ImportParticipantsDialogComponent,
+            {
+                data: this.drawId,
+                disableClose: true,
+            }
+        );
+        matDialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            this.store.dispatch(ParticipantAction.loadParticipant());
         });
-        if (result) this.store.dispatch(ParticipantAction.loadParticipant());
     }
 }

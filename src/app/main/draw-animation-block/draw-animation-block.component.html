@@ -1,5 +1,10 @@
-<div class="animation-container">
-    <p [@flyInOut]="item.state">
-        {{ item.text }}
-    </p>
-</div>
+<mat-card class="card-container">
+    <mat-card-header>
+        <mat-card-title>{{ item.prize }}</mat-card-title>
+    </mat-card-header>
+    <div class="animation-container">
+        <p [@flyInOut]="item.state">
+            {{ item.participant }}
+        </p>
+    </div>
+</mat-card>

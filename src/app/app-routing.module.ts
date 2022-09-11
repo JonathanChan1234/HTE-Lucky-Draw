@@ -46,7 +46,7 @@ const routes: Routes = [
                 loadChildren: () =>
                     import('./prize/prize.module').then((m) => m.PrizeModule),
             },
-            { path: '**', component: LuckyDrawComponent },
+            { path: '**', redirectTo: '' },
         ],
         canActivate: [FirebaseAuthPrivateGuard],
     },

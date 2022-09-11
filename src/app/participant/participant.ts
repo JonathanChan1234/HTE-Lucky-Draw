@@ -19,6 +19,7 @@ export type Participant = {
 export const PARTICIPANTS_KEY = 'participants';
 
 export enum ParticipantKey {
+    id = 'id',
     name = 'name',
     signedIn = 'signedIn',
     signedInAt = 'signedInAt',

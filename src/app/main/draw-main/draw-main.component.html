@@ -7,11 +7,14 @@
             <h1>
                 {{ draw.name }}
             </h1>
-            <!-- <app-draw-main-nav-bar [draw]="draw"></app-draw-main-nav-bar> -->
-            <app-prizes-selection></app-prizes-selection>
-            <div class="draw-groups-container">
-                <app-draw-groups></app-draw-groups>
-            </div>
+            <ng-container *ngIf="loadingPrizes$ | async">
+                <app-loading-spinner
+                    msg="Fetching Prize List"
+                ></app-loading-spinner>
+            </ng-container>
+            <ng-container *ngIf="prizes$ | async as prizes">
+                <app-prizes-selection [prizes]="prizes"></app-prizes-selection>
+            </ng-container>
         </div>
     </ng-container>
     <ng-container *ngIf="err">

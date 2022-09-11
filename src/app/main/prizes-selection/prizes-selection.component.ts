@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { Prize } from 'src/app/prize/prize';
 import { DrawMainAction } from '../draw-main.action';
+import { DrawGroup } from '../draw-main.reducer';
 import { DrawMainSelector } from '../draw-main.selector';
 import { PrizesSelectionDialogComponent } from '../prizes-selection-dialog/prizes-selection-dialog.component';
 
@@ -13,13 +14,29 @@ import { PrizesSelectionDialogComponent } from '../prizes-selection-dialog/prize
     styleUrls: ['./prizes-selection.component.scss'],
 })
 export class PrizesSelectionComponent implements OnInit {
-    prizes$!: Observable<Prize[]>;
+    @Input()
+    prizes!: Prize[];
+
+    drawGroups$!: Observable<DrawGroup[]>;
+    loadingDrawGroups$!: Observable<boolean>;
+    loadDrawGroupsError$!: Observable<string | undefined>;
+
+    isAnimating = false;
+
     numberOfPrizes = 1;
 
     constructor(private readonly store: Store, private matDialog: MatDialog) {}
 
     ngOnInit(): void {
-        this.prizes$ = this.store.select(DrawMainSelector.selectPrizes);
+        this.drawGroups$ = this.store
+            .select(DrawMainSelector.selectDrawGroups)
+            .pipe(filter((groups) => groups.length !== 0));
+        this.loadingDrawGroups$ = this.store.select(
+            DrawMainSelector.selectLoadingDrawGroups
+        );
+        this.loadDrawGroupsError$ = this.store.select(
+            DrawMainSelector.selectLoadDrawGroupError
+        );
     }
 
     openSelectionDialog(prizeQuantity: number): void {
@@ -42,9 +59,12 @@ export class PrizesSelectionComponent implements OnInit {
     startDraw(prizes: Prize[]): void {
         this.store.dispatch(
             DrawMainAction.loadDrawGroups({
-                prizes: prizes.slice(0, this.numberOfPrizes - 1),
-                numberOfDraws: this.numberOfPrizes,
+                prizes: prizes.slice(0, this.numberOfPrizes),
             })
         );
+    }
+
+    disablePrizeSelection(isAnimating: boolean): void {
+        this.isAnimating = isAnimating;
     }
 }

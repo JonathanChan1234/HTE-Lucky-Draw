@@ -17,9 +17,8 @@ import {
 } from '@firebase/firestore';
 import { from, Observable } from 'rxjs';
 import { Draw } from '../model/draw';
-import { AuthService } from './auth.service';
+import { AuthService, USERS_KEY } from './auth.service';
 
-const USERS_KEY = 'users';
 const DRAWS_KEY = 'draws';
 
 @Injectable({

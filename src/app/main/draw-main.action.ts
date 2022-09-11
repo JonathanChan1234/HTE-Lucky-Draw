@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Prize } from '../prize/prize';
-import { AnimateItems, DrawGroup } from './draw-main.reducer';
+import { DrawGroup } from './draw-main.reducer';
 
 export enum DrawMainActionType {
     SetDrawId = '[DrawMain Component] SetDrawId',
@@ -11,7 +11,7 @@ export enum DrawMainActionType {
     ClearDrawGroups = '[DrawMain Component] ClearDrawGroups',
     LoadDrawGroupsSuccess = '[DrawMain Component] LoadDrawGroupsSuccess',
     LoadDrawGroupsFailure = '[DrawMain Component] LoadDrawGroupsFailure',
-    SetAnimationItems = '[DrawMain Component] SetAnimationItems',
+    SetAnimating = '[DrawMain Component] SetAnimating',
 }
 
 const setDrawId = createAction(
@@ -33,7 +33,7 @@ const loadPrizeFailure = createAction(
 
 const loadDrawGroups = createAction(
     DrawMainActionType.LoadDrawGroups,
-    props<{ prizes: Prize[]; numberOfDraws: number }>()
+    props<{ prizes: Prize[] }>()
 );
 
 const loadDrawGroupsSuccess = createAction(
@@ -48,9 +48,9 @@ const loadDrawGroupsError = createAction(
 
 const clearDrawGroups = createAction(DrawMainActionType.ClearDrawGroups);
 
-const setAnimationItems = createAction(
-    DrawMainActionType.SetAnimationItems,
-    props<{ items: AnimateItems[]; animating: boolean }>()
+const setAnimating = createAction(
+    DrawMainActionType.SetAnimating,
+    props<{ animating: boolean }>()
 );
 
 export const DrawMainAction = {
@@ -62,5 +62,5 @@ export const DrawMainAction = {
     loadDrawGroupsSuccess,
     loadDrawGroupsError,
     clearDrawGroups,
-    setAnimationItems,
+    setAnimating,
 };

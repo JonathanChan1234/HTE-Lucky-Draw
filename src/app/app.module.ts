@@ -4,7 +4,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { PERSISTENCE } from '@angular/fire/compat/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import {
+    connectFirestoreEmulator,
+    getFirestore,
+    provideFirestore,
+} from '@angular/fire/firestore';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
@@ -61,7 +65,12 @@ import { UtilsModule } from './utils/utils.module';
         UtilsModule,
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => getAuth()),
-        provideFirestore(() => getFirestore()),
+        provideFirestore(() => {
+            const firestore = getFirestore();
+            if (environment.useEmulators)
+                connectFirestoreEmulator(firestore, 'localhost', 8080);
+            return firestore;
+        }),
         provideFunctions(() => getFunctions()),
         provideMessaging(() => getMessaging()),
         provideStorage(() => getStorage()),

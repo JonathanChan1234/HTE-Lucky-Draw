@@ -1,11 +1,11 @@
-<ng-container *ngIf="loading$ | async">
-    <app-loading-spinner msg="Fetching Awardees"></app-loading-spinner>
-</ng-container>
-
-<ng-container *ngFor="let item of items$ | async">
-    <app-draw-animation-block [item]="item"></app-draw-animation-block>
-</ng-container>
-
-<ng-container *ngIf="error$ | async as error">
-    <app-error-message-bar [errMsg]="error"></app-error-message-bar>
-</ng-container>
+<div class="draw-groups-container">
+    <ng-container *ngIf="loading$ | async">
+        <app-loading-spinner msg="Fetching Awardees"></app-loading-spinner>
+    </ng-container>
+    <ng-container *ngFor="let item of itemsShown$ | async">
+        <app-draw-animation-block [item]="item"></app-draw-animation-block>
+    </ng-container>
+    <ng-container *ngIf="error$ | async as error">
+        <app-error-message-bar [errMsg]="error"></app-error-message-bar>
+    </ng-container>
+</div>

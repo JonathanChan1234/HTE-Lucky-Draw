@@ -1,23 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import {
-    catchError,
-    exhaustMap,
-    from,
-    interval,
-    map,
-    of,
-    switchMap,
-    take,
-} from 'rxjs';
+import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
 import { PrizeService } from '../prize/prize.service';
 import { DrawMainAction } from './draw-main.action';
 import { DrawMainSelector } from './draw-main.selector';
-import { DrawMainService } from './draw-main.service';
-
-type ANIMATION_STATE = 'reset' | 'in' | 'out';
-const ImmediateState: ANIMATION_STATE[] = ['in', 'out'];
+import { LotteryService } from './lottery.service';
 
 @Injectable()
 export class DrawMainEffect {
@@ -25,7 +13,7 @@ export class DrawMainEffect {
         private actions$: Actions,
         private readonly store: Store,
         private readonly prizeService: PrizeService,
-        private readonly drawMainService: DrawMainService
+        private readonly lotteryService: LotteryService
     ) {}
 
     setDrawId$ = createEffect(() => {
@@ -75,7 +63,7 @@ export class DrawMainEffect {
             concatLatestFrom(() =>
                 this.store.select(DrawMainSelector.selectDrawId)
             ),
-            exhaustMap(([{ prizes, numberOfDraws }, drawId]) => {
+            exhaustMap(([{ prizes }, drawId]) => {
                 if (!drawId)
                     return of(
                         DrawMainAction.loadPrizeFailure({
@@ -83,37 +71,12 @@ export class DrawMainEffect {
                         })
                     );
                 return from(
-                    this.drawMainService.selectRandomParticipants(
-                        drawId,
-                        numberOfDraws
-                    )
+                    this.lotteryService.selectRandomParticipants(drawId, prizes)
                 ).pipe(
-                    exhaustMap((groups) =>
-                        interval(100).pipe(
-                            take(20),
-                            map((x) =>
-                                DrawMainAction.setAnimationItems({
-                                    items: groups.map((group) =>
-                                        x !== 19
-                                            ? {
-                                                  text: group.candidates[
-                                                      x %
-                                                          group.candidates
-                                                              .length
-                                                  ].name,
-                                                  state: ImmediateState[
-                                                      x % ImmediateState.length
-                                                  ],
-                                              }
-                                            : {
-                                                  text: group.winner.name,
-                                                  state: 'reset',
-                                              }
-                                    ),
-                                    animating: x < 19,
-                                })
-                            )
-                        )
+                    map((drawGroups) =>
+                        DrawMainAction.loadDrawGroupsSuccess({
+                            drawGroups,
+                        })
                     ),
                     catchError((error) =>
                         of(
@@ -124,6 +87,13 @@ export class DrawMainEffect {
                     )
                 );
             })
+        );
+    });
+
+    loadDrawGroupsSuccess$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(DrawMainAction.loadDrawGroupsSuccess),
+            map(() => DrawMainAction.loadPrizes())
         );
     });
 }

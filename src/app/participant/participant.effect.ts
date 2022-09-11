@@ -72,8 +72,6 @@ export class ParticipantEffects {
                         })
                     ),
                     catchError((error) => {
-                        console.log(error);
-
                         return of(
                             ParticipantAction.loadParticipantError({
                                 error: error.message,

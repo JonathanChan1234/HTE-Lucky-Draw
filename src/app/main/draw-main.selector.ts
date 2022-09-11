@@ -27,11 +27,20 @@ const selectDrawGroups = createSelector(
     ({ drawGroups }) => drawGroups
 );
 
-const selectAnimateItems = createSelector(selectFeature, ({ items }) => items);
-
 const selectLoadDrawGroupError = createSelector(
     selectFeature,
     ({ loadDrawGroupError }) => loadDrawGroupError
+);
+
+const selectAnimating = createSelector(
+    selectFeature,
+    ({ animating }) => animating
+);
+
+const selectPrizeSelectedDisabled = createSelector(
+    selectAnimating,
+    selectLoadingDrawGroups,
+    (animating, loadingDrawGroups) => animating || loadingDrawGroups
 );
 
 export const DrawMainSelector = {
@@ -42,5 +51,6 @@ export const DrawMainSelector = {
     selectLoadingDrawGroups,
     selectDrawGroups,
     selectLoadDrawGroupError,
-    selectAnimateItems,
+    selectAnimating,
+    selectPrizeSelectedDisabled,
 };
