@@ -34,15 +34,14 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { extModules } from './build-specific';
-import { CreateDrawDialogComponent } from './components/create-draw-dialog/create-draw-dialog.component';
-import { DeleteDrawDialogComponent } from './components/delete-draw-dialog/delete-draw-dialog.component';
-import { EmptyListComponent } from './components/empty-list/empty-list.component';
-import { LuckyDrawToolbarComponent } from './components/lucky-draw-toolbar/lucky-draw-toolbar.component';
-import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
+import { CreateDrawDialogComponent } from './draw/create-draw-dialog/create-draw-dialog.component';
+import { DeleteDrawDialogComponent } from './draw/delete-draw-dialog/delete-draw-dialog.component';
+import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
+import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
+import { LuckyDrawComponent } from './draw/lucky-draw/lucky-draw.component';
 import { LoginComponent } from './pages/login/login.component';
-import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { UtilsModule } from './utils/utils.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -54,7 +53,6 @@ import { UtilsModule } from './utils/utils.module';
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,
-        EmptyListComponent,
     ],
     imports: [
         BrowserModule,
@@ -62,7 +60,7 @@ import { UtilsModule } from './utils/utils.module';
         BrowserAnimationsModule,
         ReactiveFormsModule,
         FormsModule,
-        UtilsModule,
+        SharedModule,
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => getAuth()),
         provideFirestore(() => {

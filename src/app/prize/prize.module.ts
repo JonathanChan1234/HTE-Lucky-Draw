@@ -16,7 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { UtilsModule } from '../utils/utils.module';
+import { SharedModule } from '../shared/shared.module';
 import { DrawPrizeComponent } from './draw-prize/draw-prize.component';
 import { PrizeCreateDialogComponent } from './prize-create-dialog/prize-create-dialog.component';
 import { PrizeDeleteDialogComponent } from './prize-delete-dialog/prize-delete-dialog.component';
@@ -51,7 +51,7 @@ import { prizeFeatureKey, prizeReducer } from './prize.reducer';
         ReactiveFormsModule,
         StoreModule.forFeature(prizeFeatureKey, prizeReducer),
         EffectsModule.forFeature([PrizeEffects]),
-        UtilsModule,
+        SharedModule,
         MatListModule,
         MatChipsModule,
         MatIconModule,

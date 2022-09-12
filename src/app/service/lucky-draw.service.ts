@@ -16,7 +16,7 @@ import {
     updateDoc,
 } from '@firebase/firestore';
 import { from, Observable } from 'rxjs';
-import { Draw } from '../model/draw';
+import { Draw } from '../draw/draw';
 import { AuthService, USERS_KEY } from './auth.service';
 
 const DRAWS_KEY = 'draws';

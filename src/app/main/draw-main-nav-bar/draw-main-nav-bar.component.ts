@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Draw } from 'src/app/model/draw';
+import { Draw } from 'src/app/draw/draw';
 
 @Component({
     selector: 'app-draw-main-nav-bar',

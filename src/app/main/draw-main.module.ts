@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { UtilsModule } from '../utils/utils.module';
+import { SharedModule } from '../shared/shared.module';
 import { DrawAnimationBlockComponent } from './draw-animation-block/draw-animation-block.component';
 import { DrawGroupsComponent } from './draw-groups/draw-groups.component';
 import { DrawMainNavBarComponent } from './draw-main-nav-bar/draw-main-nav-bar.component';
@@ -39,7 +39,7 @@ import { PrizesSelectionComponent } from './prizes-selection/prizes-selection.co
         EffectsModule.forFeature([DrawMainEffect]),
         DrawMainRoutingModule,
         MatButtonModule,
-        UtilsModule,
+        SharedModule,
         MatIconModule,
         MatSelectModule,
         MatFormFieldModule,

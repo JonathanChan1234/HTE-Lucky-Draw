@@ -17,7 +17,7 @@ import {
     tap,
     throwError,
 } from 'rxjs';
-import { Draw } from 'src/app/model/draw';
+import { Draw } from 'src/app/draw/draw';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 
 const FETCH_SETTING_MSG = 'Fetching Lucky Draw Setting';

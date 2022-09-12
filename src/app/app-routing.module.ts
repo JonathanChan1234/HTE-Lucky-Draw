@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
+import { LuckyDrawComponent } from './draw/lucky-draw/lucky-draw.component';
 import { FirebaseAuthPrivateGuard } from './guard/firebase-auth-private.guard';
-import { DrawSettingComponent } from './pages/draw-setting/draw-setting.component';
 import { LoginComponent } from './pages/login/login.component';
-import { LuckyDrawComponent } from './pages/lucky-draw/lucky-draw.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 const routes: Routes = [

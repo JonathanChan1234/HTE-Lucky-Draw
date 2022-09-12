@@ -11,7 +11,7 @@ import {
     of,
     switchMap,
 } from 'rxjs';
-import { Draw } from 'src/app/model/draw';
+import { Draw } from 'src/app/draw/draw';
 import { Prize } from 'src/app/prize/prize';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 import { DrawMainAction } from '../draw-main.action';

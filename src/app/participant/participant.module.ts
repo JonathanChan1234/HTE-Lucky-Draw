@@ -22,8 +22,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
-import { UtilsModule } from '../utils/utils.module';
+import { SharedModule } from '../shared/shared.module';
 import { DrawParticipantsComponent } from './draw-participants/draw-participants.component';
+import { ImportParticipantsDialogComponent } from './import-participants-dialog/import-participants-dialog.component';
+import { ParticipantCreateDialogComponent } from './participant-create-dialog/participant-create-dialog.component';
 import { ParticipantDeleteDialogComponent } from './participant-delete-dialog/participant-delete-dialog.component';
 import { ParticipantDetailsDialogComponent } from './participant-details-dialog/participant-details-dialog.component';
 import { ParticipantEditDialogComponent } from './participant-edit-dialog/participant-edit-dialog.component';
@@ -36,8 +38,6 @@ import {
     participantFeatureKey,
     participantReducer,
 } from './participant.reducer';
-import { ParticipantCreateDialogComponent } from './participant-create-dialog/participant-create-dialog.component';
-import { ImportParticipantsDialogComponent } from './import-participants-dialog/import-participants-dialog.component';
 
 @NgModule({
     declarations: [
@@ -53,7 +53,7 @@ import { ImportParticipantsDialogComponent } from './import-participants-dialog/
     ],
     imports: [
         CommonModule,
-        UtilsModule,
+        SharedModule,
         ReactiveFormsModule,
         FormsModule,
         ParticipantRoutingModule,

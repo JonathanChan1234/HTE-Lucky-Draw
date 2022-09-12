@@ -20,7 +20,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { cold, getTestScheduler } from 'jasmine-marbles';
-import { Draw } from 'src/app/model/draw';
+import { Draw } from 'src/app/draw/draw';
 import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 
 import { LuckyDrawComponent } from './lucky-draw.component';
