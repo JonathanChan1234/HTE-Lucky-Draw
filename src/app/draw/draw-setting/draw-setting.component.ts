@@ -18,7 +18,7 @@ import {
     throwError,
 } from 'rxjs';
 import { Draw } from 'src/app/draw/draw';
-import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
+import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
 
 const FETCH_SETTING_MSG = 'Fetching Lucky Draw Setting';
 const UPDATE_SETTING_MSG = 'Update Lucky Draw Setting';

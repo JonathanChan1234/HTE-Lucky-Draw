@@ -54,6 +54,7 @@ export class PrizeToolbarComponent implements OnInit {
     }
 
     openImportPrizeDialog(): void {
+        if (!this.drawId) return;
         const matDialogRef = this.matDialog.open(PrizeImportDialogComponent);
         matDialogRef.afterClosed().subscribe((prizes) => {
             if (!prizes) return;

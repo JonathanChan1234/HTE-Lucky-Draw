@@ -1,22 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import {
-    BehaviorSubject,
-    catchError,
-    map,
-    merge,
-    Observable,
-    of,
-    shareReplay,
-    switchMap,
-} from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { CreateDrawDialogComponent } from 'src/app/draw/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from 'src/app/draw/delete-draw-dialog/delete-draw-dialog.component';
 import { Draw } from 'src/app/draw/draw';
-import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
 import { convertDateToDateString } from 'src/app/utility/date';
+import { DrawAction } from '../draw.action';
+import { DrawSelector } from '../draw.selector';
 
 @Component({
     selector: 'app-lucky-draw',
@@ -24,42 +18,30 @@ import { convertDateToDateString } from 'src/app/utility/date';
     styleUrls: ['./lucky-draw.component.scss'],
 })
 export class LuckyDrawComponent implements OnInit {
-    refresh$ = new BehaviorSubject<true>(true);
     loading$!: Observable<boolean>;
-    draws$!: Observable<Draw[] | null>;
-    errMsg = '';
+    draws$!: Observable<Draw[] | undefined>;
+    error$!: Observable<string | undefined>;
 
     constructor(
         private router: Router,
         private matDialog: MatDialog,
-        private luckyDrawService: LuckyDrawService,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private readonly store: Store
     ) {}
 
     ngOnInit(): void {
-        this.draws$ = this.refresh$.pipe(
-            switchMap(() => this.luckyDrawService.getDrawList()),
-            catchError((err) => {
-                this.errMsg = err.message;
-                return of(null);
-            }),
-            shareReplay(1)
-        );
-        this.loading$ = merge(
-            this.refresh$,
-            this.draws$.pipe(
-                catchError(() => of(false)),
-                map(() => false)
-            )
-        );
+        this.store.dispatch(DrawAction.loadDraws());
+        this.loading$ = this.store.select(DrawSelector.selectLoading);
+        this.error$ = this.store.select(DrawSelector.selectError);
+        this.draws$ = this.store.select(DrawSelector.selectDraws);
     }
 
-    getReadableDate(date: Date): string {
-        return convertDateToDateString(date);
+    getReadableDate(date: Timestamp): string {
+        return convertDateToDateString(date.toDate());
     }
 
     refresh(): void {
-        this.refresh$.next(true);
+        this.store.dispatch(DrawAction.loadDraws());
     }
 
     openCreateDrawDialog(): void {
@@ -114,6 +96,6 @@ export class LuckyDrawComponent implements OnInit {
     }
 
     navigateToSettingPage(drawId: string): Promise<boolean> {
-        return this.router.navigate([`draws/${drawId}/setting`]);
+        return this.router.navigate([`draws/${drawId}/settings`]);
     }
 }

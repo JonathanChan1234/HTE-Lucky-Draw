@@ -43,7 +43,7 @@ export class ParticipantListComponent implements OnInit {
         this.loading$ = this.store.select(ParticipantSelector.selectLoading);
         this.error$ = this.store.select(ParticipantSelector.selectError);
 
-        this.route.params.subscribe((params) => {
+        this.route.parent?.params.subscribe((params) => {
             if (!params['drawId']) return;
             this.drawId = params['drawId'];
             this.store.dispatch(

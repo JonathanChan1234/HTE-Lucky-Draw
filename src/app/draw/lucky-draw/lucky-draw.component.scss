@@ -16,3 +16,24 @@
         margin-left: auto;
     }
 }
+
+.draw-card-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .create-card-content {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+    }
+
+    .draw-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        min-width: 300px;
+        min-height: 150px;
+        margin: 10px;
+    }
+}

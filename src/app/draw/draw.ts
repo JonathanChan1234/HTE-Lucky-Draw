@@ -2,10 +2,9 @@ import {
     DocumentData,
     QueryDocumentSnapshot,
     Timestamp,
-    WithFieldValue,
 } from '@angular/fire/firestore';
 
-export class Draw {
+export type Draw = {
     id: string;
     name: string;
     prizeCount: number;
@@ -14,49 +13,31 @@ export class Draw {
     signInRequired: boolean;
     lock: boolean;
     createdAt: Timestamp;
+};
 
-    constructor(
-        name: string,
-        id = '',
-        prizeCount = 0,
-        participantCount = 0,
-        signInCount = 0,
-        signInRequired = false,
-        lock = false,
-        createdAt = Timestamp.fromDate(new Date())
-    ) {
-        this.name = name;
-        this.id = id;
-        this.prizeCount = prizeCount;
-        this.participantCount = participantCount;
-        this.signInCount = signInCount;
-        this.signInRequired = signInRequired;
-        this.lock = lock;
-        this.createdAt = createdAt;
-    }
+export const USERS_KEY = 'users';
+export const DRAWS_KEY = 'draws';
 
-    static ToJSONObject(doc: QueryDocumentSnapshot<DocumentData>) {
-        return new Draw(
-            doc.data()['name'],
-            doc.id,
-            doc.data()['prizeCount'],
-            doc.data()['participantCount'],
-            doc.data()['signInCount'],
-            doc.data()['signInRequired'],
-            doc.data()['lock'],
-            doc.data()['createdAt']
-        );
-    }
-
-    toFirebaseData(): WithFieldValue<DocumentData> {
-        return {
-            name: this.name,
-            prizeCount: this.prizeCount,
-            participantCount: this.participantCount,
-            signInCount: this.signInCount,
-            signInRequired: this.signInRequired,
-            lock: this.lock,
-            createdAt: this.createdAt,
-        };
-    }
+export enum DrawKey {
+    id = 'id',
+    name = 'name',
+    prizeCount = 'prizeCount',
+    participantCount = 'participantCount',
+    signInCount = 'signInCount',
+    signInRequired = 'signInRequired',
+    lock = 'lock',
+    createdAt = 'createdAt',
 }
+
+export const drawDocToJsonData = (
+    doc: QueryDocumentSnapshot<DocumentData>
+): Draw => ({
+    name: doc.data()['name'],
+    id: doc.id,
+    prizeCount: doc.data()['prizeCount'],
+    participantCount: doc.data()['participantCount'],
+    signInCount: doc.data()['signInCount'],
+    signInRequired: doc.data()['signInRequired'],
+    lock: doc.data()['lock'],
+    createdAt: doc.data()['createdAt'],
+});

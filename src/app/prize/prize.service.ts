@@ -15,6 +15,8 @@ import {
     Timestamp,
 } from '@angular/fire/firestore';
 import { collection, endBefore, limitToLast, where } from '@firebase/firestore';
+import { DRAWS_KEY, USERS_KEY } from '../draw/draw';
+import { LuckyDrawService } from '../draw/lucky-draw.service';
 import {
     Participant,
     ParticipantKey,
@@ -22,13 +24,9 @@ import {
 } from '../participant/participant';
 import { ParticipantDbService } from '../participant/participant-db.service';
 import { AuthService } from '../service/auth.service';
-import { LuckyDrawService } from '../service/lucky-draw.service';
 import { Prize, prizeDocToJsonObject, PrizeKey, PRIZES_KEY } from './prize';
 import { CreatePrizeDao, EditPrizeDao } from './prize.action';
 import { PrizePaginatorOption, PrizeSearchFilter } from './prize.reducer';
-
-const USERS_KEY = 'users';
-const DRAWS_KEY = 'draws';
 
 export interface PrizeList {
     prizes: Prize[];

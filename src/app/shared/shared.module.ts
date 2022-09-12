@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyListComponent } from './empty-list/empty-list.component';
 import { ErrorMessageBarComponent } from './error-message-bar/error-message-bar.component';
@@ -16,6 +17,6 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
         LoadingSpinnerComponent,
         EmptyListComponent,
     ],
-    imports: [CommonModule, MatProgressSpinnerModule],
+    imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule],
 })
 export class SharedModule {}

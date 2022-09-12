@@ -25,13 +25,15 @@ export class DrawPrizeComponent implements OnInit {
         this.handlingRequest = this.store.select(
             PrizeSelector.selectHandlingRequest
         );
-        const drawId = this.route.snapshot.paramMap.get('drawId');
-        if (!drawId) {
-            this.store.dispatch(
-                PrizeAction.loadPrizeError({ error: 'Empty Draw Id' })
-            );
-            return;
-        }
-        this.store.dispatch(PrizeAction.setDrawId({ drawId }));
+        this.route.params.subscribe((params) => {
+            const drawId = params['drawId'];
+            if (!drawId) {
+                this.store.dispatch(
+                    PrizeAction.loadPrizeError({ error: 'Empty Draw Id' })
+                );
+                return;
+            }
+            this.store.dispatch(PrizeAction.setDrawId({ drawId }));
+        });
     }
 }

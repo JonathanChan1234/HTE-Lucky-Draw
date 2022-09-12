@@ -5,113 +5,20 @@ import {
     getDocs,
     limit,
     query,
-    Timestamp,
     where,
 } from '@angular/fire/firestore';
 import { doc, runTransaction } from '@firebase/firestore';
+import { DRAWS_KEY, USERS_KEY } from '../draw/draw';
 import {
     Participant,
     participantDocToJsonObject,
     ParticipantKey,
     PARTICIPANTS_KEY,
 } from '../participant/participant';
-import { DRAWS_KEY } from '../participant/participant-db.service';
 import { Prize, PrizeKey, PRIZES_KEY } from '../prize/prize';
-import { AuthService, USERS_KEY } from '../service/auth.service';
+import { AuthService } from '../service/auth.service';
 import { getRandomInt, getRandomKey } from '../utility/random';
 import { DrawGroup } from './draw-main.reducer';
-
-// TODO: Remove test data later
-const candidates: Participant[] = [
-    {
-        id: '1',
-        name: 'test 1',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '2',
-        name: 'test 2',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '3',
-        name: 'test 3',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '4',
-        name: 'test 4',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '5',
-        name: 'test 5',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '6',
-        name: 'test 6',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '7',
-        name: 'test 7',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-    {
-        id: '8',
-        name: 'test 8',
-        message: 'test message',
-        prize: '',
-        prizeId: '',
-        prizeWinner: false,
-        random: 100,
-        signedIn: true,
-        signedInAt: Timestamp.now(),
-    },
-];
 
 @Injectable({
     providedIn: 'root',

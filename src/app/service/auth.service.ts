@@ -10,8 +10,6 @@ import {
 } from '@angular/fire/auth';
 import { BehaviorSubject, from, Observable, shareReplay } from 'rxjs';
 
-export const USERS_KEY = 'users';
-
 @Injectable({
     providedIn: 'root',
 })

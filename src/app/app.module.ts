@@ -37,6 +37,9 @@ import { extModules } from './build-specific';
 import { CreateDrawDialogComponent } from './draw/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from './draw/delete-draw-dialog/delete-draw-dialog.component';
 import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
+import { DrawEffects } from './draw/draw.effect';
+import { drawReducer } from './draw/draw.reducer';
+import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
 import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
 import { LuckyDrawComponent } from './draw/lucky-draw/lucky-draw.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -53,6 +56,7 @@ import { SharedModule } from './shared/shared.module';
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,
+        LuckyDrawAppComponent,
     ],
     imports: [
         BrowserModule,
@@ -86,8 +90,8 @@ import { SharedModule } from './shared/shared.module';
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot([]),
+        StoreModule.forRoot({ draw: drawReducer }),
+        EffectsModule.forRoot([DrawEffects]),
         extModules,
     ],
     providers: [{ provide: PERSISTENCE, useValue: 'local' }],

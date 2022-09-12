@@ -18,9 +18,10 @@ import {
     Timestamp,
 } from '@angular/fire/firestore';
 import { where } from '@firebase/firestore';
+import { DRAWS_KEY, USERS_KEY } from '../draw/draw';
+import { LuckyDrawService } from '../draw/lucky-draw.service';
 import { Prize, PrizeKey, PRIZES_KEY } from '../prize/prize';
 import { AuthService } from '../service/auth.service';
-import { LuckyDrawService } from '../service/lucky-draw.service';
 import {
     Participant,
     participantDocToJsonObject,
@@ -40,9 +41,6 @@ export type ParticipantPaginatorOption = {
     type: 'startAfter' | 'endBefore';
 };
 
-export const USERS_KEY = 'users';
-export const DRAWS_KEY = 'draws';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -59,8 +57,6 @@ export class ParticipantDbService {
         filter: ParticipantSearchFilter,
         pageOption?: ParticipantPaginatorOption
     ): Promise<ParticipantList> {
-        console.log('get participant list');
-
         const participants = await this.getParticipants(
             drawId,
             pageSize,

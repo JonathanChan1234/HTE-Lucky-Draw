@@ -116,7 +116,6 @@ export class PrizeEffects {
                         })
                     ),
                     catchError((error) => {
-                        console.log(error);
                         return of(
                             PrizeAction.requestFailure({ msg: error.message })
                         );

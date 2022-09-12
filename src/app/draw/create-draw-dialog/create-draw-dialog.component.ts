@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { LuckyDrawService } from 'src/app/service/lucky-draw.service';
+import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
 
 @Component({
     selector: 'create-draw-dialog',
