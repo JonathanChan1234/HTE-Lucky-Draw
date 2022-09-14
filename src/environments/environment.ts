@@ -12,7 +12,7 @@ export const environment = {
         messagingSenderId: '427079540763',
         measurementId: 'G-BJZ22HC5GN',
     },
-    useEmulators: false,
+    useEmulators: true,
     production: false,
     apiKey: 'AIzaSyAGSPLZPEfz7gu2dAxNBrvp-PGMVlJcR-w',
     authDomain: 'hte-lucky-draw.firebaseapp.com',

@@ -27,6 +27,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -90,6 +91,7 @@ import { SharedModule } from './shared/shared.module';
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
+        MatTooltipModule,
         StoreModule.forRoot({ draw: drawReducer }),
         EffectsModule.forRoot([DrawEffects]),
         extModules,

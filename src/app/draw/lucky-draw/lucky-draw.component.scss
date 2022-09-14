@@ -22,6 +22,10 @@
     flex-direction: row;
     flex-wrap: wrap;
 
+    .create-draw-card {
+        cursor: pointer;
+    }
+
     .create-card-content {
         display: flex;
         justify-content: center;
@@ -35,5 +39,16 @@
         min-width: 300px;
         min-height: 150px;
         margin: 10px;
+    }
+
+    .draw-card-footer {
+        padding: 10px;
+    }
+
+    .draw-card-footer-list {
+        > * {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
     }
 }

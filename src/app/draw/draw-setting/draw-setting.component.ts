@@ -57,7 +57,7 @@ export class DrawSettingComponent implements OnInit {
             tap(() => (this.loadingMsg = FETCH_SETTING_MSG)),
             switchMap(() => this.route.params),
             switchMap((params) =>
-                !!params['drawId']
+                params['drawId']
                     ? this.luckyDrawService.getDrawById(params['drawId'])
                     : throwError(() => new Error('Emtpy Draw ID'))
             ),
