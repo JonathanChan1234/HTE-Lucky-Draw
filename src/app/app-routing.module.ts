@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
-import { LuckyDrawComponent } from './draw/lucky-draw/lucky-draw.component';
+import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { FirebaseAuthPrivateGuard } from './guard/firebase-auth-private.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -24,8 +24,8 @@ const routes: Routes = [
         canActivate: [FirebaseAuthPrivateGuard],
     },
     {
-        path: 'draws',
-        component: LuckyDrawComponent,
+        path: 'home',
+        component: LuckyDrawHomeComponent,
         canActivate: [FirebaseAuthPrivateGuard],
     },
     {
@@ -61,7 +61,7 @@ const routes: Routes = [
     },
     {
         path: '**',
-        component: LuckyDrawComponent,
+        component: LuckyDrawHomeComponent,
         canActivate: [FirebaseAuthPrivateGuard],
     },
 ];

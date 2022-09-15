@@ -22,8 +22,7 @@ import { Router } from '@angular/router';
 import { cold, getTestScheduler } from 'jasmine-marbles';
 import { Draw } from 'src/app/draw/draw';
 import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
-
-import { LuckyDrawComponent } from './lucky-draw.component';
+import { LuckyDrawHomeComponent } from './lucky-draw-home.component';
 
 @Component({
     selector: 'app-error-message-bar',
@@ -42,8 +41,8 @@ class TestLoadingSpinnerComponent {
 }
 
 describe('LuckyDrawComponent (Success)', () => {
-    let component: LuckyDrawComponent;
-    let fixture: ComponentFixture<LuckyDrawComponent>;
+    let component: LuckyDrawHomeComponent;
+    let fixture: ComponentFixture<LuckyDrawHomeComponent>;
 
     let spyRouter: jasmine.SpyObj<Router>;
     let spyLuckyDrawService: jasmine.SpyObj<LuckyDrawService>;

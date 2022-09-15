@@ -163,6 +163,7 @@ export class PrizeService {
             ...[...queryConstraints]
         );
         const documentSnapshots = await getDocs(getPrizeQuery);
+
         return documentSnapshots.docs.map((doc) => prizeDocToJsonObject(doc));
     }
 

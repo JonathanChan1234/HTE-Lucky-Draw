@@ -17,6 +17,10 @@ export class LuckyDrawToolbarComponent implements OnInit {
         this.user$ = this.authService.user$;
     }
 
+    navigateToHome(): Promise<boolean> {
+        return this.router.navigate(['draws']);
+    }
+
     signOut(): void {
         this.authService
             .signOut()

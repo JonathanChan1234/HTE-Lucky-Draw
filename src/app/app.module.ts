@@ -38,11 +38,12 @@ import { extModules } from './build-specific';
 import { CreateDrawDialogComponent } from './draw/create-draw-dialog/create-draw-dialog.component';
 import { DeleteDrawDialogComponent } from './draw/delete-draw-dialog/delete-draw-dialog.component';
 import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
+import { DrawSideNavBarComponent } from './draw/draw-side-nav-bar/draw-side-nav-bar.component';
 import { DrawEffects } from './draw/draw.effect';
 import { drawReducer } from './draw/draw.reducer';
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
+import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
-import { LuckyDrawComponent } from './draw/lucky-draw/lucky-draw.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { SharedModule } from './shared/shared.module';
@@ -51,13 +52,14 @@ import { SharedModule } from './shared/shared.module';
     declarations: [
         AppComponent,
         LoginComponent,
-        LuckyDrawComponent,
+        LuckyDrawHomeComponent,
         RegisterComponent,
         CreateDrawDialogComponent,
         LuckyDrawToolbarComponent,
         DeleteDrawDialogComponent,
         DrawSettingComponent,
         LuckyDrawAppComponent,
+        DrawSideNavBarComponent,
     ],
     imports: [
         BrowserModule,

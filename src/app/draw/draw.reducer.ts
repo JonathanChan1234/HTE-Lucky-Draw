@@ -13,7 +13,7 @@ export interface DrawState {
     error?: string;
     handlingRequest: boolean;
     hasMoreDraw: boolean;
-    selectedDraw?: Draw;
+    currentDrawId?: string;
 }
 
 const initialState: DrawState = {
@@ -45,6 +45,13 @@ export const drawReducer = createReducer(
             ...state,
             loading: false,
             error,
+        })
+    ),
+    on(
+        DrawAction.setSelectedDraw,
+        (state, { drawId }): DrawState => ({
+            ...state,
+            currentDrawId: drawId,
         })
     )
 );

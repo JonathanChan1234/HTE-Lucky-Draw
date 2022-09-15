@@ -3,12 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
     catchError,
-    distinctUntilChanged,
     from,
     map,
     merge,
     Observable,
     of,
+    shareReplay,
     switchMap,
 } from 'rxjs';
 import { Draw } from 'src/app/draw/draw';
@@ -29,6 +29,7 @@ export class DrawMainComponent implements OnInit {
 
     prizes$!: Observable<Prize[]>;
     loadingPrizes$!: Observable<boolean>;
+    // currentDraw$!: Observable<Draw | undefined>;
 
     constructor(
         private drawService: LuckyDrawService,
@@ -37,10 +38,9 @@ export class DrawMainComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.draw$ = this.route.paramMap.pipe(
-            distinctUntilChanged(),
-            switchMap((params) => {
-                const drawId = params.get('drawId');
+        this.draw$ = this.route.params.pipe(
+            map((params) => params['drawId']),
+            switchMap((drawId) => {
                 if (!drawId) {
                     this.err = 'Empty Draw ID';
                     return of(null);
@@ -52,7 +52,8 @@ export class DrawMainComponent implements OnInit {
                         return of(null);
                     })
                 );
-            })
+            }),
+            shareReplay(1)
         );
         this.loading$ = merge(
             of(true),

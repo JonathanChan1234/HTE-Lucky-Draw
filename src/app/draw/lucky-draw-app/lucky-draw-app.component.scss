@@ -1,8 +1,10 @@
-.side-nav-bar {
-    height: 100%;
-}
-
 .draw-app-container {
     display: flex;
     flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+.draw-app-content {
+    flex: 1;
 }

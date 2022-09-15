@@ -1,0 +1,64 @@
+<div class="side-nav-bar" [@collapseExpand]="expand ? 'expand' : 'collapse'">
+    <ng-container *ngIf="expand; else collapse">
+        <div>
+            <div class="home-row" (click)="navigateToHome()">
+                <div>
+                    <img src="/assets/lucky-draw.png" />
+                </div>
+                <h2>HTE Lucky Draw</h2>
+            </div>
+            <mat-list>
+                <mat-divider></mat-divider>
+                <mat-list-item class="home-row" (click)="navigateToMain()">
+                    <mat-icon mat-list-icon>home</mat-icon>
+                    <h3 mat-line>Home</h3>
+                    <div class="home-row-settings">
+                        <div class="divider"></div>
+                        <mat-icon (click)="navigateToSettings($event)"
+                            >settings</mat-icon
+                        >
+                    </div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item (click)="navigateToPrize()">
+                    <mat-icon mat-list-icon>redeem</mat-icon>
+                    <div mat-line>Prizes</div>
+                </mat-list-item>
+                <mat-list-item (click)="navigateToParticipant()">
+                    <mat-icon mat-list-icon>person</mat-icon>
+                    <div mat-line>Participants</div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <div class="bottom-collapse-container" (click)="collapseNavBar()">
+            <mat-icon>chevron_left</mat-icon>
+        </div>
+    </ng-container>
+
+    <ng-template #collapse>
+        <mat-list>
+            <mat-list-item>
+                <div>
+                    <img src="/assets/lucky-draw.png" />
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <mat-icon mat-list-icon>home</mat-icon>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>settings</mat-icon>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <mat-icon mat-list-icon>redeem</mat-icon>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>person</mat-icon>
+            </mat-list-item>
+        </mat-list>
+        <div (click)="expandNavBar()">
+            <mat-icon>chevron_right</mat-icon>
+        </div>
+    </ng-template>
+</div>

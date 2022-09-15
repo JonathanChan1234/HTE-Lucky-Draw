@@ -5,6 +5,7 @@ export enum DrawActionType {
     LoadDraws = '[Draw Component] LoadDrawList',
     LoadDrawsSuccess = '[Draw API] LoadDrawsSuccess',
     LoadDrawsFailure = '[Draw API] LoadDrawsFailure',
+    SetSelectedDraw = '[Draw Component] SetSelectedDraw',
 }
 
 const loadDraws = createAction(DrawActionType.LoadDraws);
@@ -19,8 +20,14 @@ const loadDrawsFailure = createAction(
     props<{ error: string }>()
 );
 
+const setSelectedDraw = createAction(
+    DrawActionType.SetSelectedDraw,
+    props<{ drawId: string }>()
+);
+
 export const DrawAction = {
     loadDraws,
     loadDrawsSuccess,
     loadDrawsFailure,
+    setSelectedDraw,
 };

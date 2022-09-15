@@ -13,11 +13,11 @@ import { DrawAction } from '../draw.action';
 import { DrawSelector } from '../draw.selector';
 
 @Component({
-    selector: 'app-lucky-draw',
-    templateUrl: './lucky-draw.component.html',
-    styleUrls: ['./lucky-draw.component.scss'],
+    selector: 'app-lucky-draw-home',
+    templateUrl: './lucky-draw-home.component.html',
+    styleUrls: ['./lucky-draw-home.component.scss'],
 })
-export class LuckyDrawComponent implements OnInit {
+export class LuckyDrawHomeComponent implements OnInit {
     loading$!: Observable<boolean>;
     draws$!: Observable<Draw[] | undefined>;
     error$!: Observable<string | undefined>;
