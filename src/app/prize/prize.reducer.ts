@@ -22,7 +22,7 @@ export interface PrizeState {
     prizes: Prize[];
     loading: boolean;
     handlingRequest: boolean;
-    snackBarMsg?: { success: boolean; msg: string };
+    requestError?: string;
     error: string | null;
     pageOption: {
         filter: PrizeSearchFilter;
@@ -155,10 +155,9 @@ export const prizeReducer = createReducer(
     ),
     on(
         PrizeAction.requestSuccess,
-        (state, { msg }): PrizeState => ({
+        (state): PrizeState => ({
             ...state,
             handlingRequest: false,
-            snackBarMsg: { success: true, msg },
         })
     ),
     on(
@@ -166,7 +165,7 @@ export const prizeReducer = createReducer(
         (state, { msg }): PrizeState => ({
             ...state,
             handlingRequest: false,
-            snackBarMsg: { success: false, msg },
+            requestError: msg,
         })
     )
 );

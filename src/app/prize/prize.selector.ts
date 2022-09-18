@@ -29,9 +29,9 @@ const selectHandlingRequest = createSelector(
     ({ handlingRequest }) => handlingRequest
 );
 
-const selectSnackbarMsg = createSelector(
+const selectRequestError = createSelector(
     selectFeature,
-    ({ snackBarMsg }) => snackBarMsg
+    ({ requestError }) => requestError
 );
 
 export const PrizeSelector = {
@@ -42,5 +42,5 @@ export const PrizeSelector = {
     selectReachEnd,
     selectPageOption,
     selectHandlingRequest,
-    selectSnackbarMsg,
+    selectRequestError,
 };

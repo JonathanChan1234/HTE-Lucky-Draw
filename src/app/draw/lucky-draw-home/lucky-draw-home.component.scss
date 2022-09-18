@@ -1,19 +1,16 @@
 .lucky-draw-container {
     width: 100%;
     height: 100%;
-    padding: 20px;
     box-sizing: border-box;
+}
 
-    .list-container {
-        display: flex;
+.draw-home-container {
+    padding: 20px;
+
+    .load-more-btn-container {
         width: 100%;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .open-create-draw-dialog {
-        margin-top: auto;
-        margin-left: auto;
+        display: flex;
+        justify-content: center;
     }
 }
 

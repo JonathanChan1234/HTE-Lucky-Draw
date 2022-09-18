@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
@@ -12,18 +11,18 @@ import { PrizeSelector } from '../prize.selector';
     styleUrls: ['./draw-prize.component.scss'],
 })
 export class DrawPrizeComponent implements OnInit {
-    handlingRequest!: Observable<boolean>;
+    handlingRequest$!: Observable<boolean>;
+    requestError$!: Observable<string | undefined>;
     snackBarSubscription!: Subscription;
 
-    constructor(
-        private route: ActivatedRoute,
-        private readonly store: Store,
-        private snackBar: MatSnackBar
-    ) {}
+    constructor(private route: ActivatedRoute, private readonly store: Store) {}
 
     ngOnInit(): void {
-        this.handlingRequest = this.store.select(
+        this.handlingRequest$ = this.store.select(
             PrizeSelector.selectHandlingRequest
+        );
+        this.requestError$ = this.store.select(
+            PrizeSelector.selectRequestError
         );
         this.route.params.subscribe((params) => {
             const drawId = params['drawId'];

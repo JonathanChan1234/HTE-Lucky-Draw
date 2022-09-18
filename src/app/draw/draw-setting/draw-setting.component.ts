@@ -2,26 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-    BehaviorSubject,
-    catchError,
-    from,
-    map,
-    merge,
-    Observable,
-    of,
-    shareReplay,
-    Subject,
-    switchMap,
-    tap,
-    throwError,
-} from 'rxjs';
+import { Store } from '@ngrx/store';
+import { from, Observable } from 'rxjs';
 import { Draw } from 'src/app/draw/draw';
 import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
-
-const FETCH_SETTING_MSG = 'Fetching Lucky Draw Setting';
-const UPDATE_SETTING_MSG = 'Update Lucky Draw Setting';
+import { DrawAction } from '../draw.action';
+import { DrawSelector } from '../draw.selector';
 
 @Component({
     selector: 'app-draw-setting',
@@ -29,21 +15,16 @@ const UPDATE_SETTING_MSG = 'Update Lucky Draw Setting';
     styleUrls: ['./draw-setting.component.scss'],
 })
 export class DrawSettingComponent implements OnInit {
-    refresh$ = new BehaviorSubject<true>(true);
-    request$ = new Subject<boolean>();
-    loading$!: Observable<boolean>;
+    loading = false;
     draw$!: Observable<Draw | undefined>;
 
     errMsg = '';
-    loadingMsg: string = FETCH_SETTING_MSG;
-    draw?: Draw;
     editMode = false;
     nameFormControl: FormControl;
 
     constructor(
+        private readonly store: Store,
         private matSnackBar: MatSnackBar,
-        private route: ActivatedRoute,
-        private router: Router,
         private luckyDrawService: LuckyDrawService
     ) {
         this.nameFormControl = new FormControl('', [
@@ -53,42 +34,13 @@ export class DrawSettingComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.draw$ = this.refresh$.pipe(
-            tap(() => (this.loadingMsg = FETCH_SETTING_MSG)),
-            switchMap(() => this.route.params),
-            switchMap((params) =>
-                params['drawId']
-                    ? this.luckyDrawService.getDrawById(params['drawId'])
-                    : throwError(() => new Error('Emtpy Draw ID'))
-            ),
-            catchError((err) => {
-                this.errMsg = err.message;
-                return of(undefined);
-            }),
-            shareReplay(1)
+        this.draw$ = this.store.select(DrawSelector.selectCurrentDraw);
+        this.draw$.subscribe((draw) =>
+            this.nameFormControl.setValue(draw?.name)
         );
-
-        this.loading$ = merge(
-            this.refresh$,
-            this.request$,
-            this.draw$.pipe(
-                map(() => false),
-                catchError(() => of(false))
-            )
-        );
-
-        this.draw$.subscribe((draw) => {
-            this.draw = draw;
-            if (!draw) return;
-            this.nameFormControl.setValue(draw.name);
-        });
     }
 
-    refresh(): void {
-        this.refresh$.next(true);
-    }
-
-    changeDrawName(): void {
+    changeDrawName(draw: Draw): void {
         // change to edit mode if it isn't
         if (!this.editMode) {
             this.editMode = true;
@@ -96,32 +48,33 @@ export class DrawSettingComponent implements OnInit {
         }
 
         // ignore if the draw name did not change
-        if (this.draw?.name === this.nameFormControl.value) {
+        if (draw.name === this.nameFormControl.value) {
             this.editMode = false;
             return;
         }
 
-        if (!this.draw) return;
-
-        this.loadingMsg = UPDATE_SETTING_MSG;
-        this.request$.next(true);
+        this.loading = true;
         from(
             this.luckyDrawService.updateDrawNameAsync(
-                this.draw.id,
+                draw.id,
                 this.nameFormControl.value
             )
         ).subscribe({
             next: () => {
-                this.request$.next(false);
+                this.loading = false;
                 this.editMode = false;
                 this.matSnackBar.open('✔️ Change name successfully', 'close', {
                     duration: 2000,
                 });
-                this.refresh();
+                this.store.dispatch(
+                    DrawAction.updateDrawSettings({
+                        draw: { ...draw, name: this.nameFormControl.value },
+                    })
+                );
             },
             error: (err) => {
                 this.editMode = false;
-                this.request$.next(false);
+                this.loading = false;
                 this.matSnackBar.open(`⚠️ ${err.message}`, 'close', {
                     duration: 2000,
                 });
@@ -129,19 +82,16 @@ export class DrawSettingComponent implements OnInit {
         });
     }
 
-    changeSignInRequiredSetting({ checked }: MatSlideToggleChange): void {
-        if (!this.draw) return;
-
-        this.request$.next(true);
-        this.loadingMsg = UPDATE_SETTING_MSG;
+    changeSignInRequiredSetting(
+        { checked }: MatSlideToggleChange,
+        draw: Draw
+    ): void {
+        this.loading = true;
         from(
-            this.luckyDrawService.updateSignInRequiredAsync(
-                this.draw.id,
-                checked
-            )
+            this.luckyDrawService.updateSignInRequiredAsync(draw.id, checked)
         ).subscribe({
             next: () => {
-                this.request$.next(false);
+                this.loading = false;
                 this.matSnackBar.open(
                     `✔️ Sign in is now ${
                         checked ? 'required' : 'not required'
@@ -149,36 +99,14 @@ export class DrawSettingComponent implements OnInit {
                     'close',
                     { duration: 2000 }
                 );
-                this.refresh();
-            },
-            error: (err) => {
-                this.request$.next(false);
-                this.matSnackBar.open(`⚠️ ${err.message}`, 'close', {
-                    duration: 2000,
-                });
-            },
-        });
-    }
-
-    changeLockSetting({ checked }: MatSlideToggleChange): void {
-        if (!this.draw) return;
-
-        this.loadingMsg = UPDATE_SETTING_MSG;
-        this.request$.next(true);
-        from(
-            this.luckyDrawService.updateLockAsync(this.draw.id, checked)
-        ).subscribe({
-            next: () => {
-                this.request$.next(false);
-                this.matSnackBar.open(
-                    `✔️ Draw is now ${checked ? 'locked' : 'open'}`,
-                    'close',
-                    { duration: 2000 }
+                this.store.dispatch(
+                    DrawAction.updateDrawSettings({
+                        draw: { ...draw, signInRequired: checked },
+                    })
                 );
-                this.refresh();
             },
             error: (err) => {
-                this.request$.next(false);
+                this.loading = false;
                 this.matSnackBar.open(`⚠️ ${err.message}`, 'close', {
                     duration: 2000,
                 });
@@ -186,7 +114,30 @@ export class DrawSettingComponent implements OnInit {
         });
     }
 
-    navigateToHomePage(): Promise<boolean> {
-        return this.router.navigate(['draws']);
+    changeLockSetting({ checked }: MatSlideToggleChange, draw: Draw): void {
+        this.loading = true;
+        from(this.luckyDrawService.updateLockAsync(draw.id, checked)).subscribe(
+            {
+                next: () => {
+                    this.loading = false;
+                    this.matSnackBar.open(
+                        `✔️ Draw is now ${checked ? 'locked' : 'open'}`,
+                        'close',
+                        { duration: 2000 }
+                    );
+                    this.store.dispatch(
+                        DrawAction.updateDrawSettings({
+                            draw: { ...draw, lock: checked },
+                        })
+                    );
+                },
+                error: (err) => {
+                    this.loading = false;
+                    this.matSnackBar.open(`⚠️ ${err.message}`, 'close', {
+                        duration: 2000,
+                    });
+                },
+            }
+        );
     }
 }

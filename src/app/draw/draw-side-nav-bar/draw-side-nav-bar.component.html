@@ -42,13 +42,13 @@
     </ng-container>
     <ng-template #showSmallNav>
         <mat-list>
-            <mat-list-item>
+            <mat-list-item (click)="navigateToHome()">
                 <div>
                     <img src="/assets/lucky-draw.png" />
                 </div>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <mat-list-item (click)="navigateToHome()">
+            <mat-list-item (click)="navigateToMain()">
                 <mat-icon mat-list-icon matTooltip="Home">home</mat-icon>
             </mat-list-item>
             <mat-list-item (click)="navigateToSettings($event)">

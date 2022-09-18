@@ -1,22 +1,24 @@
 <div class="draw-app-container">
-    <ng-container *ngIf="draw$ | async as draw">
-        <div class="side-nav-bar">
-            <app-draw-side-nav-bar></app-draw-side-nav-bar>
-        </div>
-        <div class="draw-app-content">
-            <app-lucky-draw-toolbar
-                class="header"
-                [title]="draw.name"
-            ></app-lucky-draw-toolbar>
-            <router-outlet></router-outlet>
-        </div>
-    </ng-container>
-
-    <ng-container *ngIf="loading$ | async">
+    <ng-container *ngIf="loading$ | async; else finishLoading">
         <app-loading-spinner
             msg="Fetching Draw Information"
         ></app-loading-spinner>
     </ng-container>
+
+    <ng-template #finishLoading>
+        <ng-container *ngIf="draw$ | async as draw">
+            <div class="side-nav-bar">
+                <app-draw-side-nav-bar></app-draw-side-nav-bar>
+            </div>
+            <div class="draw-app-content">
+                <app-lucky-draw-toolbar
+                    class="header"
+                    [title]="draw.name"
+                ></app-lucky-draw-toolbar>
+                <router-outlet></router-outlet>
+            </div>
+        </ng-container>
+    </ng-template>
 
     <ng-container *ngIf="error$ | async as error">
         <app-error-message-bar [errMsg]="error"></app-error-message-bar>

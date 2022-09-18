@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
 
 @Component({
-    selector: 'create-draw-dialog',
+    selector: 'app-create-draw-dialog',
     templateUrl: './create-draw-dialog.component.html',
     styleUrls: ['./create-draw-dialog.component.scss'],
 })
@@ -36,7 +36,7 @@ export class CreateDrawDialogComponent {
         this.luckyDrawService.createNewDraw(name).subscribe({
             next: () => {
                 this.loading = false;
-                this.dialogRef.close(true);
+                this.dialogRef.close(name);
             },
             error: (err) => {
                 this.loading = false;

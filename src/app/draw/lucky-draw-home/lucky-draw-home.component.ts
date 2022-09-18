@@ -19,8 +19,9 @@ import { DrawSelector } from '../draw.selector';
 })
 export class LuckyDrawHomeComponent implements OnInit {
     loading$!: Observable<boolean>;
-    draws$!: Observable<Draw[] | undefined>;
+    draws$!: Observable<Draw[]>;
     error$!: Observable<string | undefined>;
+    reachEnd$!: Observable<boolean>;
 
     constructor(
         private router: Router,
@@ -34,14 +35,11 @@ export class LuckyDrawHomeComponent implements OnInit {
         this.loading$ = this.store.select(DrawSelector.selectLoadingDrawList);
         this.error$ = this.store.select(DrawSelector.selectLoadDrawListError);
         this.draws$ = this.store.select(DrawSelector.selectDrawList);
+        this.reachEnd$ = this.store.select(DrawSelector.selectReachEnd);
     }
 
     getReadableDate(date: Timestamp): string {
         return convertDateToDateString(date.toDate());
-    }
-
-    refresh(): void {
-        this.store.dispatch(DrawAction.loadDraws());
     }
 
     openCreateDrawDialog(): void {
@@ -51,9 +49,7 @@ export class LuckyDrawHomeComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (!result) return;
-            // refresh the list if success
-            this.refresh();
-
+            this.store.dispatch(DrawAction.createDrawSuccess({ name: result }));
             this.snackBar.open(`✔️ Draw created successfully`, 'close', {
                 duration: 2000,
             });
@@ -67,8 +63,7 @@ export class LuckyDrawHomeComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((result) => {
             if (!result) return;
-            // refresh the list if success
-            this.refresh();
+            this.store.dispatch(DrawAction.deleteDrawSuccess({ drawId: id }));
             this.snackBar.open(
                 `✔️ Draw ${name} deleted successfully`,
                 'close',
@@ -77,6 +72,10 @@ export class LuckyDrawHomeComponent implements OnInit {
                 }
             );
         });
+    }
+
+    loadMoreDraws(): void {
+        this.store.dispatch(DrawAction.loadMoreDraws());
     }
 
     stopEvent(event: Event): void {

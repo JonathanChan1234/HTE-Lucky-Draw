@@ -9,11 +9,11 @@ export interface AppState {
 export const drawFeatureKey = 'draw';
 
 export interface DrawState {
-    draws?: Draw[];
+    draws: Draw[];
     loadingDrawList: boolean;
     loadDrawListError?: string;
     handlingRequest: boolean;
-    hasMoreDraw: boolean;
+    reachEnd: boolean;
     loadingCurrentDraw: boolean;
     loadingCurrentDrawError?: string;
     currentDraw?: Draw;
@@ -21,9 +21,10 @@ export interface DrawState {
 }
 
 const initialState: DrawState = {
+    draws: [],
     loadingDrawList: false,
     handlingRequest: false,
-    hasMoreDraw: false,
+    reachEnd: true,
     loadingCurrentDraw: false,
 };
 
@@ -37,11 +38,28 @@ export const drawReducer = createReducer(
         })
     ),
     on(
+        DrawAction.loadMoreDraws,
+        (state): DrawState => ({
+            ...state,
+            loadingDrawList: true,
+        })
+    ),
+    on(
         DrawAction.loadDrawsSuccess,
-        (state, { draws }): DrawState => ({
+        (state, { draws: { draws, reachEnd } }): DrawState => ({
             ...state,
             loadingDrawList: false,
             draws,
+            reachEnd,
+        })
+    ),
+    on(
+        DrawAction.loadMoreDrawsSuccess,
+        (state, { draws: { draws, reachEnd } }): DrawState => ({
+            ...state,
+            loadingDrawList: false,
+            draws: [...state.draws].concat(draws),
+            reachEnd,
         })
     ),
     on(
@@ -50,7 +68,6 @@ export const drawReducer = createReducer(
             ...state,
             loadingDrawList: false,
             loadDrawListError: error,
-            draws: undefined,
         })
     ),
     on(
@@ -75,6 +92,20 @@ export const drawReducer = createReducer(
             loadingCurrentDraw: false,
             loadingCurrentDrawError: error,
             currentDraw: undefined,
+        })
+    ),
+    on(
+        DrawAction.deleteDrawSuccess,
+        (state, { drawId }): DrawState => ({
+            ...state,
+            draws: state.draws.filter((draw) => draw.id !== drawId),
+        })
+    ),
+    on(
+        DrawAction.updateDrawSettings,
+        (state, { draw }): DrawState => ({
+            ...state,
+            currentDraw: draw,
         })
     )
 );

@@ -15,6 +15,11 @@ const selectLoadDrawListError = createSelector(
 
 const selectDrawList = createSelector(selectFeature, ({ draws }) => draws);
 
+const selectReachEnd = createSelector(
+    selectFeature,
+    ({ reachEnd }) => reachEnd
+);
+
 const selectCurrentDraw = createSelector(
     selectFeature,
     ({ currentDraw }) => currentDraw
@@ -34,6 +39,7 @@ export const DrawSelector = {
     selectLoadingDrawList,
     selectLoadDrawListError,
     selectDrawList,
+    selectReachEnd,
     selectCurrentDraw,
     selectLoadingCurrentDraw,
     selectLoadCurrentDrawError,

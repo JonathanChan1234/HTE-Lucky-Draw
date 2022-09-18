@@ -6,8 +6,12 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    limit,
+    orderBy,
     query,
+    QueryConstraint,
     runTransaction,
+    startAfter,
     Timestamp,
     where,
 } from '@angular/fire/firestore';
@@ -17,8 +21,14 @@ import {
     updateDoc,
 } from '@firebase/firestore';
 import { from, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { AuthService } from '../service/auth.service';
 import { Draw, drawDocToJsonData, DrawKey, DRAWS_KEY, USERS_KEY } from './draw';
+
+export interface DrawList {
+    draws: Draw[];
+    reachEnd: boolean;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -30,8 +40,11 @@ export class LuckyDrawService {
         return from(this.getDrawByIdAsync(drawId));
     }
 
-    getDrawList(): Observable<Draw[]> {
-        return from(this.getDrawListAsync());
+    async getDrawList(idStartAfter?: string): Promise<DrawList> {
+        const draws = await this.getDraws(idStartAfter);
+        if (draws.length === 0) return { reachEnd: true, draws };
+        const nextDraw = await this.getDraws(draws[draws.length - 1].id, 1);
+        return { draws, reachEnd: nextDraw.length === 0 };
     }
 
     createNewDraw(name: string): Observable<void> {
@@ -42,6 +55,12 @@ export class LuckyDrawService {
         return from(this.deleteDrawAsync(id));
     }
 
+    getDrawDoc(drawId: string): DocumentReference<DocumentData> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return doc(this.db, USERS_KEY, uid, DRAWS_KEY, drawId);
+    }
+
     async checkIfUserDocsExist(): Promise<boolean> {
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not authenticated');
@@ -49,10 +68,20 @@ export class LuckyDrawService {
         return docSnap.exists();
     }
 
-    getDrawDoc(drawId: string): DocumentReference<DocumentData> {
+    async getDrawByName(name: string): Promise<Draw | undefined> {
         const uid = this.authService.getUserId();
-        if (!uid) throw new Error('Not signed in');
-        return doc(this.db, USERS_KEY, uid, DRAWS_KEY, drawId);
+        if (!uid) throw new Error('Not authenticated');
+        const querySnapshot = await getDocs(
+            query(
+                collection(this.db, USERS_KEY, uid, DRAWS_KEY),
+                where(DrawKey.name, '==', name),
+                orderBy(DrawKey.name, 'desc'),
+                limit(1)
+            )
+        );
+        return querySnapshot.empty
+            ? undefined
+            : querySnapshot.docs.map((doc) => drawDocToJsonData(doc))[0];
     }
 
     async getDrawRefById(
@@ -79,14 +108,28 @@ export class LuckyDrawService {
         return drawDocToJsonData(drawDoc);
     }
 
-    async getDrawListAsync(): Promise<Draw[]> {
+    async getDraws(idStartAfter?: string, pageSize?: number): Promise<Draw[]> {
         const uid = this.authService.getUserId();
         if (!uid) throw new Error('Not authenticated');
         const userDocExist = await this.checkIfUserDocsExist();
         if (!userDocExist) return [];
 
+        const queryConstraints: QueryConstraint[] = [];
+        if (idStartAfter) {
+            const doc = await getDoc(this.getDrawDoc(idStartAfter));
+            if (!doc.exists())
+                throw new Error(`draw ${idStartAfter} does not exist`);
+            queryConstraints.push(startAfter(doc));
+        }
         const querySnapshot = await getDocs(
-            collection(this.db, USERS_KEY, uid, DRAWS_KEY)
+            query(
+                collection(this.db, USERS_KEY, uid, DRAWS_KEY),
+                ...[
+                    orderBy(DrawKey.createdAt, 'desc'),
+                    limit(pageSize ?? environment.production ? 10 : 1),
+                    ...queryConstraints,
+                ]
+            )
         );
         return querySnapshot.docs.map((doc) => drawDocToJsonData(doc));
     }
