@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
+import { DrawSelector } from '../draw/draw.selector';
 import { PrizeAction } from './prize.action';
 import { PrizeSelector } from './prize.selector';
 import { PrizeService } from './prize.service';
@@ -13,13 +14,6 @@ export class PrizeEffects {
         private readonly store: Store,
         private readonly prizeService: PrizeService
     ) {}
-
-    setDrawId$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(PrizeAction.setDrawId),
-            map(() => PrizeAction.loadPrizes())
-        );
-    });
 
     setPrizeFilter$ = createEffect(() => {
         return this.actions$.pipe(
@@ -53,14 +47,17 @@ export class PrizeEffects {
         return this.actions$.pipe(
             ofType(PrizeAction.loadPrizes),
             concatLatestFrom(() => [
-                this.store.select(PrizeSelector.selectDrawId),
+                this.store.select(DrawSelector.selectCurrentDraw),
                 this.store.select(PrizeSelector.selectPageOption),
             ]),
-            switchMap(([, drawId, { filter, pageSize, paginator }]) => {
-                if (!drawId) throw new Error('Empty Draw Id');
+            switchMap(([, draw, { filter, pageSize, paginator }]) => {
+                if (!draw)
+                    return of(
+                        PrizeAction.loadPrizeError({ error: 'Invalid Draw' })
+                    );
                 return from(
                     this.prizeService.getPrizeList(
-                        drawId,
+                        draw.id,
                         pageSize,
                         filter,
                         paginator
@@ -81,12 +78,17 @@ export class PrizeEffects {
         return this.actions$.pipe(
             ofType(PrizeAction.createPrize),
             concatLatestFrom(() =>
-                this.store.select(PrizeSelector.selectDrawId)
+                this.store.select(DrawSelector.selectCurrentDraw)
             ),
-            switchMap(([{ prizes }, drawId]) => {
-                if (!drawId) throw new Error('Empty Draw Id');
+            switchMap(([{ prizes }, draw]) => {
+                if (!draw)
+                    return of(
+                        PrizeAction.requestFailure({
+                            msg: 'Invalid Draw',
+                        })
+                    );
                 return from(
-                    this.prizeService.createPrizes(drawId, prizes)
+                    this.prizeService.createPrizes(draw.id, prizes)
                 ).pipe(
                     map(() =>
                         PrizeAction.requestSuccess({
@@ -105,11 +107,14 @@ export class PrizeEffects {
         return this.actions$.pipe(
             ofType(PrizeAction.editPrize),
             concatLatestFrom(() =>
-                this.store.select(PrizeSelector.selectDrawId)
+                this.store.select(DrawSelector.selectCurrentDraw)
             ),
-            exhaustMap(([{ prize }, drawId]) => {
-                if (!drawId) throw new Error('Empty Draw ID');
-                return from(this.prizeService.editPrize(drawId, prize)).pipe(
+            exhaustMap(([{ prize }, draw]) => {
+                if (!draw)
+                    return of(
+                        PrizeAction.requestFailure({ msg: 'Invalid Draw' })
+                    );
+                return from(this.prizeService.editPrize(draw.id, prize)).pipe(
                     map(() =>
                         PrizeAction.requestSuccess({
                             msg: 'Edit Prize Successfully',
@@ -129,12 +134,15 @@ export class PrizeEffects {
         return this.actions$.pipe(
             ofType(PrizeAction.deletePrize),
             concatLatestFrom(() =>
-                this.store.select(PrizeSelector.selectDrawId)
+                this.store.select(DrawSelector.selectCurrentDraw)
             ),
-            switchMap(([{ prizeId }, drawId]) => {
-                if (!drawId) throw new Error('Empty Draw Id');
+            switchMap(([{ prizeId }, draw]) => {
+                if (!draw)
+                    return of(
+                        PrizeAction.requestFailure({ msg: 'Invalid Draw' })
+                    );
                 return from(
-                    this.prizeService.deletePrize(drawId, prizeId)
+                    this.prizeService.deletePrize(draw.id, prizeId)
                 ).pipe(
                     map(() =>
                         PrizeAction.requestSuccess({

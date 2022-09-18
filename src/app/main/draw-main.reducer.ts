@@ -39,13 +39,6 @@ export const mainFeatureKey = 'main';
 export const mainReducer = createReducer(
     initialState,
     on(
-        DrawMainAction.setDrawId,
-        (state, { drawId }): MainState => ({
-            drawId,
-            ...state,
-        })
-    ),
-    on(
         DrawMainAction.loadPrizes,
         (state): MainState => ({
             ...state,

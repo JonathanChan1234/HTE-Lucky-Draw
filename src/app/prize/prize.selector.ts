@@ -19,22 +19,9 @@ const selectReachEnd = createSelector(
     ({ reachEnd }) => reachEnd
 );
 
-const selectDrawId = createSelector(selectFeature, ({ drawId }) => drawId);
-
 const selectPageOption = createSelector(
     selectFeature,
     ({ pageOption }) => pageOption
-);
-
-const selectDrawIdAndPageOption = createSelector(
-    selectDrawId,
-    selectPageOption,
-    (drawId, { filter, pageSize, paginator }) => ({
-        drawId,
-        filter,
-        pageSize,
-        paginator,
-    })
 );
 
 const selectHandlingRequest = createSelector(
@@ -53,9 +40,7 @@ export const PrizeSelector = {
     selectPrizeList,
     selectReachStart,
     selectReachEnd,
-    selectDrawId,
     selectPageOption,
-    selectDrawIdAndPageOption,
     selectHandlingRequest,
     selectSnackbarMsg,
 };

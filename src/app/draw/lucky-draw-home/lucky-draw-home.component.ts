@@ -31,9 +31,9 @@ export class LuckyDrawHomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.store.dispatch(DrawAction.loadDraws());
-        this.loading$ = this.store.select(DrawSelector.selectLoading);
-        this.error$ = this.store.select(DrawSelector.selectError);
-        this.draws$ = this.store.select(DrawSelector.selectDraws);
+        this.loading$ = this.store.select(DrawSelector.selectLoadingDrawList);
+        this.error$ = this.store.select(DrawSelector.selectLoadDrawListError);
+        this.draws$ = this.store.select(DrawSelector.selectDrawList);
     }
 
     getReadableDate(date: Timestamp): string {

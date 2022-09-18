@@ -1,5 +1,9 @@
-<div class="side-nav-bar" [@collapseExpand]="expand ? 'expand' : 'collapse'">
-    <ng-container *ngIf="expand; else collapse">
+<div
+    class="side-nav-bar"
+    [@collapseExpand]="expand ? 'expand' : 'collapse'"
+    (@collapseExpand.done)="onAnimationDone($event)"
+>
+    <ng-container *ngIf="showBigNav; else showSmallNav">
         <div>
             <div class="home-row" (click)="navigateToHome()">
                 <div>
@@ -14,7 +18,9 @@
                     <h3 mat-line>Home</h3>
                     <div class="home-row-settings">
                         <div class="divider"></div>
-                        <mat-icon (click)="navigateToSettings($event)"
+                        <mat-icon
+                            (click)="navigateToSettings($event)"
+                            class="settings-icon"
                             >settings</mat-icon
                         >
                     </div>
@@ -30,12 +36,11 @@
                 </mat-list-item>
             </mat-list>
         </div>
-        <div class="bottom-collapse-container" (click)="collapseNavBar()">
+        <div class="bottom-expand-container" (click)="collapseNavBar()">
             <mat-icon>chevron_left</mat-icon>
         </div>
     </ng-container>
-
-    <ng-template #collapse>
+    <ng-template #showSmallNav>
         <mat-list>
             <mat-list-item>
                 <div>
@@ -43,21 +48,28 @@
                 </div>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <mat-list-item>
-                <mat-icon mat-list-icon>home</mat-icon>
+            <mat-list-item (click)="navigateToHome()">
+                <mat-icon mat-list-icon matTooltip="Home">home</mat-icon>
             </mat-list-item>
-            <mat-list-item>
-                <mat-icon mat-list-icon>settings</mat-icon>
+            <mat-list-item (click)="navigateToSettings($event)">
+                <mat-icon
+                    mat-list-icon
+                    class="settings-icon"
+                    matTooltip="Settings"
+                    >settings</mat-icon
+                >
             </mat-list-item>
             <mat-divider></mat-divider>
-            <mat-list-item>
-                <mat-icon mat-list-icon>redeem</mat-icon>
+            <mat-list-item (click)="navigateToPrize()">
+                <mat-icon mat-list-icon matTooltip="Prize">redeem</mat-icon>
             </mat-list-item>
-            <mat-list-item>
-                <mat-icon mat-list-icon>person</mat-icon>
+            <mat-list-item (click)="navigateToParticipant()">
+                <mat-icon mat-list-icon matTooltip="Participant"
+                    >person</mat-icon
+                >
             </mat-list-item>
         </mat-list>
-        <div (click)="expandNavBar()">
+        <div (click)="expandNavBar()" class="bottom-collapse-container">
             <mat-icon>chevron_right</mat-icon>
         </div>
     </ng-template>

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
+import { DrawSelector } from '../draw/draw.selector';
 import { PrizeService } from '../prize/prize.service';
 import { DrawMainAction } from './draw-main.action';
-import { DrawMainSelector } from './draw-main.selector';
 import { LotteryService } from './lottery.service';
 
 @Injectable()
@@ -16,28 +16,21 @@ export class DrawMainEffect {
         private readonly lotteryService: LotteryService
     ) {}
 
-    setDrawId$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(DrawMainAction.setDrawId),
-            map(() => DrawMainAction.loadPrizes())
-        );
-    });
-
-    loadPrize$ = createEffect(() => {
+    loadPrizes$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(DrawMainAction.loadPrizes),
             concatLatestFrom(() =>
-                this.store.select(DrawMainSelector.selectDrawId)
+                this.store.select(DrawSelector.selectCurrentDraw)
             ),
-            switchMap(([, drawId]) => {
-                if (!drawId)
+            switchMap(([, draw]) => {
+                if (!draw)
                     return of(
                         DrawMainAction.loadPrizeFailure({
-                            error: 'Empty Draw Id',
+                            error: 'Invalid Draw',
                         })
                     );
                 return from(
-                    this.prizeService.getPrizes(drawId, 10, {
+                    this.prizeService.getPrizes(draw.id, 10, {
                         assigned: false,
                         searchValue: '',
                     })
@@ -61,17 +54,20 @@ export class DrawMainEffect {
         return this.actions$.pipe(
             ofType(DrawMainAction.loadDrawGroups),
             concatLatestFrom(() =>
-                this.store.select(DrawMainSelector.selectDrawId)
+                this.store.select(DrawSelector.selectCurrentDraw)
             ),
-            exhaustMap(([{ prizes }, drawId]) => {
-                if (!drawId)
+            exhaustMap(([{ prizes }, draw]) => {
+                if (!draw)
                     return of(
                         DrawMainAction.loadPrizeFailure({
-                            error: 'Empty Draw ID',
+                            error: 'Invalid Draw',
                         })
                     );
                 return from(
-                    this.lotteryService.selectRandomParticipants(drawId, prizes)
+                    this.lotteryService.selectRandomParticipants(
+                        draw.id,
+                        prizes
+                    )
                 ).pipe(
                     map((drawGroups) =>
                         DrawMainAction.loadDrawGroupsSuccess({

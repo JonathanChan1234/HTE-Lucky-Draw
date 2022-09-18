@@ -1,5 +1,5 @@
 <mat-toolbar class="title-toolbar">
-    <span (click)="navigateToHome()" class="title-span"></span>
+    <span (click)="navigateToHome()" class="title-span">{{ title || '' }}</span>
     <button
         mat-mini-fab
         color="basic"

@@ -1,3 +1,4 @@
+import { UserInfo } from '@angular/fire/auth';
 import { createReducer, on } from '@ngrx/store';
 import { Draw } from './draw';
 import { DrawAction } from './draw.action';
@@ -9,17 +10,21 @@ export const drawFeatureKey = 'draw';
 
 export interface DrawState {
     draws?: Draw[];
-    loading: boolean;
-    error?: string;
+    loadingDrawList: boolean;
+    loadDrawListError?: string;
     handlingRequest: boolean;
     hasMoreDraw: boolean;
-    currentDrawId?: string;
+    loadingCurrentDraw: boolean;
+    loadingCurrentDrawError?: string;
+    currentDraw?: Draw;
+    user?: UserInfo;
 }
 
 const initialState: DrawState = {
-    loading: false,
+    loadingDrawList: false,
     handlingRequest: false,
     hasMoreDraw: false,
+    loadingCurrentDraw: false,
 };
 
 export const drawReducer = createReducer(
@@ -28,14 +33,14 @@ export const drawReducer = createReducer(
         DrawAction.loadDraws,
         (state): DrawState => ({
             ...state,
-            loading: true,
+            loadingDrawList: true,
         })
     ),
     on(
         DrawAction.loadDrawsSuccess,
         (state, { draws }): DrawState => ({
             ...state,
-            loading: false,
+            loadingDrawList: false,
             draws,
         })
     ),
@@ -43,15 +48,33 @@ export const drawReducer = createReducer(
         DrawAction.loadDrawsFailure,
         (state, { error }): DrawState => ({
             ...state,
-            loading: false,
-            error,
+            loadingDrawList: false,
+            loadDrawListError: error,
+            draws: undefined,
         })
     ),
     on(
-        DrawAction.setSelectedDraw,
-        (state, { drawId }): DrawState => ({
+        DrawAction.loadCurrentDraw,
+        (state): DrawState => ({
             ...state,
-            currentDrawId: drawId,
+            loadingCurrentDraw: true,
+        })
+    ),
+    on(
+        DrawAction.loadCurrentDrawSuccess,
+        (state, { draw }): DrawState => ({
+            ...state,
+            loadingCurrentDraw: false,
+            currentDraw: draw,
+        })
+    ),
+    on(
+        DrawAction.loadCurrentDrawFailure,
+        (state, { error }): DrawState => ({
+            ...state,
+            loadingCurrentDraw: false,
+            loadingCurrentDrawError: error,
+            currentDraw: undefined,
         })
     )
 );

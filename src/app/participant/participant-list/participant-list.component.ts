@@ -22,7 +22,6 @@ export interface ParticipantDialogData {
     styleUrls: ['./participant-list.component.scss'],
 })
 export class ParticipantListComponent implements OnInit {
-    drawId!: string | null;
     isSmallScreen$!: Observable<boolean>;
     loading$!: Observable<boolean>;
     participants$!: Observable<Participant[]>;
@@ -42,20 +41,14 @@ export class ParticipantListComponent implements OnInit {
         );
         this.loading$ = this.store.select(ParticipantSelector.selectLoading);
         this.error$ = this.store.select(ParticipantSelector.selectError);
-
-        this.route.parent?.params.subscribe((params) => {
-            if (!params['drawId']) return;
-            this.drawId = params['drawId'];
-            this.store.dispatch(
-                ParticipantAction.setDrawId({ drawId: params['drawId'] })
-            );
-        });
+        this.store.dispatch(ParticipantAction.loadParticipant());
     }
 
     openEditDialog(participant: Participant): void {
-        if (!this.drawId) return;
+        const drawId = this.route.snapshot.params['drawId'];
+        if (!drawId) return;
         const dialogRef = this.matDialog.open(ParticipantEditDialogComponent, {
-            data: { participant, drawId: this.drawId },
+            data: { participant, drawId },
         });
         dialogRef.afterClosed().subscribe((result) => {
             if (!result) return;
@@ -70,10 +63,12 @@ export class ParticipantListComponent implements OnInit {
     }
 
     openDeleteDialog(participant: Participant): void {
+        const drawId = this.route.snapshot.params['drawId'];
+        if (!drawId) return;
         const dialogRef = this.matDialog.open(
             ParticipantDeleteDialogComponent,
             {
-                data: { participant, drawId: this.drawId },
+                data: { participant, drawId },
             }
         );
         dialogRef.afterClosed().subscribe((result) => {

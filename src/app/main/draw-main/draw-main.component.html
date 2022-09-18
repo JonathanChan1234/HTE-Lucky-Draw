@@ -1,23 +1,11 @@
 <div class="draw-main-container">
     <ng-container *ngIf="loading$ | async">
-        <app-loading-spinner msg="Fetching Draw Data"></app-loading-spinner>
+        <app-loading-spinner msg="Fetching Prize List"></app-loading-spinner>
     </ng-container>
-    <ng-container *ngIf="(loading$ | async) === false">
-        <div *ngIf="draw$ | async as draw">
-            <h1>
-                {{ draw.name }}
-            </h1>
-            <ng-container *ngIf="loadingPrizes$ | async">
-                <app-loading-spinner
-                    msg="Fetching Prize List"
-                ></app-loading-spinner>
-            </ng-container>
-            <ng-container *ngIf="prizes$ | async as prizes">
-                <app-prizes-selection [prizes]="prizes"></app-prizes-selection>
-            </ng-container>
-        </div>
+    <ng-container *ngIf="prizes$ | async as prizes">
+        <app-prizes-selection [prizes]="prizes"></app-prizes-selection>
     </ng-container>
-    <ng-container *ngIf="err">
-        <app-error-message-bar [errMsg]="err"></app-error-message-bar>
+    <ng-container *ngIf="error$ | async as error">
+        <app-error-message-bar [errMsg]="error"></app-error-message-bar>
     </ng-container>
 </div>

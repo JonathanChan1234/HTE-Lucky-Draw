@@ -4,7 +4,6 @@ import { PrizeSearchFilter } from './prize.reducer';
 import { PrizeList } from './prize.service';
 
 export enum PrizeActionType {
-    SetDrawId = '[Prize Component] SetDrawId',
     LoadPrizes = '[Prize Component] LoadPrizeList',
     LoadPrizesSuccess = '[Prize API] LoadPrizeListSuccess',
     LoadPrizesError = '[Prize API] LoadPrizeListError',
@@ -32,11 +31,6 @@ export type EditPrizeDao = Pick<
     | PrizeKey.sponsor
     | PrizeKey.winnerId
 >;
-
-const setDrawId = createAction(
-    PrizeActionType.SetDrawId,
-    props<{ drawId: string }>()
-);
 
 const loadPrizes = createAction(PrizeActionType.LoadPrizes);
 
@@ -92,7 +86,6 @@ const requestFailure = createAction(
 );
 
 export const PrizeAction = {
-    setDrawId,
     setPageSize,
     goToPreviousPage,
     goToNextPage,

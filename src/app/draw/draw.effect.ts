@@ -34,4 +34,22 @@ export class DrawEffects {
             )
         );
     });
+
+    loadCurrentDraw$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(DrawAction.loadCurrentDraw),
+            switchMap(({ drawId }) =>
+                this.drawService.getDrawById(drawId).pipe(
+                    map((draw) => DrawAction.loadCurrentDrawSuccess({ draw })),
+                    catchError((error) =>
+                        of(
+                            DrawAction.loadCurrentDrawFailure({
+                                error: error.message,
+                            })
+                        )
+                    )
+                )
+            )
+        );
+    });
 }

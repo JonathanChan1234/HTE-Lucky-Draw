@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -10,7 +10,10 @@ import { AuthService } from 'src/app/service/auth.service';
     styleUrls: ['./lucky-draw-toolbar.component.scss'],
 })
 export class LuckyDrawToolbarComponent implements OnInit {
+    @Input()
+    title!: string;
     user$!: Subject<User | null>;
+
     constructor(private authService: AuthService, private router: Router) {}
 
     ngOnInit(): void {
@@ -18,7 +21,7 @@ export class LuckyDrawToolbarComponent implements OnInit {
     }
 
     navigateToHome(): Promise<boolean> {
-        return this.router.navigate(['draws']);
+        return this.router.navigate(['home']);
     }
 
     signOut(): void {

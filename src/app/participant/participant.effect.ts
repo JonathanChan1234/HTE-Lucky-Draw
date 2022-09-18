@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, from, map, of, switchMap } from 'rxjs';
+import { DrawSelector } from '../draw/draw.selector';
 import { ParticipantDbService } from './participant-db.service';
 import { ParticipantAction } from './participant.action';
 import { ParticipantSelector } from './participant.selector';
@@ -13,13 +14,6 @@ export class ParticipantEffects {
         private store: Store,
         private participantDbService: ParticipantDbService
     ) {}
-
-    setDrawId$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(ParticipantAction.setDrawId),
-            map(() => ParticipantAction.loadParticipant())
-        );
-    });
 
     setParticipantFilter$ = createEffect(() => {
         return this.actions$.pipe(
@@ -53,14 +47,19 @@ export class ParticipantEffects {
         return this.actions$.pipe(
             ofType(ParticipantAction.loadParticipant),
             concatLatestFrom(() => [
-                this.store.select(ParticipantSelector.selectDrawId),
+                this.store.select(DrawSelector.selectCurrentDraw),
                 this.store.select(ParticipantSelector.selectPageOption),
             ]),
-            switchMap(([, drawId, { filter, pageSize, paginator }]) => {
-                if (!drawId) throw new Error('Empty Draw ID');
+            switchMap(([, draw, { filter, pageSize, paginator }]) => {
+                if (!draw)
+                    return of(
+                        ParticipantAction.loadParticipantError({
+                            error: 'Empty Draw Data',
+                        })
+                    );
                 return from(
                     this.participantDbService.getParticpantData(
-                        drawId,
+                        draw.id,
                         pageSize,
                         filter,
                         paginator

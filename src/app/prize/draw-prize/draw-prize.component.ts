@@ -33,7 +33,7 @@ export class DrawPrizeComponent implements OnInit {
                 );
                 return;
             }
-            this.store.dispatch(PrizeAction.setDrawId({ drawId }));
+            this.store.dispatch(PrizeAction.loadPrizes());
         });
     }
 }

@@ -19,7 +19,6 @@ export interface PrizePaginatorOption {
 }
 
 export interface PrizeState {
-    drawId?: string;
     prizes: Prize[];
     loading: boolean;
     handlingRequest: boolean;
@@ -53,13 +52,6 @@ export const prizeFeatureKey = 'prize';
 
 export const prizeReducer = createReducer(
     initialState,
-    on(
-        PrizeAction.setDrawId,
-        (state, { drawId }): PrizeState => ({
-            ...state,
-            drawId,
-        })
-    ),
     on(
         PrizeAction.loadPrizes,
         (state): PrizeState => ({

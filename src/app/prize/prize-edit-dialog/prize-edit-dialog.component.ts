@@ -3,11 +3,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { debounceTime, from, Observable, of, startWith, switchMap } from 'rxjs';
+import { DrawSelector } from 'src/app/draw/draw.selector';
 import { Participant } from 'src/app/participant/participant';
 import { ParticipantDbService } from 'src/app/participant/participant-db.service';
 import { Prize } from '../prize';
 import { EditPrizeDao } from '../prize.action';
-import { PrizeSelector } from '../prize.selector';
 
 interface PrizeEditFormGroup {
     name: FormControl<string>;
@@ -78,14 +78,18 @@ export class PrizeEditDialogComponent implements OnInit {
             startWith(this.prize.winner ?? ''),
             debounceTime(1000),
             switchMap((value) =>
-                this.store.select(PrizeSelector.selectDrawId).pipe(
-                    switchMap((drawId) => {
-                        if (!drawId) return of([]);
+                this.store.select(DrawSelector.selectCurrentDraw).pipe(
+                    switchMap((draw) => {
+                        if (!draw) return of([]);
                         return from(
-                            this.participantService.getParticipants(drawId, 5, {
-                                searchField: 'name',
-                                searchValue: value || '',
-                            })
+                            this.participantService.getParticipants(
+                                draw.id,
+                                5,
+                                {
+                                    searchField: 'name',
+                                    searchValue: value || '',
+                                }
+                            )
                         );
                     })
                 )

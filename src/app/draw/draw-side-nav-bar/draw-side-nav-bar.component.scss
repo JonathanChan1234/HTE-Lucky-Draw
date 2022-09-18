@@ -24,12 +24,21 @@
     align-content: space-around;
 }
 
-.bottom-collapse-container {
+.bottom-expand-container {
     width: 100%;
     display: flex;
     justify-content: center;
     padding-bottom: 20px;
     cursor: pointer;
+}
+
+.bottom-collapse-container {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    cursor: pointer;
+    padding-bottom: 20px;
 }
 
 .home-row {
@@ -38,4 +47,12 @@
     justify-content: space-around;
     padding: 10px;
     cursor: pointer;
+}
+
+.settings-icon {
+    transition: transform 100ms;
+}
+
+.settings-icon:hover {
+    transform: rotate(90deg);
 }

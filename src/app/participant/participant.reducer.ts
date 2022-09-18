@@ -15,7 +15,6 @@ export interface ParticipantSearchFilter {
 }
 
 export interface ParticipantState {
-    drawId?: string;
     participants: Participant[];
     loading: boolean;
     error: string | null;
@@ -51,13 +50,6 @@ export const participantFeatureKey = 'participant';
 export const participantReducer = createReducer(
     initialState,
     on(
-        ParticipantAction.setDrawId,
-        (state, { drawId }): ParticipantState => ({
-            ...state,
-            drawId,
-        })
-    ),
-    on(
         ParticipantAction.loadParticipant,
         (state): ParticipantState => ({ ...state, loading: true })
     ),
@@ -80,6 +72,7 @@ export const participantReducer = createReducer(
         (state, { error }): ParticipantState => ({
             ...state,
             loading: false,
+            participants: [],
             error,
         })
     ),

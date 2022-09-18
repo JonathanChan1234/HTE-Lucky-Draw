@@ -1,5 +1,6 @@
 import {
     animate,
+    AnimationEvent,
     state,
     style,
     transition,
@@ -14,14 +15,17 @@ import { ActivatedRoute, Router } from '@angular/router';
     styleUrls: ['./draw-side-nav-bar.component.scss'],
     animations: [
         trigger('collapseExpand', [
-            state('collapse', style({})),
-            state('expand', style({})),
-            transition('* => *', [animate(1000), style({})]),
+            state('expand', style({ width: '250px' })),
+            state('collapse', style({ width: '100px' })),
+            transition('expand => collapse', [animate(100)]),
+            transition('collapse => expand', [animate(100)]),
         ]),
     ],
 })
 export class DrawSideNavBarComponent implements OnInit {
     expand = true;
+    showBigNav = true;
+
     constructor(private router: Router, private route: ActivatedRoute) {}
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -48,6 +52,13 @@ export class DrawSideNavBarComponent implements OnInit {
     navigateToSettings(event: Event): Promise<boolean> {
         event.stopPropagation();
         return this.router.navigate(['settings'], { relativeTo: this.route });
+    }
+
+    onAnimationDone(event: AnimationEvent) {
+        if (event.fromState === 'expand' && event.toState === 'collapse')
+            this.showBigNav = false;
+        if (event.fromState === 'collapse' && event.toState === 'expand')
+            this.showBigNav = true;
     }
 
     expandNavBar(): void {

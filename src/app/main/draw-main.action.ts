@@ -3,7 +3,6 @@ import { Prize } from '../prize/prize';
 import { DrawGroup } from './draw-main.reducer';
 
 export enum DrawMainActionType {
-    SetDrawId = '[DrawMain Component] SetDrawId',
     LoadPrizes = '[DrawMain Component] LoadPrizeList',
     LoadPrizesSuccess = '[DrawMain API] LoadPrizeListSuccess',
     LoadPrizesFailure = '[DrawMain API] LoadPrizeListError',
@@ -13,11 +12,6 @@ export enum DrawMainActionType {
     LoadDrawGroupsFailure = '[DrawMain Component] LoadDrawGroupsFailure',
     SetAnimating = '[DrawMain Component] SetAnimating',
 }
-
-const setDrawId = createAction(
-    DrawMainActionType.SetDrawId,
-    props<{ drawId: string }>()
-);
 
 const loadPrizes = createAction(DrawMainActionType.LoadPrizes);
 
@@ -54,7 +48,6 @@ const setAnimating = createAction(
 );
 
 export const DrawMainAction = {
-    setDrawId,
     loadPrizes,
     loadPrizesSuccess,
     loadPrizeFailure,

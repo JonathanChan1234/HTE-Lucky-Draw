@@ -3,22 +3,38 @@ import { drawFeatureKey, DrawState } from './draw.reducer';
 
 const selectFeature = createFeatureSelector<DrawState>(drawFeatureKey);
 
-const selectLoading = createSelector(selectFeature, ({ loading }) => loading);
+const selectLoadingDrawList = createSelector(
+    selectFeature,
+    ({ loadingDrawList }) => loadingDrawList
+);
 
-const selectError = createSelector(selectFeature, ({ error }) => error);
+const selectLoadDrawListError = createSelector(
+    selectFeature,
+    ({ loadDrawListError }) => loadDrawListError
+);
 
-const selectDraws = createSelector(selectFeature, ({ draws }) => draws);
+const selectDrawList = createSelector(selectFeature, ({ draws }) => draws);
 
 const selectCurrentDraw = createSelector(
     selectFeature,
-    ({ currentDrawId, draws }) => {
-        draws ? draws.find((draw) => draw.id === currentDrawId) : undefined;
-    }
+    ({ currentDraw }) => currentDraw
+);
+
+const selectLoadingCurrentDraw = createSelector(
+    selectFeature,
+    ({ loadingCurrentDraw }) => loadingCurrentDraw
+);
+
+const selectLoadCurrentDrawError = createSelector(
+    selectFeature,
+    ({ loadingCurrentDrawError }) => loadingCurrentDrawError
 );
 
 export const DrawSelector = {
-    selectLoading,
-    selectError,
-    selectDraws,
+    selectLoadingDrawList,
+    selectLoadDrawListError,
+    selectDrawList,
     selectCurrentDraw,
+    selectLoadingCurrentDraw,
+    selectLoadCurrentDrawError,
 };

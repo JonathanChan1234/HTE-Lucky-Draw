@@ -3,8 +3,6 @@ import { mainFeatureKey, MainState } from './draw-main.reducer';
 
 const selectFeature = createFeatureSelector<MainState>(mainFeatureKey);
 
-const selectDrawId = createSelector(selectFeature, ({ drawId }) => drawId);
-
 const selectLoadingPrizeList = createSelector(
     selectFeature,
     ({ loadingPrizeList }) => loadingPrizeList
@@ -44,7 +42,6 @@ const selectPrizeSelectedDisabled = createSelector(
 );
 
 export const DrawMainSelector = {
-    selectDrawId,
     selectLoadingPrizeList,
     selectLoadingPrizeError,
     selectPrizes,
