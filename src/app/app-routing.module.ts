@@ -4,6 +4,7 @@ import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
 import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { FirebaseAuthPrivateGuard } from './guard/firebase-auth-private.guard';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 
@@ -26,6 +27,11 @@ const routes: Routes = [
     {
         path: 'home',
         component: LuckyDrawHomeComponent,
+        canActivate: [FirebaseAuthPrivateGuard],
+    },
+    {
+        path: 'changePassword',
+        component: ChangePasswordComponent,
         canActivate: [FirebaseAuthPrivateGuard],
     },
     {

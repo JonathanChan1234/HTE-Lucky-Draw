@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
     FormControl,
     FormGroup,
-    FormGroupDirective,
-    NgForm,
     ValidatorFn,
     Validators,
 } from '@angular/forms';
@@ -23,10 +21,7 @@ const PasswordValidator: ValidatorFn = (fg) => {
 };
 
 class ConfirmPasswordErrorMatcher implements ErrorStateMatcher {
-    isErrorState(
-        control: FormControl | null,
-        _form: FormGroupDirective | NgForm | null
-    ): boolean {
+    isErrorState(control: FormControl | null): boolean {
         return !!(control?.parent?.invalid && control?.touched);
     }
 }
@@ -61,6 +56,7 @@ export class RegisterComponent implements OnInit {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     ngOnInit(): void {}
 
     navigateToLoginPage() {

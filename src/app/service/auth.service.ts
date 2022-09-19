@@ -2,9 +2,12 @@ import { Injectable, OnDestroy } from '@angular/core';
 import {
     Auth,
     createUserWithEmailAndPassword,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
     signInWithEmailAndPassword,
     signOut,
     Unsubscribe,
+    updatePassword,
     User,
     UserCredential,
 } from '@angular/fire/auth';
@@ -52,6 +55,20 @@ export class AuthService implements OnDestroy {
         return from(
             signInWithEmailAndPassword(this.auth, email, password)
         ).pipe(shareReplay(1));
+    }
+
+    async changePassword(
+        oldPassword: string,
+        newPassword: string
+    ): Promise<void> {
+        const user = this.user$.value;
+        if (!user || !user.email) throw new Error('Unauthenticated');
+        const credential = EmailAuthProvider.credential(
+            user.email,
+            oldPassword
+        );
+        await reauthenticateWithCredential(user, credential);
+        return updatePassword(user, newPassword);
     }
 
     signOut(): Observable<void> {

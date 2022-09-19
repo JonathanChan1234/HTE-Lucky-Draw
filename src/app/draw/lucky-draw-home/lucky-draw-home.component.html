@@ -8,14 +8,6 @@
         ></app-error-message-bar>
     </ng-container>
 
-    <ng-container *ngIf="loading$ | async">
-        <app-loading-spinner
-            class="loading-spinner"
-            msg="Fetching Your Lucky Draw List"
-        >
-        </app-loading-spinner>
-    </ng-container>
-
     <ng-container *ngIf="draws$ | async as draws">
         <div class="draw-home-container">
             <h2>Your Lucky Draw List</h2>
@@ -116,6 +108,13 @@
                     </mat-card-footer>
                 </mat-card>
             </div>
+            <ng-container *ngIf="loading$ | async">
+                <app-loading-spinner
+                    class="loading-spinner"
+                    msg="Fetching Your Lucky Draw List"
+                >
+                </app-loading-spinner>
+            </ng-container>
             <div class="load-more-btn-container">
                 <button
                     mat-button

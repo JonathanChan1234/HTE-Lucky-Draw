@@ -24,6 +24,10 @@ export class LuckyDrawToolbarComponent implements OnInit {
         return this.router.navigate(['home']);
     }
 
+    navigateToChangePassword(): Promise<boolean> {
+        return this.router.navigate(['changePassword']);
+    }
+
     signOut(): void {
         this.authService
             .signOut()

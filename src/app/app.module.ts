@@ -44,6 +44,7 @@ import { drawReducer } from './draw/draw.reducer';
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
 import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { SharedModule } from './shared/shared.module';
@@ -60,6 +61,7 @@ import { SharedModule } from './shared/shared.module';
         DrawSettingComponent,
         LuckyDrawAppComponent,
         DrawSideNavBarComponent,
+        ChangePasswordComponent,
     ],
     imports: [
         BrowserModule,
