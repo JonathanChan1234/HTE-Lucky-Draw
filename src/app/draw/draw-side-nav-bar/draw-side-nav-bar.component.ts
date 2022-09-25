@@ -49,6 +49,10 @@ export class DrawSideNavBarComponent implements OnInit {
         });
     }
 
+    navigateToLink(): Promise<boolean> {
+        return this.router.navigate(['link'], { relativeTo: this.route });
+    }
+
     navigateToSettings(event: Event): Promise<boolean> {
         event.stopPropagation();
         return this.router.navigate(['settings'], { relativeTo: this.route });

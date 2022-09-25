@@ -1,0 +1,52 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "baseUrl": "./src",
+        "outDir": "./lib",
+        "sourceMap": true,
+        "strict": true,
+        "target": "ESNext",
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noFallthroughCasesInSwitch": true,
+        "declaration": true,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "compileOnSave": true,
+    "include": ["src"],
+    "exclude": ["node_modules", "lib"],
+    "ts-node": {
+        "esm": true
+    }
+    // "compileOnSave": false,
+    // "compilerOptions": {
+    //     "baseUrl": "./src",
+    //     "outDir": "./lib",
+    //     "module": "ESNext",
+    //     "noImplicitReturns": true,
+    //     "noUnusedLocals": true,
+    //     "sourceMap": true,
+    //     "strict": true,
+    //     "target": "es2017",
+    //     "resolveJsonModule": true,
+    //     "noImplicitOverride": true,
+    //     "noPropertyAccessFromIndexSignature": true,
+    //     "noFallthroughCasesInSwitch": true,
+    //     "declaration": true,
+    //     "downlevelIteration": true,
+    //     "experimentalDecorators": true,
+    //     "moduleResolution": "node",
+    //     "importHelpers": true,
+    //     "allowSyntheticDefaultImports": true,
+    //     "esModuleInterop": true,
+    //     "lib": ["es6", "dom"]
+    // },
+    // "include": ["src"],
+}

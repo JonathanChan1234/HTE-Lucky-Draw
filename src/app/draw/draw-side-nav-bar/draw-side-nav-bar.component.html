@@ -34,6 +34,10 @@
                     <mat-icon mat-list-icon>person</mat-icon>
                     <div mat-line>Participants</div>
                 </mat-list-item>
+                <mat-list-item (click)="navigateToLink()">
+                    <mat-icon mat-list-icon>qr_code</mat-icon>
+                    <div mat-line>Link</div>
+                </mat-list-item>
             </mat-list>
         </div>
         <div class="bottom-expand-container" (click)="collapseNavBar()">
@@ -67,6 +71,9 @@
                 <mat-icon mat-list-icon matTooltip="Participant"
                     >person</mat-icon
                 >
+            </mat-list-item>
+            <mat-list-item (click)="navigateToLink()">
+                <mat-icon mat-list-icon matTooltip="Link">qr_code</mat-icon>
             </mat-list-item>
         </mat-list>
         <div (click)="expandNavBar()" class="bottom-collapse-container">

@@ -1,0 +1,24 @@
+.participant-signin-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    margin-top: 10px;
+
+    > * {
+        margin: 10px;
+    }
+}
+
+.signin-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+
+    .mat-form-field {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+}

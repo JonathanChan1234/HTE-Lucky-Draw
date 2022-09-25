@@ -46,3 +46,7 @@ Thumbs.db
 *-debug.log
 .runtimeconfig.json
 emulators
+
+functions/node_modules
+functions/lib
+functions/serviceAccountKey.json

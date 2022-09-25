@@ -1,0 +1,41 @@
+<div class="qr-code-container">
+    <ng-container *ngIf="draw | async as draw; else emptyDraw">
+        <ng-container *ngIf="userId as uid; else emptyUser">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>
+                        Share the QR Code for participants to sign in
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <qrcode
+                        #parent
+                        [qrdata]="getSignInURL(uid, draw.id)"
+                        [width]="256"
+                        [errorCorrectionLevel]="'M'"
+                    ></qrcode>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-raised-button (click)="saveAsImage(parent)">
+                        Download QR Code Image
+                    </button>
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        (click)="copySignInURL(uid, draw.id)"
+                    >
+                        Copy URL
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </ng-container>
+    </ng-container>
+
+    <ng-template #emptyDraw>
+        <app-error-message-bar errMsg="Invalid Draw"></app-error-message-bar>
+    </ng-template>
+
+    <ng-template #emptyUser>
+        <app-error-message-bar errMsg="Not Signed In"></app-error-message-bar>
+    </ng-template>
+</div>

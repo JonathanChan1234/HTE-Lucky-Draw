@@ -64,10 +64,7 @@ export class DrawMainEffect {
                         })
                     );
                 return from(
-                    this.lotteryService.selectRandomParticipants(
-                        draw.id,
-                        prizes
-                    )
+                    this.lotteryService.selectRandomParticipants(draw, prizes)
                 ).pipe(
                     map((drawGroups) =>
                         DrawMainAction.loadDrawGroupsSuccess({

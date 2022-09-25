@@ -21,6 +21,7 @@ export const environment = {
     messagingSenderId: '427079540763',
     appId: '1:427079540763:web:693188f007abf9823dd8be',
     measurementId: 'G-BJZ22HC5GN',
+    host: 'http://localhost:5001/hte-lucky-draw/us-central1/app/',
 };
 
 /*

@@ -5,10 +5,11 @@ import {
     getDocs,
     limit,
     query,
+    QueryConstraint,
     where,
 } from '@angular/fire/firestore';
 import { doc, runTransaction } from '@firebase/firestore';
-import { DRAWS_KEY, USERS_KEY } from '../draw/draw';
+import { Draw, DRAWS_KEY, USERS_KEY } from '../draw/draw';
 import {
     Participant,
     participantDocToJsonObject,
@@ -27,7 +28,7 @@ export class LotteryService {
     constructor(private db: Firestore, private authService: AuthService) {}
 
     async selectRandomParticipants(
-        drawId: string,
+        draw: Draw,
         prizes: Prize[]
     ): Promise<DrawGroup[]> {
         const uid = this.authService.getUserId();
@@ -38,7 +39,7 @@ export class LotteryService {
         for (const prize of prizes) {
             const candidates = await this.fetchRandomParticipant(
                 uid,
-                drawId,
+                draw,
                 winners
             );
             const randomWinnerIndex = getRandomInt(candidates.length);
@@ -50,7 +51,7 @@ export class LotteryService {
                 prize,
             });
         }
-        await this.assignPrizes(uid, drawId, drawGroups);
+        await this.assignPrizes(uid, draw.id, drawGroups);
         return drawGroups;
     }
 
@@ -95,14 +96,14 @@ export class LotteryService {
 
     async fetchRandomParticipant(
         uid: string,
-        drawId: string,
+        draw: Draw,
         idsNotIncluded: string[]
     ): Promise<Participant[]> {
         const randomComparator = getRandomInt(2);
         const random = getRandomKey();
         let participants = await this.fetchRandomParticipantHelper(
             uid,
-            drawId,
+            draw,
             random,
             randomComparator ? '>' : '<',
             idsNotIncluded
@@ -111,7 +112,7 @@ export class LotteryService {
         if (participants.length === 0) {
             participants = await this.fetchRandomParticipantHelper(
                 uid,
-                drawId,
+                draw,
                 random,
                 randomComparator ? '<' : '>',
                 idsNotIncluded
@@ -124,23 +125,27 @@ export class LotteryService {
 
     async fetchRandomParticipantHelper(
         uid: string,
-        drawId: string,
+        draw: Draw,
         random: number,
         comparator: '<' | '>',
         idsNotIncluded: string[]
     ): Promise<Participant[]> {
+        const queryConstraint: QueryConstraint[] = [
+            where(ParticipantKey.prizeWinner, '==', false),
+            where(ParticipantKey.random, comparator, random),
+        ];
+        if (draw.signInRequired)
+            queryConstraint.push(where(ParticipantKey.signedIn, '==', true));
         const getParticipantQuery = query(
             collection(
                 this.db,
                 USERS_KEY,
                 uid,
                 DRAWS_KEY,
-                drawId,
+                draw.id,
                 PARTICIPANTS_KEY
             ),
-            where(ParticipantKey.prizeWinner, '==', false),
-            where(ParticipantKey.random, comparator, random),
-            limit(10)
+            ...[...queryConstraint, limit(10)]
         );
         const snapshot = await getDocs(getParticipantQuery);
         return snapshot.docs

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { HttpClientModule } from '@angular/common/http';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { PERSISTENCE } from '@angular/fire/compat/auth';
@@ -31,6 +32,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { QRCodeModule } from 'angularx-qrcode';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -44,8 +46,10 @@ import { drawReducer } from './draw/draw.reducer';
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
 import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
+import { QrCodeComponent } from './draw/qr-code/qr-code.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ParticipantSignInComponent } from './pages/participant-sign-in/participant-sign-in.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { SharedModule } from './shared/shared.module';
 
@@ -62,8 +66,11 @@ import { SharedModule } from './shared/shared.module';
         LuckyDrawAppComponent,
         DrawSideNavBarComponent,
         ChangePasswordComponent,
+        ParticipantSignInComponent,
+        QrCodeComponent,
     ],
     imports: [
+        HttpClientModule,
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
@@ -96,6 +103,7 @@ import { SharedModule } from './shared/shared.module';
         MatCardModule,
         MatSelectModule,
         MatTooltipModule,
+        QRCodeModule,
         StoreModule.forRoot({ draw: drawReducer }),
         EffectsModule.forRoot([DrawEffects]),
         extModules,

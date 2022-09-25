@@ -3,9 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { DrawSettingComponent } from './draw/draw-setting/draw-setting.component';
 import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.component';
 import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
+import { QrCodeComponent } from './draw/qr-code/qr-code.component';
 import { FirebaseAuthPrivateGuard } from './guard/firebase-auth-private.guard';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ParticipantSignInComponent } from './pages/participant-sign-in/participant-sign-in.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 const routes: Routes = [
@@ -28,6 +30,10 @@ const routes: Routes = [
         path: 'home',
         component: LuckyDrawHomeComponent,
         canActivate: [FirebaseAuthPrivateGuard],
+    },
+    {
+        path: ':userId/draw/:drawId/participant/signIn',
+        component: ParticipantSignInComponent,
     },
     {
         path: 'changePassword',
@@ -60,6 +66,10 @@ const routes: Routes = [
                 path: 'prizes',
                 loadChildren: () =>
                     import('./prize/prize.module').then((m) => m.PrizeModule),
+            },
+            {
+                path: 'link',
+                component: QrCodeComponent,
             },
             { path: '**', redirectTo: 'main' },
         ],
