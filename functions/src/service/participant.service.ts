@@ -58,28 +58,3 @@ export const participantSignIn = async (
     if (!participant) throw new Error('Participant does not exist');
     return participant;
 };
-
-// export const selectRandomParticipants = async (
-//     userId: string,
-//     drawId: string
-// ) => {
-//     const random = getRandomInt();
-//     const randomParticipants = firestore
-//         .collection(USERS_KEY)
-//         .doc(userId)
-//         .collection(DRAWS_KEY)
-//         .doc(drawId)
-//         .collection(PARTICIPANTS_KEY)
-//         .where(ParticipantKey.signedIn, '==', true)
-//         .where(ParticipantKey.random, '>=', random);
-
-//     await firestore.runTransaction(async (transaction) => {
-//         const participants = await transaction.get(randomParticipants);
-//     });
-// };
-
-// const getRandomInt = (): number => {
-//     const array = new Uint32Array(1);
-//     crypto.getRandomValues(array);
-//     return array[0];
-// };
