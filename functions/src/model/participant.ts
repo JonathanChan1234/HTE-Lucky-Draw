@@ -32,17 +32,18 @@ export enum ParticipantKey {
 
 export const participantDocToJsonObject = (
     doc: DocumentSnapshot<DocumentData>
-): Participant | undefined =>
-    doc.data()
-        ? {
-              id: doc.id,
-              name: doc.data()?.[ParticipantKey.name],
-              signedIn: doc.data()?.[ParticipantKey.signedIn],
-              signedInAt: doc.data()?.[ParticipantKey.signedInAt],
-              random: doc.data()?.[ParticipantKey.random],
-              prizeWinner: doc.data()?.[ParticipantKey.prizeWinner],
-              prize: doc.data()?.[ParticipantKey.prize],
-              prizeId: doc.data()?.[ParticipantKey.prizeId],
-              message: doc.data()?.[ParticipantKey.message],
-          }
-        : undefined;
+): Participant => {
+    const data = doc.data();
+    if (data === undefined) throw new Error('Empty Doc Data');
+    return {
+        id: doc.id,
+        name: data[ParticipantKey.name],
+        signedIn: data[ParticipantKey.signedIn],
+        signedInAt: data[ParticipantKey.signedInAt],
+        random: data[ParticipantKey.random],
+        prizeWinner: data[ParticipantKey.prizeWinner],
+        prize: data[ParticipantKey.prize],
+        prizeId: data[ParticipantKey.prizeId],
+        message: data[ParticipantKey.message],
+    };
+};

@@ -1,14 +1,19 @@
 import { DocumentData, Query } from 'firebase-admin/firestore';
-import { DRAWS_KEY, USERS_KEY } from 'model/draw';
+import { firestore } from '../firebase';
+import { DRAWS_KEY, USERS_KEY } from '../model/draw';
 import {
     Participant,
     participantDocToJsonObject,
     ParticipantKey,
     PARTICIPANTS_KEY,
-} from 'model/participant';
-import { Prize, prizeDocToJsonObject, PRIZES_KEY } from 'model/prize';
-import { getRandomInt, getRandomWithMax } from 'utils/random';
-import firestore from '../firestore';
+} from '../model/participant';
+import {
+    Prize,
+    prizeDocToJsonObject,
+    PrizeKey,
+    PRIZES_KEY,
+} from '../model/prize';
+import { getRandomInt, getRandomWithMax } from '../utils/random';
 
 export interface PrizeWinnerGroup {
     prize: Prize;
@@ -31,14 +36,9 @@ export const selectRandomParticipants = async (
     await firestore.runTransaction(async (transaction) => {
         const excludedIds: string[] = [];
         for (const prizeId of prizeIds) {
-            const prizeRef = firestore
-                .collection(USERS_KEY)
-                .doc(userId)
-                .collection(DRAWS_KEY)
-                .doc(drawId)
-                .collection(PRIZES_KEY)
-                .doc(prizeId);
-            const prizeDoc = await transaction.get(prizeRef);
+            const prizeDoc = await transaction.get(
+                prizeRefBuilder(userId, drawId, prizeId)
+            );
             const prize = prizeDocToJsonObject(prizeDoc);
             if (!prizeDoc.exists || prize === undefined)
                 throw new Error('Prize does not exists');
@@ -47,49 +47,87 @@ export const selectRandomParticipants = async (
                     `Prize ${prize.name} (ID: ${prize.id}) has already been assigned`
                 );
             const random = getRandomInt();
-            const operator = getRandomWithMax(2) ? '>=' : '<=';
-            let participantRef = randomParticipantQueryHelper(
+            const operator = getRandomWithMax(2);
+            let participantRef = randomParticipantQueryBuilder(
                 userId,
                 drawId,
                 random,
-                operator
+                operator ? '>=' : '<='
             );
-            let group = (await transaction.get(participantRef)).docs
+            let group: Participant[] = (
+                await transaction.get(participantRef)
+            ).docs
                 .map((doc) => participantDocToJsonObject(doc))
-                .filter(
-                    (participant) =>
-                        participant && !excludedIds.includes(participant.id)
-                );
+                .filter((participant) => !excludedIds.includes(participant.id));
 
             if (group.length === 0) {
-                participantRef = randomParticipantQueryHelper(
+                participantRef = randomParticipantQueryBuilder(
                     userId,
                     drawId,
                     random,
-                    operator
+                    operator ? '<=' : '>='
                 );
                 group = (await transaction.get(participantRef)).docs
                     .map((doc) => participantDocToJsonObject(doc))
                     .filter(
-                        (participant) =>
-                            participant && !excludedIds.includes(participant.id)
+                        (participant) => !excludedIds.includes(participant.id)
                     );
             }
             if (group.length === 0)
                 throw new Error('No available participants');
             const winner = group[getRandomWithMax(group.length)];
-            groups.push({
-                prize,
-                winner: winner as Participant,
-                group: group as Participant[],
-            });
+            excludedIds.push(winner.id);
+            groups.push({ prize, winner, group });
         }
-        // TODO: Assign prize to winner
+
+        for (const group of groups) {
+            // Update participant's status
+            transaction.update(
+                participantRefBuilder(userId, drawId, group.winner.id),
+                {
+                    [ParticipantKey.prize]: group.prize.name,
+                    [ParticipantKey.prizeId]: group.prize.id,
+                    [ParticipantKey.prizeWinner]: true,
+                }
+            );
+            // Update prize's status
+            transaction.update(
+                prizeRefBuilder(userId, drawId, group.prize.id),
+                {
+                    [PrizeKey.winner]: group.winner.name,
+                    [PrizeKey.winnerId]: group.winner.id,
+                }
+            );
+        }
     });
     return groups;
 };
 
-const randomParticipantQueryHelper = (
+const prizeRefBuilder = (userId: string, drawId: string, prizeId: string) => {
+    return firestore
+        .collection(USERS_KEY)
+        .doc(userId)
+        .collection(DRAWS_KEY)
+        .doc(drawId)
+        .collection(PRIZES_KEY)
+        .doc(prizeId);
+};
+
+const participantRefBuilder = (
+    userId: string,
+    drawId: string,
+    participantId: string
+) => {
+    return firestore
+        .collection(USERS_KEY)
+        .doc(userId)
+        .collection(DRAWS_KEY)
+        .doc(drawId)
+        .collection(PARTICIPANTS_KEY)
+        .doc(participantId);
+};
+
+const randomParticipantQueryBuilder = (
     userId: string,
     drawId: string,
     random: number,

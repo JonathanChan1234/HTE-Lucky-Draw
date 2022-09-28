@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import firestore from '../firestore';
+import { firestore } from '../firebase';
 import {
     drawDocToJsonData,
     DrawKey,
