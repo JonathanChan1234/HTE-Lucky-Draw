@@ -45,6 +45,11 @@ export class AuthService implements OnDestroy {
         });
     }
 
+    getUserIdToken(): Promise<string> {
+        if (!this.auth.currentUser) throw new Error('Not authenticated');
+        return this.auth.currentUser.getIdToken();
+    }
+
     register(email: string, password: string): Observable<UserCredential> {
         return from(
             createUserWithEmailAndPassword(this.auth, email, password)

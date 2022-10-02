@@ -22,6 +22,7 @@ import { DRAWS_KEY, USERS_KEY } from '../draw/draw';
 import { LuckyDrawService } from '../draw/lucky-draw.service';
 import { Prize, PrizeKey, PRIZES_KEY } from '../prize/prize';
 import { AuthService } from '../service/auth.service';
+import { getRandomInt } from '../utility/random';
 import {
     Participant,
     participantDocToJsonObject,
@@ -286,8 +287,6 @@ export class ParticipantDbService {
                     throw new Error(`Participant ID ${id} already exists`);
             }
             for (const { id, name, message, signedIn } of participants) {
-                const u = new Int32Array(1);
-                const random = crypto.getRandomValues(u);
                 const participantRef = this.getParticipantRef(drawId, id);
                 const participant: Participant = {
                     id,
@@ -298,7 +297,7 @@ export class ParticipantDbService {
                     prize: '',
                     prizeId: '',
                     prizeWinner: false,
-                    random: random[0],
+                    random: getRandomInt(Number.MAX_SAFE_INTEGER),
                 };
                 if (signedIn) signedInCount++;
                 transaction.set(participantRef, participant);

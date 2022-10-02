@@ -4,7 +4,7 @@
     "description": "",
     "main": "lib/src/index.prod.js",
     "scripts": {
-        "dev": "set env=dev && ts-node-dev --respawn --transpile-only src/index.ts",
+        "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
         "build": "set env=prod && tsc",
         "build:start": "set env=prod && tsc && node lib/src/index.prod.js",
         "test": "echo \"Error: no test specified\" && exit 1"

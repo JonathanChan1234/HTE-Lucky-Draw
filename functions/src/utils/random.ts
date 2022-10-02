@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 export const getRandomInt = (): number => {
     const array = new Uint32Array(1);
     crypto.getRandomValues(array);

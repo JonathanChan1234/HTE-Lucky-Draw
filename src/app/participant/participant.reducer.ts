@@ -104,9 +104,7 @@ export const participantReducer = createReducer(
                                   ? undefined
                                   : {
                                         type: 'endBefore',
-                                        id: state.participants[
-                                            state.participants.length - 1
-                                        ].id,
+                                        id: state.participants[0].id,
                                     },
                       },
                   }
@@ -125,7 +123,9 @@ export const participantReducer = createReducer(
                                   ? undefined
                                   : {
                                         type: 'startAfter',
-                                        id: state.participants[0].id,
+                                        id: state.participants[
+                                            state.participants.length - 1
+                                        ].id,
                                     },
                       },
                   }

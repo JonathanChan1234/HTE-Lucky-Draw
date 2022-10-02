@@ -53,6 +53,7 @@ export class PrizeImportDialogComponent implements OnInit {
         if (!this.reader.result) return;
         try {
             this.prizeList = prizeListCsvParser(this.reader.result.toString());
+            this.errMsg = '';
         } catch (error) {
             this.errMsg = (error as Error).message;
         }

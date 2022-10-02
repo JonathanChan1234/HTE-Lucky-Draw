@@ -59,6 +59,7 @@ export class ImportParticipantsDialogComponent implements OnInit {
         };
         if (!this.reader.result) return;
         try {
+            this.errMsg = '';
             this.participantList = participantListCsvParser(
                 this.reader.result.toString()
             );

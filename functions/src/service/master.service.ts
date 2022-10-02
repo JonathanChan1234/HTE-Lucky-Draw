@@ -13,12 +13,12 @@ import {
     PrizeKey,
     PRIZES_KEY,
 } from '../model/prize';
-import { getRandomInt, getRandomWithMax } from '../utils/random';
+import { getRandomWithMax } from '../utils/random';
 
 export interface PrizeWinnerGroup {
     prize: Prize;
     winner: Participant;
-    group: Participant[];
+    candidates: Participant[];
 }
 
 /**
@@ -46,7 +46,7 @@ export const selectRandomParticipants = async (
                 throw new Error(
                     `Prize ${prize.name} (ID: ${prize.id}) has already been assigned`
                 );
-            const random = getRandomInt();
+            const random = getRandomWithMax(Number.MAX_SAFE_INTEGER);
             const operator = getRandomWithMax(2);
             let participantRef = randomParticipantQueryBuilder(
                 userId,
@@ -77,7 +77,7 @@ export const selectRandomParticipants = async (
                 throw new Error('No available participants');
             const winner = group[getRandomWithMax(group.length)];
             excludedIds.push(winner.id);
-            groups.push({ prize, winner, group });
+            groups.push({ prize, winner, candidates: group });
         }
 
         for (const group of groups) {
@@ -94,13 +94,48 @@ export const selectRandomParticipants = async (
             transaction.update(
                 prizeRefBuilder(userId, drawId, group.prize.id),
                 {
+                    [PrizeKey.assigned]: true,
                     [PrizeKey.winner]: group.winner.name,
                     [PrizeKey.winnerId]: group.winner.id,
                 }
             );
         }
     });
+    groups.forEach((group) => console.log(group.winner));
     return groups;
+};
+
+export const resetDraw = (uid: string, drawId: string) => {
+    return firestore.runTransaction(async (transaction) => {
+        const participantCollection = firestore
+            .collection(USERS_KEY)
+            .doc(uid)
+            .collection(DRAWS_KEY)
+            .doc(drawId)
+            .collection(PARTICIPANTS_KEY);
+        const prizeCollection = firestore
+            .collection(USERS_KEY)
+            .doc(uid)
+            .collection(DRAWS_KEY)
+            .doc(drawId)
+            .collection(PRIZES_KEY);
+        const participantDocs = await transaction.get(participantCollection);
+        const prizeDocs = await transaction.get(prizeCollection);
+        participantDocs.docs.forEach((doc) => {
+            transaction.update(doc.ref, {
+                [ParticipantKey.prize]: '',
+                [ParticipantKey.prizeId]: '',
+                [ParticipantKey.prizeWinner]: false,
+            });
+        });
+        prizeDocs.docs.forEach((doc) => {
+            transaction.update(doc.ref, {
+                [PrizeKey.assigned]: false,
+                [PrizeKey.winner]: '',
+                [PrizeKey.winnerId]: '',
+            });
+        });
+    });
 };
 
 const prizeRefBuilder = (userId: string, drawId: string, prizeId: string) => {

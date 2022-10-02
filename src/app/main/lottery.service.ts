@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
     collection,
@@ -9,6 +10,7 @@ import {
     where,
 } from '@angular/fire/firestore';
 import { doc, runTransaction } from '@firebase/firestore';
+import { catchError, Observable } from 'rxjs';
 import { Draw, DRAWS_KEY, USERS_KEY } from '../draw/draw';
 import {
     Participant,
@@ -18,6 +20,7 @@ import {
 } from '../participant/participant';
 import { Prize, PrizeKey, PRIZES_KEY } from '../prize/prize';
 import { AuthService } from '../service/auth.service';
+import { httpHandleErrorFactory } from '../utility/http';
 import { getRandomInt, getRandomKey } from '../utility/random';
 import { DrawGroup } from './draw-main.reducer';
 
@@ -25,7 +28,21 @@ import { DrawGroup } from './draw-main.reducer';
     providedIn: 'root',
 })
 export class LotteryService {
-    constructor(private db: Firestore, private authService: AuthService) {}
+    constructor(
+        private db: Firestore,
+        private authService: AuthService,
+        private httpClient: HttpClient
+    ) {}
+
+    luckyDrawHelper(draw: Draw, prizes: Prize[]): Observable<DrawGroup[]> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return this.httpClient
+            .post<DrawGroup[]>(`${uid}/draw/${draw.id}/luckyDraw`, {
+                prizeIds: prizes.map((prize) => prize.id),
+            })
+            .pipe(catchError(httpHandleErrorFactory));
+    }
 
     async selectRandomParticipants(
         draw: Draw,

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
+import { catchError, exhaustMap, from, map, of, switchMap, tap } from 'rxjs';
 import { DrawSelector } from '../draw/draw.selector';
 import { PrizeService } from '../prize/prize.service';
 import { DrawMainAction } from './draw-main.action';
@@ -63,9 +63,8 @@ export class DrawMainEffect {
                             error: 'Invalid Draw',
                         })
                     );
-                return from(
-                    this.lotteryService.selectRandomParticipants(draw, prizes)
-                ).pipe(
+                return this.lotteryService.luckyDrawHelper(draw, prizes).pipe(
+                    tap((drawGroups) => console.log(drawGroups)),
                     map((drawGroups) =>
                         DrawMainAction.loadDrawGroupsSuccess({
                             drawGroups,

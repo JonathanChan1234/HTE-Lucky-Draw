@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
+import authMiddleware from '../middleware/auth.middleware';
 import validationMiddleware from '../middleware/validation.middleware';
-import { selectRandomParticipants } from '../service/master.service';
+import { resetDraw, selectRandomParticipants } from '../service/master.service';
 import { participantSignIn } from '../service/participant.service';
 
 const router = Router();
 
-// TODO: Add authorization middleware
 router.post(
-    '/:userId/draws/:drawId/lucky',
+    '/:userId/draw/:drawId/luckyDraw',
     validationMiddleware([
         param('userId').exists().not().isEmpty().withMessage('Missing User Id'),
         param('drawId').exists().not().isEmpty().withMessage('Missing Draw Id'),
@@ -17,11 +17,10 @@ router.post(
             .isArray({ min: 1, max: 10 })
             .withMessage('Missing Prize ID'),
     ]),
-    // authMiddleware,
+    authMiddleware,
     async (req, res) => {
         const { userId, drawId } = req.params;
         const { prizeIds } = req.body;
-        console.log(typeof prizeIds);
         try {
             const groups = await selectRandomParticipants(
                 userId,
@@ -35,8 +34,28 @@ router.post(
     }
 );
 
+router.delete(
+    '/:userId/draw/:drawId/reset',
+    validationMiddleware([
+        param('userId').exists().not().isEmpty().withMessage('Missing User Id'),
+        param('drawId').exists().not().isEmpty().withMessage('Missing Draw Id'),
+    ]),
+    authMiddleware,
+    async (req, res) => {
+        const { userId, drawId } = req.params;
+        try {
+            await resetDraw(userId, drawId);
+            return res
+                .status(200)
+                .json({ success: 1, msg: 'reset draw successfully' });
+        } catch (error) {
+            return res.status(400).json({ msg: (error as Error).message });
+        }
+    }
+);
+
 router.post(
-    '/:userId/draws/:drawId/signIn',
+    '/:userId/draw/:drawId/signIn',
     validationMiddleware([
         param('userId').exists().not().isEmpty().withMessage('Missing User Id'),
         param('drawId').exists().not().isEmpty().withMessage('Missing Draw Id'),

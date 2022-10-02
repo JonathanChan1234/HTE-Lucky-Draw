@@ -47,6 +47,7 @@ import { LuckyDrawAppComponent } from './draw/lucky-draw-app/lucky-draw-app.comp
 import { LuckyDrawHomeComponent } from './draw/lucky-draw-home/lucky-draw-home.component';
 import { LuckyDrawToolbarComponent } from './draw/lucky-draw-toolbar/lucky-draw-toolbar.component';
 import { QrCodeComponent } from './draw/qr-code/qr-code.component';
+import { httpInterceptorProviders } from './http-interceptor';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ParticipantSignInComponent } from './pages/participant-sign-in/participant-sign-in.component';
@@ -108,7 +109,10 @@ import { SharedModule } from './shared/shared.module';
         EffectsModule.forRoot([DrawEffects]),
         extModules,
     ],
-    providers: [{ provide: PERSISTENCE, useValue: 'local' }],
+    providers: [
+        { provide: PERSISTENCE, useValue: 'local' },
+        httpInterceptorProviders,
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

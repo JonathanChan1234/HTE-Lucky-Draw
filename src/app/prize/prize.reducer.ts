@@ -87,9 +87,7 @@ export const prizeReducer = createReducer(
                                   ? undefined
                                   : {
                                         type: 'endBefore',
-                                        id: state.prizes[
-                                            state.prizes.length - 1
-                                        ].id,
+                                        id: state.prizes[0].id,
                                     },
                       },
                   }
@@ -108,7 +106,9 @@ export const prizeReducer = createReducer(
                                   ? undefined
                                   : {
                                         type: 'startAfter',
-                                        id: state.prizes[0].id,
+                                        id: state.prizes[
+                                            state.prizes.length - 1
+                                        ].id,
                                     },
                       },
                   }
