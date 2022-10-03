@@ -73,7 +73,6 @@ export class ParticipantCreateDialogComponent implements OnInit {
                 this.dialogRef.close(true);
             },
             error: (error) => {
-                console.log(error.message);
                 this.loading = false;
                 this.errMsg = error.message;
             },

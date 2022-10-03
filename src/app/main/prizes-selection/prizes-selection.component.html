@@ -1,70 +1,88 @@
 <div class="prizes-selection-container">
-    <mat-card>
-        <div class="card-container">
-            <div class="card-header">
-                <div>
-                    <mat-card-title>Lucky Draw</mat-card-title>
-                    <mat-card-subtitle
-                        >Number of prizes to be drawn:
-                        {{ numberOfPrizes }}</mat-card-subtitle
-                    >
-                </div>
-                <button
-                    mat-button
-                    class="setting-btn"
-                    (click)="openSelectionDialog(prizes.length)"
-                    [disabled]="(loadingDrawGroups$ | async) || isAnimating"
-                >
-                    <mat-icon>settings</mat-icon>
-                </button>
-            </div>
-            <mat-card-content>
-                <div *ngIf="prizes.length === 0">
-                    <h3>No prize in your prize list</h3>
-                </div>
-                <div *ngIf="prizes.length > 0 && numberOfPrizes === 1">
-                    <h3>
-                        <p style="font-weight: bold">Next Prize:</p>
-                        {{ prizes[0].sequence }}.
-                        {{ prizes[0].name }}
-                        (Sponsor: {{ prizes[0].sponsor }})
-                    </h3>
-                </div>
-                <div
-                    *ngIf="
-                        prizes.length > 0 &&
-                        numberOfPrizes > 1 &&
-                        numberOfPrizes <= prizes.length
-                    "
-                >
-                    <div>
-                        <h3>
-                            <p style="font-weight: bold">Next Prize:</p>
-                            {{ prizes[0].sequence }}.
-                            {{ prizes[0].name }}
-                            (Sponsor: {{ prizes[0].sponsor }}) -
-                            {{ prizes[numberOfPrizes - 1].sequence }}.
-                            {{ prizes[numberOfPrizes - 1].name }}
-                            (Sponsor: {{ prizes[numberOfPrizes - 1].sponsor }})
-                        </h3>
+    <ng-container *ngIf="loading$ | async; else notLoading">
+        <app-loading-spinner msg="Fetching Prize List"></app-loading-spinner>
+    </ng-container>
+    <ng-container *ngIf="error$ | async as error">
+        <app-error-message-bar [errMsg]="error"></app-error-message-bar>
+    </ng-container>
+    <ng-template #notLoading>
+        <ng-container *ngIf="prizes$ | async as prizes">
+            <mat-card>
+                <div class="card-container">
+                    <div class="card-header">
+                        <div>
+                            <mat-card-title>Lucky Draw</mat-card-title>
+                            <mat-card-subtitle
+                                >Number of prizes to be drawn:
+                                {{
+                                    prizes.length === 0 ? 0 : numberOfPrizes
+                                }}</mat-card-subtitle
+                            >
+                        </div>
+                        <button
+                            mat-button
+                            class="setting-btn"
+                            (click)="openSelectionDialog(prizes.length)"
+                            [disabled]="
+                                (loadingDrawGroups$ | async) ||
+                                isAnimating ||
+                                prizes.length === 0
+                            "
+                        >
+                            <mat-icon>settings</mat-icon>
+                        </button>
+                    </div>
+                    <mat-card-content>
+                        <div *ngIf="prizes.length === 0">
+                            <h3>No prize in your prize list</h3>
+                        </div>
+                        <div *ngIf="prizes.length > 0 && numberOfPrizes === 1">
+                            <h3>
+                                <p style="font-weight: bold">Next Prize:</p>
+                                {{ prizes[0].sequence }}.
+                                {{ prizes[0].name }}
+                                (Sponsor: {{ prizes[0].sponsor }})
+                            </h3>
+                        </div>
+                        <div
+                            *ngIf="
+                                prizes.length > 0 &&
+                                numberOfPrizes > 1 &&
+                                numberOfPrizes <= prizes.length
+                            "
+                        >
+                            <div>
+                                <h3>
+                                    <p style="font-weight: bold">Next Prize:</p>
+                                    {{ prizes[0].sequence }}.
+                                    {{ prizes[0].name }}
+                                    (Sponsor: {{ prizes[0].sponsor }}) -
+                                    {{ prizes[numberOfPrizes - 1].sequence }}.
+                                    {{ prizes[numberOfPrizes - 1].name }}
+                                    (Sponsor:
+                                    {{ prizes[numberOfPrizes - 1].sponsor }})
+                                </h3>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                    <div class="start-draw-btn-container">
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            class="draw-button"
+                            [disabled]="
+                                (loadingDrawGroups$ | async) ||
+                                isAnimating ||
+                                prizes.length === 0
+                            "
+                            (click)="startDraw(prizes)"
+                        >
+                            <mat-icon>redeem</mat-icon>
+                            Start
+                        </button>
                     </div>
                 </div>
-            </mat-card-content>
-            <div class="start-draw-btn-container">
-                <button
-                    mat-raised-button
-                    color="primary"
-                    class="draw-button"
-                    [disabled]="(loadingDrawGroups$ | async) || isAnimating"
-                    (click)="startDraw(prizes)"
-                >
-                    <mat-icon>redeem</mat-icon>
-                    Start
-                </button>
-            </div>
-        </div>
-    </mat-card>
+            </mat-card>
+        </ng-container>
+    </ng-template>
 </div>
-<app-draw-groups
-    (setAnimating)="disablePrizeSelection($event)"
-></app-draw-groups>

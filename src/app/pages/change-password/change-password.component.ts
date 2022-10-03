@@ -72,7 +72,6 @@ export class ChangePasswordComponent implements OnInit {
     ngOnInit(): void {}
 
     changePassword(): void {
-        console.log('change password');
         if (this.formGroup.invalid) return;
         const { oldPassword, newPassword } = this.formGroup.value;
         if (!oldPassword || !newPassword) return;

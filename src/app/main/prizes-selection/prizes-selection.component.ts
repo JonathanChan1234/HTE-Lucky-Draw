@@ -1,10 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { filter, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Prize } from 'src/app/prize/prize';
 import { DrawMainAction } from '../draw-main.action';
-import { DrawGroup } from '../draw-main.reducer';
 import { DrawMainSelector } from '../draw-main.selector';
 import { PrizesSelectionDialogComponent } from '../prizes-selection-dialog/prizes-selection-dialog.component';
 
@@ -15,27 +14,27 @@ import { PrizesSelectionDialogComponent } from '../prizes-selection-dialog/prize
 })
 export class PrizesSelectionComponent implements OnInit {
     @Input()
-    prizes!: Prize[];
+    isAnimating!: boolean;
 
-    drawGroups$!: Observable<DrawGroup[]>;
+    prizes$!: Observable<Prize[]>;
+    loading$!: Observable<boolean>;
+    error$!: Observable<string | undefined>;
     loadingDrawGroups$!: Observable<boolean>;
-    loadDrawGroupsError$!: Observable<string | undefined>;
-
-    isAnimating = false;
 
     numberOfPrizes = 1;
 
     constructor(private readonly store: Store, private matDialog: MatDialog) {}
 
     ngOnInit(): void {
-        this.drawGroups$ = this.store
-            .select(DrawMainSelector.selectDrawGroups)
-            .pipe(filter((groups) => groups.length !== 0));
+        this.prizes$ = this.store.select(DrawMainSelector.selectPrizes);
+        this.loading$ = this.store.select(
+            DrawMainSelector.selectLoadingPrizeList
+        );
+        this.error$ = this.store.select(
+            DrawMainSelector.selectLoadingPrizeError
+        );
         this.loadingDrawGroups$ = this.store.select(
             DrawMainSelector.selectLoadingDrawGroups
-        );
-        this.loadDrawGroupsError$ = this.store.select(
-            DrawMainSelector.selectLoadDrawGroupError
         );
     }
 
@@ -62,9 +61,5 @@ export class PrizesSelectionComponent implements OnInit {
                 prizes: prizes.slice(0, this.numberOfPrizes),
             })
         );
-    }
-
-    disablePrizeSelection(isAnimating: boolean): void {
-        this.isAnimating = isAnimating;
     }
 }

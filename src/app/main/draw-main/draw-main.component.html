@@ -1,11 +1,4 @@
 <div class="draw-main-container">
-    <ng-container *ngIf="loading$ | async">
-        <app-loading-spinner msg="Fetching Prize List"></app-loading-spinner>
-    </ng-container>
-    <ng-container *ngIf="prizes$ | async as prizes">
-        <app-prizes-selection [prizes]="prizes"></app-prizes-selection>
-    </ng-container>
-    <ng-container *ngIf="error$ | async as error">
-        <app-error-message-bar [errMsg]="error"></app-error-message-bar>
-    </ng-container>
+    <app-prizes-selection [isAnimating]="isAnimating"></app-prizes-selection>
+    <app-draw-groups (setAnimating)="setAnimating($event)"></app-draw-groups>
 </div>

@@ -1,5 +1,4 @@
 import { createReducer, on } from '@ngrx/store';
-import { isEqual } from 'lodash';
 import { environment } from 'src/environments/environment';
 import { Prize } from './prize';
 import { PrizeAction } from './prize.action';
@@ -62,7 +61,7 @@ export const prizeReducer = createReducer(
     on(
         PrizeAction.setPrizeFilter,
         (state, { filter }): PrizeState =>
-            isEqual(state.pageOption.filter, filter)
+            isPrizeFilterEqual(state.pageOption.filter, filter)
                 ? state
                 : {
                       ...state,
@@ -169,3 +168,13 @@ export const prizeReducer = createReducer(
         })
     )
 );
+
+const isPrizeFilterEqual = (
+    filter: PrizeSearchFilter,
+    newFilter: PrizeSearchFilter
+) => {
+    return (
+        filter.assigned === newFilter.assigned &&
+        filter.searchValue === newFilter.searchValue
+    );
+};

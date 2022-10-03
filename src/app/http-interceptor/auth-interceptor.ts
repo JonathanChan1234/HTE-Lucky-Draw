@@ -18,9 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
-        console.log(this.isAuthUrl(req.url));
-
-        // if (!this.isAuthUrl(req.url)) return next.handle(req);
+        if (!this.isAuthUrl(req.url)) return next.handle(req);
 
         return from(this.authService.getUserIdToken()).pipe(
             switchMap((idToken) => {
@@ -38,7 +36,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
     isAuthUrl(url: string): boolean {
         for (const authUrl of this.AUTH_URL) {
-            if (authUrl.test(url)) return true;
+            if (authUrl.test(url)) {
+                authUrl.lastIndex = 0;
+                return true;
+            }
+            authUrl.lastIndex = 0;
         }
         return false;
     }
