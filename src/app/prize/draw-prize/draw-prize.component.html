@@ -1,5 +1,8 @@
 <div class="draw-prize-container">
     <h2>Prize List</h2>
+    <ng-container *ngIf="requestError$ | async as requestError">
+        <app-error-message-bar [errMsg]="requestError"></app-error-message-bar>
+    </ng-container>
     <app-prize-toolbar></app-prize-toolbar>
     <app-prize-search-bar></app-prize-search-bar>
     <app-prize-list></app-prize-list>
@@ -9,7 +12,4 @@
             msg="Processing Your Request"
         ></app-loading-spinner>
     </div>
-    <ng-container *ngIf="requestError$ | async as requestError">
-        <app-error-message-bar [errMsg]="requestError"></app-error-message-bar>
-    </ng-container>
 </div>

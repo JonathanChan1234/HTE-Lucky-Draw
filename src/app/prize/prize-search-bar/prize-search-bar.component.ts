@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { first, Subscription } from 'rxjs';
 import { PrizeAction } from '../prize.action';
+import { PrizeSelector } from '../prize.selector';
 
 interface PrizeFilterForm {
     searchValue: FormControl<string>;
@@ -13,23 +15,43 @@ interface PrizeFilterForm {
     templateUrl: './prize-search-bar.component.html',
     styleUrls: ['./prize-search-bar.component.scss'],
 })
-export class PrizeSearchBarComponent implements OnInit {
+export class PrizeSearchBarComponent implements OnInit, OnDestroy {
     formGroup: FormGroup<PrizeFilterForm>;
+    subscription!: Subscription;
 
     constructor(private readonly store: Store) {
         this.formGroup = new FormGroup({
-            searchValue: new FormControl<string>('', { nonNullable: true }),
+            searchValue: new FormControl<string>('', {
+                nonNullable: true,
+            }),
             assigned: new FormControl<'all' | 'assigned' | 'notAssigned'>(
                 'all',
-                { nonNullable: true }
+                {
+                    nonNullable: true,
+                }
             ),
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.subscription = this.store
+            .select(PrizeSelector.selectFilter)
+            .pipe(first())
+            .subscribe((filter) => {
+                this.formGroup.setValue({
+                    searchValue: filter.searchValue ?? '',
+                    assigned:
+                        filter.assigned === undefined
+                            ? 'all'
+                            : filter.assigned
+                            ? 'assigned'
+                            : 'notAssigned',
+                });
+            });
+    }
 
     updatePrizeFilter() {
+        if (!this.formGroup) return;
         if (this.formGroup.invalid) return;
         const { searchValue, assigned } = this.formGroup.value;
         if (searchValue === undefined || assigned === undefined) return;
@@ -44,5 +66,9 @@ export class PrizeSearchBarComponent implements OnInit {
                 },
             })
         );
+    }
+
+    ngOnDestroy(): void {
+        if (this.subscription) this.subscription.unsubscribe();
     }
 }

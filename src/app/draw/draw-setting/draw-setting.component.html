@@ -80,6 +80,20 @@
                             </p>
                         </div>
                     </mat-list-item>
+                    <mat-divider></mat-divider>
+                    <mat-list-item>
+                        <div mat-line>Reset Draw Status</div>
+                        <div mat-line>
+                            (This would set all the prizes to be unassigned)
+                        </div>
+                        <button
+                            mat-raised-button
+                            color="accent"
+                            (click)="resetDraw(draw)"
+                        >
+                            Reset
+                        </button>
+                    </mat-list-item>
                 </mat-list>
             </ng-template>
         </div>

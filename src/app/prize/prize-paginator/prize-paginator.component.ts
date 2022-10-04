@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { first, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { PrizeAction } from '../prize.action';
 import { PrizeSelector } from '../prize.selector';
 
@@ -11,7 +12,7 @@ import { PrizeSelector } from '../prize.selector';
     styleUrls: ['./prize-paginator.component.scss'],
 })
 export class PrizePaginatorComponent implements OnInit {
-    pageSize = 1;
+    pageSize = environment.production ? 10 : 1;
     reachStart$!: Observable<boolean>;
     reachEnd$!: Observable<boolean>;
 
@@ -20,6 +21,12 @@ export class PrizePaginatorComponent implements OnInit {
     ngOnInit(): void {
         this.reachStart$ = this.store.select(PrizeSelector.selectReachStart);
         this.reachEnd$ = this.store.select(PrizeSelector.selectReachEnd);
+        this.store
+            .select(PrizeSelector.selectPageSize)
+            .pipe(first())
+            .subscribe((pageSize) => {
+                this.pageSize = pageSize;
+            });
     }
 
     pageSizeChange({ value: pageSize }: MatSelectChange) {

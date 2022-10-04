@@ -5,8 +5,7 @@ export function httpHandleErrorFactory(error: HttpErrorResponse) {
     if (error.status === 403)
         return throwError(() => new Error('Unauthenticated'));
     if (error.status === 0) {
-        // A client-side or network error occurred. Handle it accordingly.
-        console.error('Error at RoomService; Client Side:', error.error);
+        return throwError(() => new Error(`Error: ${error.error}`));
     } else {
         // The backend returned an unsuccessful response code.
         console.error(

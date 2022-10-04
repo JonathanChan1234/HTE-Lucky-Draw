@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
 import { from, Observable } from 'rxjs';
 import { Draw } from 'src/app/draw/draw';
 import { LuckyDrawService } from 'src/app/draw/lucky-draw.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 import { DrawAction } from '../draw.action';
 import { DrawSelector } from '../draw.selector';
 
@@ -25,7 +27,8 @@ export class DrawSettingComponent implements OnInit {
     constructor(
         private readonly store: Store,
         private matSnackBar: MatSnackBar,
-        private luckyDrawService: LuckyDrawService
+        private luckyDrawService: LuckyDrawService,
+        private matDialog: MatDialog
     ) {
         this.nameFormControl = new FormControl('', [
             Validators.required,
@@ -139,5 +142,35 @@ export class DrawSettingComponent implements OnInit {
                 },
             }
         );
+    }
+
+    resetDraw(draw: Draw): void {
+        const matDialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+            data: {
+                title: 'Reset Draw',
+                content:
+                    'Dangerous Action: All the prize would be set to unassigned.\n However, all your participants and prize data would be remained unchanged',
+            },
+        });
+        matDialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
+            this.loading = true;
+            this.luckyDrawService.resetDraw(draw.id).subscribe({
+                next: () => {
+                    this.loading = false;
+                    this.matSnackBar.open(
+                        `✔️ Reset Draw Successfully`,
+                        'close',
+                        { duration: 2000 }
+                    );
+                },
+                error: (err) => {
+                    this.loading = false;
+                    this.matSnackBar.open(`⚠️ ${err.message}`, 'close', {
+                        duration: 2000,
+                    });
+                },
+            });
+        });
     }
 }

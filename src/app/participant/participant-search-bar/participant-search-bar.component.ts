@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { first } from 'rxjs';
 import { ParticipantAction } from '../participant.action';
+import { ParticipantSelector } from '../participant.selector';
 
 interface ParticipantFilterForm {
     searchValue: FormControl<string>;
@@ -34,8 +36,29 @@ export class ParticipantSearchBarComponent implements OnInit {
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.store
+            .select(ParticipantSelector.selectFilter)
+            .pipe(first())
+            .subscribe((filter) => {
+                this.formGroup.setValue({
+                    searchValue: filter.searchValue ?? '',
+                    searchField: filter.searchField,
+                    signIn:
+                        filter.signedIn === undefined
+                            ? 'all'
+                            : filter.signedIn
+                            ? 'signIn'
+                            : 'notSignIn',
+                    prizeWinner:
+                        filter.prizeWinner === undefined
+                            ? 'all'
+                            : filter.prizeWinner
+                            ? 'winner'
+                            : 'notWinner',
+                });
+            });
+    }
 
     updateParticipantFilter() {
         const { searchField, searchValue, signIn, prizeWinner } =

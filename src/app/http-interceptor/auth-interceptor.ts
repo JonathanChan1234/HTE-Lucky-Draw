@@ -10,7 +10,7 @@ import { AuthService } from '../service/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    AUTH_URL: RegExp[] = [/.+\/draw\/.+\/luckyDraw/gm];
+    AUTH_URL: RegExp[] = [/.+\/draw\/.+\/luckyDraw/gm, /.+\/draw\/.+\/reset/gm];
 
     constructor(private authService: AuthService) {}
 

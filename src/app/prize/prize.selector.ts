@@ -24,6 +24,16 @@ const selectPageOption = createSelector(
     ({ pageOption }) => pageOption
 );
 
+const selectFilter = createSelector(
+    selectFeature,
+    ({ pageOption }) => pageOption.filter
+);
+
+const selectPageSize = createSelector(
+    selectFeature,
+    ({ pageOption }) => pageOption.pageSize
+);
+
 const selectHandlingRequest = createSelector(
     selectFeature,
     ({ handlingRequest }) => handlingRequest
@@ -40,6 +50,8 @@ export const PrizeSelector = {
     selectPrizeList,
     selectReachStart,
     selectReachEnd,
+    selectFilter,
+    selectPageSize,
     selectPageOption,
     selectHandlingRequest,
     selectRequestError,

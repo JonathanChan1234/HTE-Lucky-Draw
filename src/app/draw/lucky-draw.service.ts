@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
     collection,
@@ -20,9 +21,10 @@ import {
     DocumentReference,
     updateDoc,
 } from '@firebase/firestore';
-import { from, Observable } from 'rxjs';
+import { catchError, from, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../service/auth.service';
+import { httpHandleErrorFactory } from '../utility/http';
 import { Draw, drawDocToJsonData, DrawKey, DRAWS_KEY, USERS_KEY } from './draw';
 
 export interface DrawList {
@@ -34,7 +36,11 @@ export interface DrawList {
     providedIn: 'root',
 })
 export class LuckyDrawService {
-    constructor(private db: Firestore, private authService: AuthService) {}
+    constructor(
+        private db: Firestore,
+        private authService: AuthService,
+        private httpClient: HttpClient
+    ) {}
 
     getDrawById(drawId: string): Observable<Draw> {
         return from(this.getDrawByIdAsync(drawId));
@@ -53,6 +59,14 @@ export class LuckyDrawService {
 
     deleteDraw(id: string): Observable<void> {
         return from(this.deleteDrawAsync(id));
+    }
+
+    resetDraw(id: string): Observable<void> {
+        const uid = this.authService.getUserId();
+        if (!uid) throw new Error('Not signed in');
+        return this.httpClient
+            .delete<void>(`${uid}/draw/${id}/reset`)
+            .pipe(catchError(httpHandleErrorFactory));
     }
 
     getDrawDoc(drawId: string): DocumentReference<DocumentData> {
