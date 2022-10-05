@@ -8,7 +8,10 @@
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
         "lint": "ng lint",
-        "emulators": "firebase emulators:start --import=./emulators"
+        "emulators:start": "firebase emulators:start --import=./emulators",
+        "emulators:export": "firebase emulators:export ./emulators",
+        "functions:deploy": "cd functions && tsc && cd .. && firebase deploy --only functions",
+        "build:deploy": "ng build && firebase deploy --only hosting"
     },
     "private": true,
     "dependencies": {

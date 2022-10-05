@@ -27,6 +27,11 @@
     ],
     "rewrites": [
       {
+        "source": "/app",
+        "function": "app",
+        "regions": "us-central1"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

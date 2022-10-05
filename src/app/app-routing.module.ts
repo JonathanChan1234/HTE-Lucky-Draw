@@ -75,11 +75,6 @@ const routes: Routes = [
         ],
         canActivate: [FirebaseAuthPrivateGuard],
     },
-    {
-        path: '**',
-        component: LuckyDrawHomeComponent,
-        canActivate: [FirebaseAuthPrivateGuard],
-    },
 ];
 
 @NgModule({

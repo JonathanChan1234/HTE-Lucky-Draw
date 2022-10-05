@@ -5,7 +5,11 @@ import router from './router';
 
 const app = Express();
 
-app.use(cors());
+app.use(
+    cors({
+        origin: 'https://hte-lucky-draw.web.app',
+    })
+);
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use('/', router);
