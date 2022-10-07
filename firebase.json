@@ -27,7 +27,7 @@
     ],
     "rewrites": [
       {
-        "source": "/app",
+        "source": "/app/**",
         "function": "app",
         "regions": "us-central1"
       },

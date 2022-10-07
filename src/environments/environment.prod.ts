@@ -10,5 +10,5 @@ export const environment = {
     },
     useEmulators: false,
     production: true,
-    host: 'https://hte-lucky-draw.web.app/app',
+    host: 'https://us-central1-hte-lucky-draw.cloudfunctions.net/app',
 };
