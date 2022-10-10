@@ -14,6 +14,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '../shared/shared.module';
@@ -65,6 +66,7 @@ import { prizeFeatureKey, prizeReducer } from './prize.reducer';
         MatSnackBarModule,
         MatCheckboxModule,
         MatAutocompleteModule,
+        MatTooltipModule,
     ],
 })
 export class PrizeModule {}

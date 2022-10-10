@@ -1,14 +1,11 @@
 .login-page-container {
-    margin: 10px;
-}
-
-.login-page-container {
+    box-sizing: border-box;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
     align-items: center;
-    margin-top: 10px;
 }
 
 .login-form {

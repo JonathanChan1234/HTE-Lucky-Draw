@@ -1,6 +1,6 @@
 import { DocumentData, Query } from 'firebase-admin/firestore';
 import { firestore } from '../firebase';
-import { DRAWS_KEY, USERS_KEY } from '../model/draw';
+import { drawDocToJsonData, DRAWS_KEY, USERS_KEY } from '../model/draw';
 import {
     Participant,
     participantDocToJsonObject,
@@ -34,6 +34,15 @@ export const selectRandomParticipants = async (
 ) => {
     const groups: PrizeWinnerGroup[] = [];
     await firestore.runTransaction(async (transaction) => {
+        const drawDoc = await transaction.get(
+            firestore
+                .collection(USERS_KEY)
+                .doc(userId)
+                .collection(DRAWS_KEY)
+                .doc(drawId)
+        );
+        if (!drawDoc.exists) throw new Error('Draw Id does not exist');
+        const draw = drawDocToJsonData(drawDoc);
         const excludedIds: string[] = [];
         for (const prizeId of prizeIds) {
             const prizeDoc = await transaction.get(
@@ -52,7 +61,8 @@ export const selectRandomParticipants = async (
                 userId,
                 drawId,
                 random,
-                operator ? '>=' : '<='
+                operator ? '>=' : '<=',
+                draw.signInRequired
             );
             let group: Participant[] = (
                 await transaction.get(participantRef)
@@ -65,7 +75,8 @@ export const selectRandomParticipants = async (
                     userId,
                     drawId,
                     random,
-                    operator ? '<=' : '>='
+                    operator ? '<=' : '>=',
+                    draw.signInRequired
                 );
                 group = (await transaction.get(participantRef)).docs
                     .map((doc) => participantDocToJsonObject(doc))
@@ -166,7 +177,8 @@ const randomParticipantQueryBuilder = (
     userId: string,
     drawId: string,
     random: number,
-    operator: '>=' | '<='
+    operator: '>=' | '<=',
+    signInRequired: boolean
 ): Query<DocumentData> => {
     return firestore
         .collection(USERS_KEY)
@@ -174,7 +186,7 @@ const randomParticipantQueryBuilder = (
         .collection(DRAWS_KEY)
         .doc(drawId)
         .collection(PARTICIPANTS_KEY)
-        .where(ParticipantKey.signedIn, '==', true)
+        .where(ParticipantKey.signedIn, '==', signInRequired)
         .where(ParticipantKey.prizeWinner, '==', false)
         .where(ParticipantKey.random, operator, random)
         .limit(10);

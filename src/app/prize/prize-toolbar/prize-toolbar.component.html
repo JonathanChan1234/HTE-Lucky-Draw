@@ -1,10 +1,27 @@
 <div class="prize-toolbar">
-    <button mat-raised-button color="primary" (click)="openImportPrizeDialog()">
-        <mat-icon>file_upload</mat-icon>
-        {{ (isSmallScreen$ | async) ? '' : 'Upload a template file' }}
+    <button
+        mat-raised-button
+        (click)="downloadTemplateFile()"
+        matTooltip="Download Template File"
+    >
+        <mat-icon>file_download</mat-icon>
+        {{ (isSmallScreen$ | async) ? '' : 'Download template file' }}
     </button>
-    <button mat-raised-button (click)="openCreatePrizeDialog()">
+    <button
+        mat-raised-button
+        color="primary"
+        (click)="openImportPrizeDialog()"
+        matTooltip="Import Template File"
+    >
+        <mat-icon>file_upload</mat-icon>
+        {{ (isSmallScreen$ | async) ? '' : 'Import' }}
+    </button>
+    <button
+        mat-raised-button
+        (click)="openCreatePrizeDialog()"
+        matTooltip="New Prize"
+    >
         <mat-icon>redeem</mat-icon>
-        {{ (isSmallScreen$ | async) ? '' : 'Add Prize' }}
+        {{ (isSmallScreen$ | async) ? '' : 'New' }}
     </button>
 </div>

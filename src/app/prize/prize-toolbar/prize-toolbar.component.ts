@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
+import { downloadFile } from 'src/app/utility/download';
 import { PrizeCreateDialogComponent } from '../prize-create-dialog/prize-create-dialog.component';
 import { PrizeImportDialogComponent } from '../prize-import-dialog/prize-import-dialog.component';
 import { PrizeAction } from '../prize.action';
@@ -60,5 +61,9 @@ export class PrizeToolbarComponent implements OnInit {
             if (!prizes) return;
             this.store.dispatch(PrizeAction.createPrize({ prizes }));
         });
+    }
+
+    downloadTemplateFile(): void {
+        downloadFile('./assets/prize.csv', 'prize_template');
     }
 }

@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
@@ -77,6 +78,7 @@ import {
         MatCardModule,
         MatSelectModule,
         MatCheckboxModule,
+        MatTooltipModule,
     ],
 })
 export class ParticipantModule {}

@@ -44,7 +44,7 @@
     <button
         mat-raised-button
         color="primary"
-        [disabled]="loadingState.loading"
+        [disabled]="loadingState.loading || participantList.length === 0"
         (click)="importParticipantList()"
     >
         Import

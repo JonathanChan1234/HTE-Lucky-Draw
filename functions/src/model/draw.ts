@@ -31,16 +31,17 @@ export enum DrawKey {
 
 export const drawDocToJsonData = (
     doc: DocumentSnapshot<DocumentData>
-): Draw | undefined =>
-    doc.data()
-        ? {
-              id: doc.id,
-              name: doc.data()?.['name'],
-              prizeCount: doc.data()?.['prizeCount'],
-              participantCount: doc.data()?.['participantCount'],
-              signInCount: doc.data()?.['signInCount'],
-              signInRequired: doc.data()?.['signInRequired'],
-              lock: doc.data()?.['lock'],
-              createdAt: doc.data()?.['createdAt'],
-          }
-        : undefined;
+): Draw => {
+    const data = doc.data();
+    if (data === undefined) throw new Error('Draw cannot be decoded');
+    return {
+        id: doc.id,
+        name: data[DrawKey.name],
+        prizeCount: data[DrawKey.prizeCount],
+        participantCount: data[DrawKey.participantCount],
+        signInCount: data[DrawKey.signInCount],
+        signInRequired: data[DrawKey.signInRequired],
+        lock: data[DrawKey.lock],
+        createdAt: data[DrawKey.createdAt],
+    };
+};

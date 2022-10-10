@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ScreenSizeService } from 'src/app/service/screen-size/screen-size.service';
+import { downloadFile } from 'src/app/utility/download';
 import { ImportParticipantsDialogComponent } from '../import-participants-dialog/import-participants-dialog.component';
 import { ParticipantCreateDialogComponent } from '../participant-create-dialog/participant-create-dialog.component';
 import { ParticipantAction } from '../participant.action';
@@ -57,5 +58,9 @@ export class DrawParticipantsComponent implements OnInit {
             if (!result) return;
             this.store.dispatch(ParticipantAction.loadParticipant());
         });
+    }
+
+    downloadTemplateFile(): void {
+        downloadFile('./assets/participant.csv', 'participant_template');
     }
 }

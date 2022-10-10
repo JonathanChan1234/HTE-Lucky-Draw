@@ -41,7 +41,7 @@
     <button
         mat-raised-button
         color="primary"
-        [disabled]="loadingState.loading"
+        [disabled]="loadingState.loading || prizeList.length === 0"
         (click)="importPrizeList()"
     >
         Import
