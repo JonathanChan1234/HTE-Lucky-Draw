@@ -12,7 +12,7 @@ export const environment = {
         messagingSenderId: '427079540763',
         measurementId: 'G-BJZ22HC5GN',
     },
-    useEmulators: true,
+    useEmulators: false,
     production: false,
     apiKey: 'AIzaSyAGSPLZPEfz7gu2dAxNBrvp-PGMVlJcR-w',
     authDomain: 'hte-lucky-draw.firebaseapp.com',
@@ -21,8 +21,8 @@ export const environment = {
     messagingSenderId: '427079540763',
     appId: '1:427079540763:web:693188f007abf9823dd8be',
     measurementId: 'G-BJZ22HC5GN',
+    // host: 'https://us-central1-hte-lucky-draw.cloudfunctions.net/app',
     host: 'http://localhost:5002',
-    // host: 'http://localhost:5001/hte-lucky-draw/us-central1/app',
 };
 
 /*
