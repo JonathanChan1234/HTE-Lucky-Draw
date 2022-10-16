@@ -1,27 +1,79 @@
-# HteLuckyDraw
+# HTE Lucky Draw
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.6.
+Lucky Draw Serverless Web App
 
-## Development server
+## Live Demo
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Check out https://hte-lucky-draw.web.app
 
-## Code scaffolding
+## Framework
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### 🔨**Frontend**
 
-## Build
+-   Angular 14
+-   Angular Material
+-   NgRX
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### 💻**Backend**
 
-## Running unit tests
+-   Firebase Firestore
+-   Firebase Cloud Function (NodeJs Express)
+-   Firebase Authentication
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Features
 
-## Running end-to-end tests
+-   Participant Management (Creating, editing and deleting participants)
+-   Prize Management (Creating, editing and deleting prizes)
+-   Selecting multiple random participants from elgible list
+-   Advanced Settings (Set if the draw requires the participants to sign in, Lock draw i.e. not allow participants to sign in)
+-   Resetting Draw
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Development
 
-## Further help
+```bash
+yarn start
+# Check out http://localhost:4200
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Build and Deploy
+
+```bash
+# Angular
+# Please update the firebase.json and environment.prod.ts according to your project
+yarn build:deploy
+# Cloud Function
+# Please put your service account key in the functions directory first
+yarn functions:deploy
+```
+
+## Project Structure
+
+    ├──functions
+        ├── src
+            ├── middleware                  # Middleware for validation and authentication
+            ├── model                       # Data Model Class
+            ├── router                      # Express Router (Controller)
+            ├── service                     # Service handling business logic
+            ├── utils                       # Utility functions
+            ├── firebase.ts                 # Exporting Firebase Object (Auth, Firestore)
+            ├── index.ts                    # Entry Class for Development (With development server)
+            ├── index.prod.ts               # Entry Class for Production
+    ├──src
+        ├── app
+            ├── build-specific              # For NgRx Redux Dev Tools
+            ├── constants                   # Storing Screen Size Constants
+            ├── draw                        # Non-lazy loading Components for Lucky Draw Dashboard
+            ├── guard                       # Angular Guard for routing
+            ├── http-interceptor            # Angular HTTP Interceptor for authentication
+            ├── main                        # Angular NgModule For Lucky Draw Main Page
+            ├── pages                       # Other non-lazy loading components (register, login page, etc.)
+            ├── participants                # Angular NgModule For Participant Dashboard
+            ├── prizes                      # Angular NgModule for Prize Dashboard
+            ├── service                     # Angular Service (Used Globally)
+            ├── shared                      # Commonly used utils comopnents for other modules
+            ├── utility                     # Utils Functions
+        ├── app-routing.module.ts           # Angular global routing module
+        ├── app.component.html
+        ├── app.component.scss
+        ├── app.component.ts
+        ├── app.module.ts
