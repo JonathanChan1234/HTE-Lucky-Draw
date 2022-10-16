@@ -78,6 +78,7 @@ const routes: Routes = [
     {
         path: '**',
         component: LuckyDrawHomeComponent,
+        canActivate: [FirebaseAuthPrivateGuard],
     },
 ];
 

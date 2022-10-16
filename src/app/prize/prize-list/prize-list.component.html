@@ -11,8 +11,13 @@
 <mat-list *ngIf="prizes$ | async">
     <ng-container *ngFor="let prize of prizes$ | async">
         <mat-list-item>
-            <div mat-line>{{ prize.name }} (Sponsor: {{ prize.sponsor }})</div>
-            <div mat-line>Order: {{ prize.sequence }}</div>
+            <div mat-line>
+                {{ prize.sequence }}. {{ prize.name }} (Sponsor:
+                {{ prize.sponsor }})
+            </div>
+            <div mat-line *ngIf="prize.assigned">
+                (Winner: {{ prize.winnerId }} {{ prize.winner }})
+            </div>
             <mat-chip-list mat-line>
                 <mat-chip color="primary" selected *ngIf="prize.assigned">
                     Assigned

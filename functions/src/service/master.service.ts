@@ -116,37 +116,48 @@ export const selectRandomParticipants = async (
     return groups;
 };
 
-export const resetDraw = (uid: string, drawId: string) => {
-    return firestore.runTransaction(async (transaction) => {
-        const participantCollection = firestore
-            .collection(USERS_KEY)
-            .doc(uid)
-            .collection(DRAWS_KEY)
-            .doc(drawId)
-            .collection(PARTICIPANTS_KEY);
-        const prizeCollection = firestore
-            .collection(USERS_KEY)
-            .doc(uid)
-            .collection(DRAWS_KEY)
-            .doc(drawId)
-            .collection(PRIZES_KEY);
-        const participantDocs = await transaction.get(participantCollection);
-        const prizeDocs = await transaction.get(prizeCollection);
-        participantDocs.docs.forEach((doc) => {
-            transaction.update(doc.ref, {
-                [ParticipantKey.prize]: '',
-                [ParticipantKey.prizeId]: '',
-                [ParticipantKey.prizeWinner]: false,
+export const resetDraw = async (uid: string, drawId: string) => {
+    const participantDocs = await firestore
+        .collection(USERS_KEY)
+        .doc(uid)
+        .collection(DRAWS_KEY)
+        .doc(drawId)
+        .collection(PARTICIPANTS_KEY)
+        .where(ParticipantKey.prizeWinner, '==', true)
+        .get();
+    const prizeDocs = await firestore
+        .collection(USERS_KEY)
+        .doc(uid)
+        .collection(DRAWS_KEY)
+        .doc(drawId)
+        .collection(PRIZES_KEY)
+        .where(PrizeKey.assigned, '==', true)
+        .get();
+
+    for (let i = 0; i < Math.ceil(participantDocs.size / 500); ++i) {
+        await firestore.runTransaction(async (transaction) => {
+            participantDocs.docs
+                .slice(i * 500, (i + 1) * 500)
+                .forEach((doc) => {
+                    transaction.update(doc.ref, {
+                        [ParticipantKey.prize]: '',
+                        [ParticipantKey.prizeId]: '',
+                        [ParticipantKey.prizeWinner]: false,
+                    });
+                });
+        });
+    }
+    for (let i = 0; i < Math.ceil(prizeDocs.size / 500); ++i) {
+        await firestore.runTransaction(async (transaction) => {
+            prizeDocs.docs.slice(i * 500, (i + 1) * 500).forEach((doc) => {
+                transaction.update(doc.ref, {
+                    [PrizeKey.assigned]: false,
+                    [PrizeKey.winner]: '',
+                    [PrizeKey.winnerId]: '',
+                });
             });
         });
-        prizeDocs.docs.forEach((doc) => {
-            transaction.update(doc.ref, {
-                [PrizeKey.assigned]: false,
-                [PrizeKey.winner]: '',
-                [PrizeKey.winnerId]: '',
-            });
-        });
-    });
+    }
 };
 
 const prizeRefBuilder = (userId: string, drawId: string, prizeId: string) => {

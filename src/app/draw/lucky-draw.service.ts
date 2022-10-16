@@ -89,7 +89,6 @@ export class LuckyDrawService {
             query(
                 collection(this.db, USERS_KEY, uid, DRAWS_KEY),
                 where(DrawKey.name, '==', name),
-                orderBy(DrawKey.name, 'desc'),
                 limit(1)
             )
         );
